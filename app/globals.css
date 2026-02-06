@@ -1,0 +1,759 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /* Default Cyfrin colors */
+  --product-primary: #155EEF;
+  --product-light: #2970FF;
+  --product-dark: #004EEB;
+  --product-rgb: 21, 94, 239;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Subtle radial gradient background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(21, 94, 239, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(41, 112, 255, 0.05) 0px, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.dark body::before {
+  background-image:
+    radial-gradient(at 0% 0%, rgba(21, 94, 239, 0.08) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(41, 112, 255, 0.08) 0px, transparent 50%);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* ========================================
+   GLASSMORPHISM CARD EFFECTS
+   ======================================== */
+
+.card {
+  --card-rgb-fallback: var(--card-rgb, var(--product-rgb));
+  background: rgba(var(--card-rgb-fallback), 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(var(--card-rgb-fallback), 0.3);
+  box-shadow: 0 8px 32px 0 rgba(var(--card-rgb-fallback), 0.2);
+  transition: all 0.3s ease;
+  border-radius: 12px;
+}
+
+.card:hover {
+  background: rgba(var(--card-rgb-fallback), 0.18);
+  border: 1px solid rgba(var(--card-rgb-fallback), 0.4);
+  box-shadow: 0 8px 32px 0 rgba(var(--card-rgb-fallback), 0.3);
+  transform: translateY(-2px);
+}
+
+.dark .card {
+  background: rgba(var(--card-rgb-fallback), 0.15);
+  border: 1px solid rgba(var(--card-rgb-fallback), 0.35);
+  box-shadow: 0 8px 32px 0 rgba(var(--card-rgb-fallback), 0.25);
+}
+
+.dark .card:hover {
+  background: rgba(var(--card-rgb-fallback), 0.22);
+  border: 1px solid rgba(var(--card-rgb-fallback), 0.5);
+  box-shadow: 0 12px 40px 0 rgba(var(--card-rgb-fallback), 0.35);
+}
+
+/* Battlechain "black lightsaber" effect in light mode */
+.card[data-battlechain="true"] {
+  background: rgba(0, 0, 0, 0.03);
+  border: 2px solid rgba(0, 0, 0, 0.25);
+  box-shadow:
+    0 0 20px rgba(0, 0, 0, 0.15),
+    0 0 40px rgba(0, 0, 0, 0.1),
+    inset 0 0 20px rgba(0, 0, 0, 0.05);
+}
+
+.card[data-battlechain="true"]:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border: 2px solid rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0 0 30px rgba(0, 0, 0, 0.25),
+    0 0 60px rgba(0, 0, 0, 0.15),
+    inset 0 0 30px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Battlechain remains vibrant in dark mode */
+.dark .card[data-battlechain="true"] {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 32px 0 rgba(255, 255, 255, 0.25);
+}
+
+.dark .card[data-battlechain="true"]:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 12px 40px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* Glass utility class */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .glass {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ========================================
+   CODE BLOCKS
+   ======================================== */
+
+pre {
+  background: rgba(var(--product-rgb), 0.03) !important;
+  border: 1px solid rgba(var(--product-rgb), 0.1) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(var(--product-rgb), 0.05) !important;
+  padding: 1rem !important;
+  overflow-x: auto;
+  font-family: var(--font-geist-mono), monospace;
+}
+
+.dark pre {
+  background: rgba(var(--product-rgb), 0.05) !important;
+  border: 1px solid rgba(var(--product-rgb), 0.15) !important;
+  box-shadow: 0 4px 16px rgba(var(--product-rgb), 0.1) !important;
+}
+
+code:not(pre code) {
+  background: rgba(var(--product-rgb), 0.08);
+  border: 1px solid rgba(var(--product-rgb), 0.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.875em;
+  font-family: var(--font-geist-mono), monospace;
+}
+
+.dark code:not(pre code) {
+  background: rgba(var(--product-rgb), 0.15);
+  border: 1px solid rgba(var(--product-rgb), 0.25);
+}
+
+/* ========================================
+   HEADINGS
+   ======================================== */
+
+h1 {
+  background: linear-gradient(135deg, var(--product-light) 0%, var(--product-primary) 50%, var(--product-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+  font-size: 2.5rem;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  margin-top: 2rem;
+}
+
+h2 {
+  font-weight: 700;
+  font-size: 2rem;
+  line-height: 1.3;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+h3 {
+  font-weight: 600;
+  font-size: 1.5rem;
+  line-height: 1.4;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+h4 {
+  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 1.4;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ========================================
+   CALLOUT BOXES
+   ======================================== */
+
+.note,
+.tip,
+.warning,
+.danger {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-left: 4px solid;
+}
+
+.note {
+  background: rgba(21, 94, 239, 0.05);
+  border-color: rgba(21, 94, 239, 0.5);
+}
+
+.tip {
+  background: rgba(102, 198, 28, 0.05);
+  border-color: rgba(102, 198, 28, 0.5);
+}
+
+.warning {
+  background: rgba(255, 165, 0, 0.05);
+  border-color: rgba(255, 165, 0, 0.5);
+}
+
+.danger {
+  background: rgba(239, 68, 68, 0.05);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+/* ========================================
+   SCROLLBAR
+   ======================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--product-light), var(--product-primary));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--product-primary), var(--product-dark));
+}
+
+/* ========================================
+   SIDEBAR PILL BADGES
+   ======================================== */
+
+.sidebar-pill-active {
+  background: linear-gradient(135deg, rgba(var(--product-rgb), 0.2), rgba(var(--product-rgb), 0.15));
+  border: 1px solid rgba(var(--product-rgb), 0.3);
+  color: var(--product-primary);
+  box-shadow: 0 2px 8px rgba(var(--product-rgb), 0.15);
+}
+
+.dark .sidebar-pill-active {
+  background: linear-gradient(135deg, rgba(var(--product-rgb), 0.25), rgba(var(--product-rgb), 0.18));
+  border: 1px solid rgba(var(--product-rgb), 0.4);
+  color: var(--product-light);
+  box-shadow: 0 2px 12px rgba(var(--product-rgb), 0.25);
+}
+
+/* Battlechain special handling - gray/silver in light mode for visibility */
+body.product-battlechain .sidebar-pill-active {
+  background: linear-gradient(135deg, rgba(100, 100, 100, 0.15), rgba(80, 80, 80, 0.1));
+  border: 1px solid rgba(100, 100, 100, 0.3);
+  color: #404040;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dark body.product-battlechain .sidebar-pill-active {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.18));
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #FFFFFF;
+  box-shadow: 0 2px 12px rgba(255, 255, 255, 0.25);
+}
+
+/* Sidebar page links */
+.sidebar-link-active {
+  background: linear-gradient(90deg, rgba(var(--product-rgb), 0.12), rgba(var(--product-rgb), 0.08));
+  color: var(--product-primary);
+  border-left: 3px solid var(--product-primary);
+  padding-left: calc(0.75rem - 3px);
+}
+
+.dark .sidebar-link-active {
+  background: linear-gradient(90deg, rgba(var(--product-rgb), 0.18), rgba(var(--product-rgb), 0.12));
+  color: var(--product-light);
+  border-left: 3px solid var(--product-light);
+}
+
+/* Battlechain link special handling */
+body.product-battlechain .sidebar-link-active {
+  background: linear-gradient(90deg, rgba(80, 80, 80, 0.12), rgba(100, 100, 100, 0.08));
+  color: #303030;
+  border-left: 3px solid #606060;
+  padding-left: calc(0.75rem - 3px);
+}
+
+.dark body.product-battlechain .sidebar-link-active {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.12));
+  color: #FFFFFF;
+  border-left: 3px solid #FFFFFF;
+}
+
+/* ========================================
+   PRODUCT SELECTOR MODAL
+   ======================================== */
+
+.product-selector-modal {
+  animation: modalSlideIn 0.2s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.product-selector-item {
+  position: relative;
+}
+
+.product-selector-item:hover {
+  transform: translateY(-2px);
+}
+
+.product-selector-item::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  background: radial-gradient(circle at center, var(--product-color), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.product-selector-item:hover::after {
+  opacity: 0.1;
+}
+
+/* ========================================
+   PRODUCT-SPECIFIC THEMING
+   ======================================== */
+
+/* CodeHawks - Orange */
+body.product-codehawks h1 {
+  background: linear-gradient(135deg, #FF692E 0%, #FF4405 50%, #E62E05 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body.product-codehawks h2 {
+  background: linear-gradient(135deg, #FF692E 0%, #FF4405 50%, #E62E05 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Updraft - Green */
+body.product-updraft h1 {
+  background: linear-gradient(135deg, #85E13A 0%, #66C61C 50%, #4CA30D 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body.product-updraft h2 {
+  background: linear-gradient(135deg, #85E13A 0%, #66C61C 50%, #4CA30D 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Solodit - Purple */
+body.product-solodit h1 {
+  background: linear-gradient(135deg, #B692F6 0%, #9E77ED 50%, #7F56D9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body.product-solodit h2 {
+  background: linear-gradient(135deg, #B692F6 0%, #9E77ED 50%, #7F56D9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Battlechain - Black/Gray in light mode, White/Silver in dark mode */
+body.product-battlechain h1 {
+  background: linear-gradient(135deg, #000000 0%, #303030 50%, #505050 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body.product-battlechain h2 {
+  background: linear-gradient(135deg, #000000 0%, #303030 50%, #505050 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dark body.product-battlechain h1 {
+  background: linear-gradient(135deg, #FFFFFF 0%, #E8E8E8 50%, #D0D0D0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+}
+
+.dark body.product-battlechain h2 {
+  background: linear-gradient(135deg, #FFFFFF 0%, #E8E8E8 50%, #D0D0D0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+}
+
+/* Profiles - Blue (default) */
+body.product-profiles h1 {
+  background: linear-gradient(135deg, #2970FF 0%, #155EEF 50%, #004EEB 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body.product-profiles h2 {
+  background: linear-gradient(135deg, #2970FF 0%, #155EEF 50%, #004EEB 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========================================
+   STEPS COMPONENT
+   ======================================== */
+
+.steps-container {
+  counter-reset: step;
+}
+
+.step-item {
+  counter-increment: step;
+}
+
+.step-number-container::before {
+  content: counter(step);
+}
+
+.step-item .step-content h4 {
+  background: none;
+  -webkit-text-fill-color: inherit;
+  color: inherit;
+}
+
+/* ========================================
+   HERO SECTION
+   ======================================== */
+
+.hero-container {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  border-radius: 24px;
+  margin-bottom: 3rem;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0a1628 0%, #0d1f3c 50%, #1a2f5a 100%);
+  box-shadow: 0 20px 60px rgba(21, 94, 239, 0.3);
+}
+
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+/* Animated grid background */
+.hero-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(rgba(21, 94, 239, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(21, 94, 239, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: gridMove 20s linear infinite;
+  opacity: 0.5;
+}
+
+/* Glowing orbs */
+.hero-glow-1, .hero-glow-2 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  animation: float 8s ease-in-out infinite;
+}
+
+.hero-glow-1 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, #155EEF, transparent);
+  top: -100px;
+  left: -100px;
+  animation-delay: 0s;
+}
+
+.hero-glow-2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #2970FF, transparent);
+  bottom: -150px;
+  right: -150px;
+  animation-delay: 4s;
+}
+
+/* Floating particles */
+.hero-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #2970FF;
+  border-radius: 50%;
+  box-shadow: 0 0 20px #2970FF, 0 0 40px rgba(41, 112, 255, 0.5);
+  animation: particleFloat 15s linear infinite;
+  opacity: 0.9;
+}
+
+.particle:nth-child(1) {
+  left: 10%;
+  animation-delay: 0s;
+  animation-duration: 12s;
+}
+
+.particle:nth-child(2) {
+  left: 30%;
+  animation-delay: 2s;
+  animation-duration: 14s;
+}
+
+.particle:nth-child(3) {
+  left: 50%;
+  animation-delay: 4s;
+  animation-duration: 16s;
+}
+
+.particle:nth-child(4) {
+  left: 70%;
+  animation-delay: 6s;
+  animation-duration: 13s;
+}
+
+.particle:nth-child(5) {
+  left: 90%;
+  animation-delay: 8s;
+  animation-duration: 15s;
+}
+
+/* Hero content */
+.hero-content {
+  position: relative;
+  z-index: 10;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.hero-logo {
+  margin-bottom: 2rem;
+  animation: logoEntrance 1s ease-out, logoPulse 3s ease-in-out 1s infinite;
+}
+
+.hero-logo img {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  margin: 2rem auto 0;
+  filter: drop-shadow(0 10px 30px rgba(21, 94, 239, 0.5));
+  transition: transform 0.3s ease, filter 0.3s ease;
+  display: block !important;
+}
+
+.hero-logo:hover img {
+  filter: drop-shadow(0 15px 40px rgba(21, 94, 239, 0.8));
+}
+
+.dark .hero-logo img {
+  filter: drop-shadow(0 10px 30px rgba(41, 112, 255, 0.6)) !important;
+}
+
+.hero-tagline {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  animation: fadeInUp 1s ease-out 0.3s both;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Animated border glow */
+.hero-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 24px;
+  padding: 2px;
+  background: linear-gradient(135deg, #155EEF, #2970FF, #155EEF);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 1;
+  animation: borderRotate 3s linear infinite;
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+
+@keyframes gridMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 50px 50px; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -30px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(100vh) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-100px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes logoPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+@keyframes logoEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes borderRotate {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+}

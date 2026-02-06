@@ -1,0 +1,93 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Battlechain Docs",
+  "colors": {
+    "primary": "#FFFFFF",
+    "light": "#FFFFFF",
+    "dark": "#CCCCCC"
+  },
+  "favicon": "/favicon.svg",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg",
+    "href": "https://cyfrin.io"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Community",
+        "href": "https://discord.gg/cyfrin"
+      },
+      {
+        "label": "GitHub",
+        "href": "https://github.com/Cyfrin"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Sign In",
+      "href": "https://profiles.cyfrin.io"
+    }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "dropdowns": [
+          {
+            "dropdown": "Battlechain",
+            "icon": "/images/product-logos/battlechain.svg",
+            "pages": [
+              "overview",
+              {
+                "group": "Security Arena",
+                "pages": [
+                  "security-arena/exploitation-rules",
+                  "security-arena/defense-strategies"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Battlechain",
+          "href": "https://battlechain.cyfrin.io",
+          "icon": "gamepad"
+        },
+        {
+          "anchor": "Discord Community",
+          "href": "https://discord.gg/cyfrin",
+          "icon": "discord"
+        }
+      ]
+    }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "claude",
+      "cursor",
+      "vscode"
+    ]
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/cyfrinaudits",
+      "github": "https://github.com/Cyfrin",
+      "discord": "https://discord.gg/cyfrin",
+      "linkedin": "https://linkedin.com/company/cyfrin"
+    }
+  },
+  "styling": {
+    "codeblocks": {
+      "theme": "github-dark-dimmed"
+    }
+  },
+  "css": ["/styles.css", "/product-themes.css"]
+}

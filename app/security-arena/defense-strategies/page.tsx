@@ -1,0 +1,35 @@
+import { notFound } from 'next/navigation'
+import { MDXRemote } from 'next-mdx-remote/rsc'
+import { Card } from '@/components/mdx/Card'
+import { CardGroup } from '@/components/mdx/CardGroup'
+import { Note, Tip, Warning, Danger, Info } from '@/components/mdx/Callouts'
+import remarkGfm from 'remark-gfm'
+import rehypePrismPlus from 'rehype-prism-plus'
+import fs from 'fs'
+import path from 'path'
+import matter from 'gray-matter'
+
+const components = { Card, CardGroup, Note, Tip, Warning, Danger, Info }
+
+export default async function DefenseStrategiesPage() {
+  const filePath = path.join(process.cwd(), 'content', 'security-arena', 'defense-strategies.mdx')
+  if (!fs.existsSync(filePath)) notFound()
+
+  const fileContent = fs.readFileSync(filePath, 'utf8')
+  const { content } = matter(fileContent)
+
+  return (
+    <div className="max-w-none">
+      <MDXRemote
+        source={content}
+        components={components}
+        options={{
+          mdxOptions: {
+            remarkPlugins: [remarkGfm],
+            rehypePlugins: [[rehypePrismPlus, { ignoreMissing: true }]],
+          },
+        }}
+      />
+    </div>
+  )
+}

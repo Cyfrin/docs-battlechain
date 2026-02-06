@@ -1,0 +1,52 @@
+[
+  {
+    "id": "/index",
+    "title": "Welcome to Cyfrin",
+    "content": "Powering the future of smart contract security Cyfrin is: The complete platform for Web3 security researchers, developers, and learners. From competitive audits to professional certifications, Cyfrin powers the future of smart contract security. Competitive Security Audits Compete to find vulnerabilities in smart contracts. Earn rewards, build your reputation, and protect Web3. Web3 Education Platform Learn smart contract development and security. Get certified and advance your career in blockchain. Vulnerability Research Navigate 20,000+ security findings. Research, learn, and contribute to the community knowledge base. Security-First Blockchain Coming soon - Revolutionary blockchain infrastructure for decentralized security and audit coordination. Unified Accounts One profile across the entire ecosystem. Manage your settings, wallets, and credentials in one place. Quick Start Sign up for a free Cyfrin account to access all platforms Create account → - Security Researcher? Join CodeHa",
+    "url": "/index",
+    "category": "index.mdx",
+    "headings": [
+      "Cyfrin is:",
+      "Quick Start",
+      "Popular Documentation",
+      "The Cyfrin Ecosystem"
+    ]
+  },
+  {
+    "id": "/overview",
+    "title": "Battlechain",
+    "content": "The Arena Battlechain is Cyfrin's PvP security-focused blockchain—an extremely antagonistic environment where smart contracts face open exploitation before production deployment. Trial by Fire Only battle-tested code survives. Deploy your contracts into the arena and let attackers find every weakness. This isn't testing—it's war. Why Battlechain? No Rules. No Mercy. Your contracts face real attackers in a live PvP environment. Every vulnerability will be found. Survive the Arena Contracts that make it through Battlechain are hardened against real-world attacks. Bounties for Exploits Attackers earn rewards for finding vulnerabilities. The more devastating, the bigger the bounty. Proven in Combat Deploy with confidence knowing your code survived the most hostile environment in Web3. Coming Soon Comprehensive documentation for Battlechain is launching soon. Prepare your contracts for the arena. Battlechain is in active development. Documentation will be updated as features launch.",
+    "url": "/overview",
+    "category": "overview.mdx",
+    "headings": [
+      "The Arena",
+      "Trial by Fire",
+      "Why Battlechain?",
+      "Coming Soon"
+    ]
+  },
+  {
+    "id": "/security-arena/defense-strategies",
+    "title": "Defense Strategies",
+    "content": "Defense Strategies Coming soon Learn how to harden your smart contracts against exploitation in the most antagonistic blockchain environment. Core Concepts - Designing for adversarial conditions - Common attack vectors in PvP environments - Testing methodologies for battle-ready contracts Best Practices Detailed strategies for building contracts that can survive the Battlechain security arena.",
+    "url": "/security-arena/defense-strategies",
+    "category": "security-arena",
+    "headings": [
+      "Defense Strategies",
+      "Core Concepts",
+      "Best Practices"
+    ]
+  },
+  {
+    "id": "/security-arena/exploitation-rules",
+    "title": "Exploitation Rules",
+    "content": "Exploitation Rules Coming soon The Battlechain security arena operates under specific rules that govern how smart contracts can be attacked and exploited during the trial by fire period. Key Principles - Open exploitation is encouraged during the testing phase - All vulnerabilities must be documented - Rewards are distributed based on severity and impact Engagement Guidelines Details about engagement rules, boundaries, and ethics will be documented here.",
+    "url": "/security-arena/exploitation-rules",
+    "category": "security-arena",
+    "headings": [
+      "Exploitation Rules",
+      "Key Principles",
+      "Engagement Guidelines"
+    ]
+  }
+]
