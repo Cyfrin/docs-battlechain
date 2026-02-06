@@ -1,19 +1,23 @@
 declare module 'flexsearch' {
   export interface Document<T = any> {
-    add(id: number | string, data: T): void
+    add(doc: T): void
     search(query: string, options?: any): any[]
     remove(id: number | string): void
-    update(id: number | string, data: T): void
+    update(id: number | string, doc: T): void
   }
 
-  export function Document(options: any): Document
+  export function Document<T = any>(options: any): Document<T>
 }
 
 declare namespace FlexSearch {
   interface Document<T = any> {
-    add(id: number | string, data: T): void
+    add(doc: T): void
     search(query: string, options?: any): any[]
     remove(id: number | string): void
-    update(id: number | string, data: T): void
+    update(id: number | string, doc: T): void
+  }
+
+  const Document: {
+    new <T = any>(options: any): Document<T>
   }
 }
