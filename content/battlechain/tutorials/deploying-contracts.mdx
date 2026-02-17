@@ -1,0 +1,139 @@
+---
+title: "Deploying Contracts to BattleChain"
+description: "Learn how to deploy smart contracts using BattleChainDeployer and understand deployment options"
+---
+
+This tutorial teaches you how to deploy contracts to BattleChain and why the deployment method matters for the attack mode workflow.
+
+<Note>
+**Audience**: Developers deploying contracts to BattleChain.
+
+**Prerequisites**: Familiarity with Solidity and smart contract deployment.
+</Note>
+
+## Why BattleChainDeployer?
+
+BattleChain tracks which contracts are eligible for attack mode through the `AttackRegistry`. When you deploy via `BattleChainDeployer`, your contracts are **automatically registered**, which means:
+
+- You're recorded as the deployer on-chain
+- You can request attack mode without extra authorization steps
+- The DAO has on-chain proof of deployment origin
+
+Without BattleChainDeployer, you can still enter attack mode, but the process requires more DAO scrutiny.
+
+## Deployment Methods
+
+`BattleChainDeployer` wraps [CreateX](https://github.com/pcaversaccio/createx), giving you access to all standard deployment patterns:
+
+### CREATE (Simple Deployment)
+
+```solidity
+BattleChainDeployer deployer = BattleChainDeployer(BATTLECHAIN_DEPLOYER_ADDRESS);
+
+// Simple deployment
+bytes memory bytecode = type(MyContract).creationCode;
+address deployed = deployer.deployCreate(bytecode);
+```
+
+### CREATE2 (Deterministic Address)
+
+```solidity
+// Deterministic address based on salt + bytecode
+bytes32 salt = keccak256("my-contract-v1");
+bytes memory bytecode = type(MyContract).creationCode;
+
+address deployed = deployer.deployCreate2(salt, bytecode);
+```
+
+<Tip>
+Use CREATE2 when you need the same contract address across BattleChain and mainnet.
+</Tip>
+
+### CREATE2 with Initialization
+
+```solidity
+// Deploy and initialize in one transaction
+bytes memory bytecode = type(MyProxy).creationCode;
+bytes memory initData = abi.encodeCall(MyProxy.initialize, (owner, config));
+
+address deployed = deployer.deployCreate2AndInit(
+    salt,
+    bytecode,
+    initData
+);
+```
+
+### CREATE3 (Address Independent of Bytecode)
+
+```solidity
+// Address depends only on salt, not bytecode
+bytes32 salt = keccak256("my-contract-v1");
+bytes memory bytecode = type(MyContract).creationCode;
+
+address deployed = deployer.deployCreate3(salt, bytecode);
+```
+
+### Clone Deployment
+
+```solidity
+// Deploy a minimal proxy (EIP-1167 clone)
+address implementation = 0x1234...;
+address clone = deployer.deployCreate2Clone(salt, implementation);
+```
+
+## All Available Methods
+
+| Method | Address Determinism | Notes |
+|--------|-------------------|-------|
+| `deployCreate()` | Nonce-based | Simplest option |
+| `deployCreateAndInit()` | Nonce-based | Deploys + calls init |
+| `deployCreateClone()` | Nonce-based | EIP-1167 proxy |
+| `deployCreate2()` | Salt + bytecode | Same address cross-chain |
+| `deployCreate2AndInit()` | Salt + bytecode | Deploy + init |
+| `deployCreate2Clone()` | Salt + impl | Deterministic proxy |
+| `deployCreate3()` | Salt only | Address independent of code |
+| `deployCreate3AndInit()` | Salt only | Deploy + init |
+
+## What Happens After Deployment
+
+Every deployment through BattleChainDeployer automatically calls `AttackRegistry.registerDeployment()`, which:
+
+1. Records the contract address
+2. Sets its state to `NEW_DEPLOYMENT`
+3. Records you as the deployer
+4. Authorizes you as the agreement owner for that contract
+
+```solidity
+// You can verify registration
+address deployer = attackRegistry.getContractDeployer(myContract);
+// deployer == your address
+
+IAttackRegistry.ContractState state = attackRegistry.getAgreementState(myContract);
+// state == NEW_DEPLOYMENT (1)
+```
+
+## Deploying Without BattleChainDeployer
+
+If your contracts are already deployed (e.g., through a custom factory or script), you can still enter the attack flow:
+
+1. Create your Safe Harbor agreement as normal
+2. Use `requestUnderAttackByNonAuthorized()` instead of `requestUnderAttack()`
+
+```solidity
+attackRegistry.requestUnderAttackByNonAuthorized(agreementAddress);
+```
+
+<Warning>
+Non-BattleChainDeployer contracts face extra DAO scrutiny because there's no on-chain proof of deployment origin. The DAO may take longer to approve or may request additional information.
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Going Attackable" icon="shield" href="/battlechain/tutorials/going-attackable">
+    Full end-to-end protocol tutorial
+  </Card>
+  <Card title="Contract API Reference" icon="code" href="/battlechain/reference/contracts">
+    Complete BattleChainDeployer API
+  </Card>
+</CardGroup>

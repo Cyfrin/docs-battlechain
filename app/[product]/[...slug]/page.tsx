@@ -5,7 +5,8 @@ import { Card } from '@/components/mdx/Card'
 import { CardGroup } from '@/components/mdx/CardGroup'
 import { Steps, Step } from '@/components/mdx/Steps'
 import { Accordion, AccordionGroup } from '@/components/mdx/Accordion'
-import { Note, Tip, Warning, Danger, Info } from '@/components/mdx/Callouts'
+import { Note, Tip, Warning, Danger, Info, Check } from '@/components/mdx/Callouts'
+import { NetworkInfo } from '@/components/mdx/NetworkInfo'
 import { CodeGroup } from '@/components/mdx/CodeGroup'
 import { Latex } from '@/components/mdx/Latex'
 import { Expandable } from '@/components/mdx/Expandable'
@@ -27,6 +28,8 @@ const components = {
   Warning,
   Danger,
   Info,
+  Check,
+  NetworkInfo,
   CodeGroup,
   Latex,
   Expandable,
@@ -113,8 +116,8 @@ export async function generateMetadata({ params }: PageProps) {
 
   if (!mdxContent) {
     return {
-      title: 'Cyfrin Docs',
-      description: 'Cyfrin Documentation',
+      title: 'BattleChain Docs',
+      description: 'BattleChain Documentation',
     }
   }
 

@@ -1,0 +1,83 @@
+---
+title: "How to Request Attack Mode"
+description: "Submit your contracts for DAO approval to enter attack mode"
+---
+
+## Overview
+
+After deploying contracts and creating an agreement, request attack mode to enable Safe Harbor protection and allow whitehats to test your contracts.
+
+## Prerequisites
+
+Before requesting:
+
+1. Contracts deployed (via `BattleChainDeployer` or any other method)
+2. Agreement created via `AgreementFactory`
+3. Agreement adopted via `adoptSafeHarbor()`
+4. Commitment window extends at least 7 days
+
+## Request Attack Mode
+
+```solidity
+attackRegistry.requestUnderAttack(agreementAddress);
+```
+
+This validates:
+- Agreement was created by official factory
+- You're the agreement owner
+- All contracts were deployed via BattleChainDeployer
+- Commitment window meets minimum requirements
+
+## For Non-BattleChainDeployer Contracts
+
+If contracts weren't deployed via BattleChainDeployer:
+
+```solidity
+attackRegistry.requestUnderAttackByNonAuthorized(agreementAddress);
+```
+
+<Warning>
+This path requires extra DAO scrutiny since there's no on-chain proof of deployment.
+</Warning>
+
+## Skip Attack Mode Entirely
+
+To go directly to production without attack testing:
+
+```solidity
+attackRegistry.goToProduction(agreementAddress);
+```
+
+This immediately sets state to `PRODUCTION` with no Safe Harbor protection.
+
+## Check Request Status
+
+```solidity
+IAttackRegistry.ContractState state = attackRegistry.getAgreementState(agreementAddress);
+
+// 2 = ATTACK_REQUESTED (waiting for DAO)
+// 3 = UNDER_ATTACK (approved!)
+// 0 = NOT_DEPLOYED (rejected or not requested)
+```
+
+## What Happens Next
+
+| Outcome | Timeline |
+|---------|----------|
+| DAO Approves | Immediate → `UNDER_ATTACK` |
+| DAO Rejects | Immediate → `NOT_DEPLOYED` |
+| DAO Takes No Action | 14 days → `PRODUCTION` (auto-promote) |
+
+## Troubleshooting
+
+| Error | Solution |
+|-------|----------|
+| `InvalidAgreement` | Agreement not from official factory |
+| `NotAgreementOwner` | Only agreement owner can request |
+| `AgreementOwnerNotAuthorized` | Call `authorizeAgreementOwner()` for each contract |
+| `InsufficientCommitment` | Extend commitment window to 7+ days |
+| `EmptyContractArray` | Add contracts to agreement's BattleChain scope |
+
+<Card title="How to Promote to Production" icon="arrow-right" href="/battlechain/how-to/promote-to-production">
+  Next: Promote after stress testing
+</Card>

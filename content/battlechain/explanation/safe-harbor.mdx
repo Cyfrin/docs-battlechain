@@ -1,0 +1,108 @@
+---
+title: "Safe Harbor Protection"
+description: "Understanding the legal protections for whitehats on BattleChain"
+---
+
+## What is Safe Harbor?
+
+Safe Harbor is a legal framework that protects whitehats who attack contracts on BattleChain. When a protocol adopts a Safe Harbor agreement and their contracts enter attack mode, they commit to not pursuing legal action against whitehats who follow the rules.
+
+## What's Protected
+
+When attacking contracts in `UNDER_ATTACK` or `PROMOTION_REQUESTED` state:
+
+- Exploiting vulnerabilities in in-scope contracts
+- Extracting funds from vulnerable contracts
+- Keeping your bounty percentage (up to the cap)
+- Acting without prior coordination
+- Remaining anonymous (if allowed by terms)
+
+## What's NOT Protected
+
+Safe Harbor does NOT cover:
+
+- Attacking `PRODUCTION` contracts
+- Attacking contracts outside the agreement's scope
+- Keeping more than your bounty entitlement
+- Ignoring identity requirements
+- Causing harm beyond the exploit itself
+
+## The Agreement Structure
+
+Every Safe Harbor agreement includes:
+
+```solidity
+struct AgreementDetails {
+    string protocolName;        // Who is this?
+    Contact[] contactDetails;   // How to reach them
+    Chain[] chains;             // What's in scope
+    BountyTerms bountyTerms;    // What you earn
+    string agreementURI;        // Full legal document
+}
+```
+
+## Commitment Window
+
+Protocols commit to not changing terms unfavorably during a commitment window:
+
+```solidity
+uint256 cantChangeUntil = agreement.getCantChangeUntil();
+```
+
+During this window, they cannot:
+- Reduce bounty percentage or caps
+- Remove contracts from scope
+- Make identity requirements stricter
+- Change from retainable to return-all
+
+This protects you from "bait and switch" tactics.
+
+## Verifying Protection
+
+Before attacking, always verify:
+
+```solidity
+// 1. Agreement is valid
+bool valid = safeHarborRegistry.isAgreementValid(agreementAddress);
+
+// 2. Contract is attackable
+bool attackable = attackRegistry.isTopLevelContractUnderAttack(contractAddress);
+
+// 3. Contract is in scope
+bool inScope = agreement.isContractInScope(contractAddress);
+```
+
+## The Agreement Document
+
+The `agreementURI` points to the full legal document:
+
+```solidity
+string memory uri = agreement.getAgreementURI();
+// e.g., "ipfs://QmXXXXXX"
+```
+
+On-chain data is a summary; the URI document is authoritative.
+
+## If Something Goes Wrong
+
+### Protocol Claims Violation
+
+1. Document your compliance (transactions, calculations)
+2. Show you met all requirements
+3. Involve neutral parties if needed
+
+### Terms Changed Unfavorably
+
+1. Check if changes were during commitment window
+2. Archive evidence of state at attack time
+3. Escalate to DAO for arbitration
+
+## Due Diligence
+
+<Warning>
+Before exploiting a vulnerability:
+
+- Verify the same vulnerability doesn't exist on mainnet
+- Consider if disclosure could harm other protocols
+- Use traditional bug bounty for mainnet-affecting issues
+</Warning>

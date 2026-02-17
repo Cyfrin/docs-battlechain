@@ -1,0 +1,110 @@
+---
+title: "Bounty Terms"
+description: "Reference for bounty configuration options"
+---
+
+## BountyTerms Structure
+
+```solidity
+struct BountyTerms {
+    uint256 bountyPercentage;       // 0-100
+    uint256 bountyCapUsd;           // Max per whitehat in USD
+    bool retainable;                // Keep from recovered funds?
+    IdentityRequirements identity;  // KYC level required
+    string diligenceRequirements;   // For Named identity
+    uint256 aggregateBountyCapUsd;  // Total cap across all whitehats
+}
+```
+
+## Fields
+
+### bountyPercentage
+
+Percentage of recovered funds the whitehat receives.
+
+- **Range**: 0-100
+- **Typical**: 10%
+- **Note**: Actual bounty is `min(recovered x percentage, bountyCapUsd)`
+
+### bountyCapUsd
+
+Maximum bounty per whitehat in USD.
+
+- **Typical**: \$1M - \$5M
+- **Note**: Requires oracle conversion to token amounts
+
+### retainable
+
+Whether whitehats keep bounty from recovered funds.
+
+| Value | Meaning |
+|-------|---------|
+| `true` | Whitehat keeps bounty, sends rest to recovery |
+| `false` | Whitehat sends all to recovery, protocol pays separately |
+
+### identity
+
+Identity verification requirements.
+
+```solidity
+enum IdentityRequirements {
+    Anonymous,     // 0 - No verification
+    Pseudonymous,  // 1 - Consistent pseudonym
+    Named          // 2 - Legal name verification
+}
+```
+
+### diligenceRequirements
+
+Additional requirements for `Named` identity. May specify KYC provider, documentation needed, etc.
+
+### aggregateBountyCapUsd
+
+Total cap across all whitehats for a single exploit.
+
+- **Value 0**: No aggregate cap
+- **Non-zero**: Total payouts ≤ this value
+- **Note**: Cannot use with `retainable = true`
+
+## Bounty Calculation
+
+```
+Individual Bounty = min(RecoveredValue x bountyPercentage%, bountyCapUsd)
+
+If aggregateBountyCapUsd > 0:
+  Total Payouts ≤ aggregateBountyCapUsd
+```
+
+## Examples
+
+### Standard Terms
+
+```solidity
+BountyTerms({
+    bountyPercentage: 10,
+    bountyCapUsd: 5_000_000,
+    retainable: true,
+    identity: IdentityRequirements.Anonymous,
+    diligenceRequirements: "",
+    aggregateBountyCapUsd: 0
+})
+```
+
+### High-Value Protocol
+
+```solidity
+BountyTerms({
+    bountyPercentage: 10,
+    bountyCapUsd: 10_000_000,
+    retainable: false,
+    identity: IdentityRequirements.Named,
+    diligenceRequirements: "Complete KYC via Persona",
+    aggregateBountyCapUsd: 50_000_000
+})
+```
+
+## Validation Rules
+
+- `bountyPercentage` cannot exceed 100
+- `aggregateBountyCapUsd` cannot be used with `retainable = true`
+- `aggregateBountyCapUsd` must be ≥ `bountyCapUsd` if non-zero

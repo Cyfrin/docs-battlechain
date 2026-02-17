@@ -1,0 +1,59 @@
+---
+title: "How to Add BattleChain to MetaMask"
+description: "Connect your wallet to the BattleChain network"
+---
+
+## Overview
+
+To interact with contracts on BattleChain, you need to add the network to your wallet. This guide covers MetaMask, but the same details work for any EVM-compatible wallet.
+
+## One-Click Setup
+
+Click the button below to add BattleChain Testnet to MetaMask automatically:
+
+<NetworkInfo network="testnet" />
+
+## Manual Setup
+
+If you prefer to add the network manually:
+
+1. Open MetaMask and click the network selector at the top
+2. Click **Add Network** → **Add a network manually**
+3. Enter the following details:
+   - **Network Name**: BattleChain Testnet
+   - **RPC URL**: `http://testnet.battlechain.com:3051`
+   - **Chain ID**: `627`
+   - **Currency Symbol**: `ETH`
+   - **Block Explorer URL**: `https://block-explorer-app-mu.vercel.app/`
+4. Click **Save**
+
+<Check>
+BattleChain Testnet is now available in your MetaMask network list.
+</Check>
+
+## Mainnet
+
+<NetworkInfo network="mainnet" />
+
+<Note>
+BattleChain Mainnet details will be announced when the network launches. Check back here for updates.
+</Note>
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Cannot connect to RPC | Ensure the RPC URL is entered exactly as shown above |
+| Wrong chain ID | Remove the network and re-add with Chain ID `627` |
+| Transactions stuck | Try resetting your MetaMask account (Settings → Advanced → Reset Account) |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Deploy Your First Contract" icon="rocket" href="/battlechain/quickstart/deploy-first-contract">
+    Get started deploying contracts on BattleChain
+  </Card>
+  <Card title="Find Attackable Contracts" icon="crosshairs" href="/battlechain/how-to/find-attackable-contracts">
+    Discover contracts you can legally attack
+  </Card>
+</CardGroup>

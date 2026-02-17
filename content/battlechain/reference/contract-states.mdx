@@ -1,0 +1,82 @@
+---
+title: "Contract States"
+description: "Reference for all contract states and transitions"
+---
+
+## State Enum
+
+```solidity
+enum ContractState {
+    NOT_DEPLOYED,        // 0
+    NEW_DEPLOYMENT,      // 1
+    ATTACK_REQUESTED,    // 2
+    UNDER_ATTACK,        // 3
+    PROMOTION_REQUESTED, // 4
+    PRODUCTION,          // 5
+    CORRUPTED            // 6
+}
+```
+
+## State Details
+
+| State | Value | Attackable | Terminal | Description |
+|-------|-------|------------|----------|-------------|
+| `NOT_DEPLOYED` | 0 | No | No | Not registered or rejected |
+| `NEW_DEPLOYMENT` | 1 | No | No | Deployed via BattleChainDeployer |
+| `ATTACK_REQUESTED` | 2 | No | No | Awaiting DAO approval |
+| `UNDER_ATTACK` | 3 | **Yes** | No | Open for whitehats |
+| `PROMOTION_REQUESTED` | 4 | **Yes** | No | 3-day promotion countdown |
+| `PRODUCTION` | 5 | No | **Yes** | Protected like mainnet |
+| `CORRUPTED` | 6 | No | **Yes** | Successfully exploited |
+
+## Querying State
+
+```solidity
+// Check if contract is attackable (UNDER_ATTACK or PROMOTION_REQUESTED)
+bool attackable = attackRegistry.isTopLevelContractUnderAttack(contractAddress);
+
+// Get exact state
+IAttackRegistry.ContractState state = attackRegistry.getAgreementState(agreementAddress);
+
+// Get full info
+IAttackRegistry.AgreementInfo memory info = attackRegistry.getAgreementInfo(agreementAddress);
+```
+
+## State Transitions
+
+### From NOT_DEPLOYED
+- → `NEW_DEPLOYMENT`: Deploy via BattleChainDeployer
+
+### From NEW_DEPLOYMENT
+- → `ATTACK_REQUESTED`: Call `requestUnderAttack()`
+- → `PRODUCTION`: Call `goToProduction()`
+
+### From ATTACK_REQUESTED
+- → `UNDER_ATTACK`: DAO calls `approveAttack()`
+- → `NOT_DEPLOYED`: DAO calls `rejectAttackRequest()`
+- → `PRODUCTION`: DAO calls `instantPromote()` or auto after 14 days
+
+### From UNDER_ATTACK
+- → `PROMOTION_REQUESTED`: Attack moderator calls `promote()`
+- → `CORRUPTED`: Attack moderator calls `markCorrupted()`
+- → `PRODUCTION`: DAO calls `instantPromote()`
+
+### From PROMOTION_REQUESTED
+- → `PRODUCTION`: After 3 days automatically
+- → `UNDER_ATTACK`: Attack moderator calls `cancelPromotion()`
+- → `CORRUPTED`: Attack moderator calls `markCorrupted()`
+- → `PRODUCTION`: DAO calls `instantPromote()`
+
+### From PRODUCTION
+None (terminal state)
+
+### From CORRUPTED
+None (terminal state)
+
+## Time Constants
+
+```solidity
+uint256 public constant PROMOTION_WINDOW = 14 days;
+uint256 public constant PROMOTION_DELAY = 3 days;
+uint256 public constant MIN_COMMITMENT = 7 days;
+```

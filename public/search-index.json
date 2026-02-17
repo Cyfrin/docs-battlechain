@@ -1,5 +1,368 @@
 [
   {
+    "id": "/battlechain/explanation/best-practices",
+    "title": "Best Practices",
+    "content": "For Protocols Deploy Identical Code Deploy the exact same bytecode you'll use on mainnet. Only differ in: - Constructor parameters (addresses, chain IDs) - Configuration values that legitimately differ per-chain Start with Reasonable Liquidity Deploy enough to attract whitehats, but not more than you're comfortable losing: | Protocol Type | Suggested Liquidity | |--------------|---------------------| | DEX/AMM | \\$50K - \\$200K | | Lending | \\$100K - \\$500K | | Yield Aggregator | \\$50K - \\$150K | | NFT/Gaming | \\$10K - \\$50K | Complete Audit First BattleChain is for stress testing, not finding obvious bugs: Set Competitive Bounty Terms Attract whitehats with reasonable terms: - 10% bounty (industry standard) - \\$5M cap (attractive for serious researchers) - retainable = true (easier for whitehats) - Anonymous identity (lower barrier) Plan Testing Duration | Risk Level | Minimum Attack Period | |------------|----------------------| | Low (simple) | 1-2 weeks | | Medium (DeFi primitives) ",
+    "url": "/battlechain/explanation/best-practices",
+    "category": "battlechain",
+    "headings": [
+      "For Protocols",
+      "Deploy Identical Code",
+      "Start with Reasonable Liquidity",
+      "Complete Audit First",
+      "Set Competitive Bounty Terms"
+    ]
+  },
+  {
+    "id": "/battlechain/explanation/contract-lifecycle",
+    "title": "The Contract Lifecycle",
+    "content": "Overview Every agreement on BattleChain follows a defined lifecycle. Understanding this helps you know what's possible at each stage. The State Machine State Descriptions NOT_DEPLOYED Default state for unregistered contracts or rejected requests. - Attackable: No - Next states: NEW_DEPLOYMENT (via BattleChainDeployer) NEW_DEPLOYMENT Contracts deployed via BattleChainDeployer start here. - Attackable: No - Next states: ATTACK_REQUESTED or PRODUCTION (goToProduction) ATTACK_REQUESTED Waiting for DAO approval. - Attackable: No - Next states: UNDERATTACK (approved), NOTDEPLOYED (rejected), PRODUCTION (instant or auto after 14 days) UNDER_ATTACK Open for whitehats. Safe Harbor protection applies. - Attackable: Yes - Next states: PROMOTION_REQUESTED, CORRUPTED, PRODUCTION (instant) PROMOTION_REQUESTED 3-day countdown to production. Still attackable! - Attackable: Yes - Next states: PRODUCTION (after 3 days), UNDER_ATTACK (cancel), CORRUPTED PRODUCTION Terminal. Protected like mainnet. - Atta",
+    "url": "/battlechain/explanation/contract-lifecycle",
+    "category": "battlechain",
+    "headings": [
+      "Overview",
+      "The State Machine",
+      "State Descriptions",
+      "NOT_DEPLOYED",
+      "NEW_DEPLOYMENT"
+    ]
+  },
+  {
+    "id": "/battlechain/explanation/safe-harbor",
+    "title": "Safe Harbor Protection",
+    "content": "What is Safe Harbor? Safe Harbor is a legal framework that protects whitehats who attack contracts on BattleChain. When a protocol adopts a Safe Harbor agreement and their contracts enter attack mode, they commit to not pursuing legal action against whitehats who follow the rules. What's Protected When attacking contracts in UNDERATTACK or PROMOTIONREQUESTED state: - Exploiting vulnerabilities in in-scope contracts - Extracting funds from vulnerable contracts - Keeping your bounty percentage (up to the cap) - Acting without prior coordination - Remaining anonymous (if allowed by terms) What's NOT Protected Safe Harbor does NOT cover: - Attacking PRODUCTION contracts - Attacking contracts outside the agreement's scope - Keeping more than your bounty entitlement - Ignoring identity requirements - Causing harm beyond the exploit itself The Agreement Structure Every Safe Harbor agreement includes: Commitment Window Protocols commit to not changing terms unfavorably during a commitment wind",
+    "url": "/battlechain/explanation/safe-harbor",
+    "category": "battlechain",
+    "headings": [
+      "What is Safe Harbor?",
+      "What's Protected",
+      "What's NOT Protected",
+      "The Agreement Structure",
+      "Commitment Window"
+    ]
+  },
+  {
+    "id": "/battlechain/explanation/what-is-battlechain",
+    "title": "What is BattleChain?",
+    "content": "The Problem Web3 has a fundamental gap in its development lifecycle. Traditional software has well-established staging environments where code is tested with production-like conditions. Web3 lacks this: | Traditional | Web3 Today | With BattleChain | |-------------|------------|------------------| | Dev → Staging → Production | Dev → Testnet → Mainnet | Dev → Testnet → BattleChain → Mainnet | | Staging has real-like data | Testnet has fake money | BattleChain has real funds | | Issues found before users | Issues found after millions at risk | Issues found with controlled risk | The consequences: - Projects go from \\$0 to \\$5M TVL overnight after audit - Bug bounties don't attract serious testing (report vulnerabilities, don't exploit them) - The industry loses billions to preventable exploits The Solution BattleChain is a pre-mainnet, post-testnet environment with real funds. It's an incentivized testnet where: - Protocols deploy audited contracts with real liquidity - Whitehats legall",
+    "url": "/battlechain/explanation/what-is-battlechain",
+    "category": "battlechain",
+    "headings": [
+      "The Problem",
+      "The Solution",
+      "How It Works",
+      "Attack Mode",
+      "Production Mode"
+    ]
+  },
+  {
+    "id": "/battlechain/how-to/add-battlechain-to-metamask",
+    "title": "How to Add BattleChain to MetaMask",
+    "content": "Overview To interact with contracts on BattleChain, you need to add the network to your wallet. This guide covers MetaMask, but the same details work for any EVM-compatible wallet. One-Click Setup Click the button below to add BattleChain Testnet to MetaMask automatically: Manual Setup If you prefer to add the network manually: 1. Open MetaMask and click the network selector at the top 2. Click Add Network → Add a network manually 3. Enter the following details: - Network Name: BattleChain Testnet - RPC URL: http://testnet.battlechain.com:3051 - Chain ID: 627 - Currency Symbol: ETH - Block Explorer URL: https://block-explorer-app-mu.vercel.app/ 4. Click Save BattleChain Testnet is now available in your MetaMask network list. Mainnet BattleChain Mainnet details will be announced when the network launches. Check back here for updates. Troubleshooting | Issue | Solution | |-------|----------| | Cannot connect to RPC | Ensure the RPC URL is entered exactly as shown above | | Wrong chain ID",
+    "url": "/battlechain/how-to/add-battlechain-to-metamask",
+    "category": "battlechain",
+    "headings": [
+      "Overview",
+      "One-Click Setup",
+      "Manual Setup",
+      "Mainnet",
+      "Troubleshooting"
+    ]
+  },
+  {
+    "id": "/battlechain/how-to/approve-reject-requests",
+    "title": "How to Approve or Reject Requests",
+    "content": "Overview As the registry moderator, you review attack requests and decide whether to approve or reject them. Approve a Request If the request passes review: Effects: - State changes to UNDER_ATTACK - Safe Harbor protection begins - Whitehats can attack Reject a Request If the request fails review: Effects: - State returns to NOT_DEPLOYED - Contract mappings cleared - Protocol can resubmit with fixes Review Checklist Before deciding, verify: 1. Deployment method: Deployed via BattleChainDeployer? 2. Not a copycat: Bytecode doesn't match mainnet contracts 3. Legitimate protocol: Has web presence, audit reports, valid contacts 4. Reasonable terms: Bounty percentage in normal range (5-15%) 5. Clear scope: All contracts properly defined Check Deployment Method solidity function batchProcess( address[] calldata toApprove, address[] calldata toReject ) external { for (uint i = 0; i Handle emergency copycat situations",
+    "url": "/battlechain/how-to/approve-reject-requests",
+    "category": "battlechain",
+    "headings": [
+      "Overview",
+      "Approve a Request",
+      "Reject a Request",
+      "Review Checklist",
+      "Check Deployment Method"
+    ]
+  },
+  {
+    "id": "/battlechain/how-to/claim-bounties",
+    "title": "How to Claim Bounties",
+    "content": "Overview Each Safe Harbor agreement defines bounty terms. Understanding these ensures you receive fair compensation. Read Bounty Terms Calculate Your Bounty Examples | Recovered | Percentage | Cap | Your Bounty | |-----------|------------|-----|-------------| | \\$500K | 10% | \\$5M | \\$50K | | \\$10M | 10% | \\$5M | \\$1M | | \\$100M | 10% | \\$5M | \\$5M (capped) | Convert USD Cap to Tokens Caps are in USD. Convert using current prices: Retainable vs Return-All Retainable (true) Return-All (false) Aggregate Bounty Cap If aggregateBountyCapUsd > 0, total bounties across all whitehats are capped: If multiple whitehats exploit the same issue, they share the aggregate cap proportionally. Aggregate caps cannot be used with retainable = true. Get Recovery Address Tax Considerations Bounties are likely taxable income. Keep records of: - Date of attack - Assets recovered (types and amounts) - Bounty received - USD value at time of receipt Understand your legal protections",
+    "url": "/battlechain/how-to/claim-bounties",
+    "category": "battlechain",
+    "headings": [
+      "Overview",
+      "Read Bounty Terms",
+      "Calculate Your Bounty",
+      "Examples",
+      "Convert USD Cap to Tokens"
+    ]
+  },
+  {
+    "id": "/battlechain/how-to/create-agreement",
+    "title": "How to Create a Safe Harbor Agreement",
+    "content": "Overview A Safe Harbor agreement defines the terms under which whitehats can attack your contracts. This guide covers all configuration options. Create the Agreement Use AgreementFactory to create your agreement: Configure Contact Details Provide emergency contacts for whitehats: Define Chain Scope Specify which contracts on which chains are covered: Child Contract Scope Options | Value | Meaning | |-------|---------| | None | Only the listed contract | | ExistingOnly | Contract + children created before agreement | | All | Contract + all children (past and future) | | FutureOnly | Contract + children created after agreement | Configure Bounty Terms Retainable vs Return-All - Retainable (true): Whitehat keeps bounty from recovered funds, sends rest to recovery - Return-All (false): Whitehat sends all funds to recovery, protocol pays bounty separately Identity Options | Level | Requirement | |-------|-------------| | Anonymous | No identity verification | | Pseudonymous | Consistent pse",
+    "url": "/battlechain/how-to/create-agreement",
+    "category": "battlechain",
+    "headings": [
+      "Overview",
+      "Create the Agreement",
+      "Configure Contact Details",
+      "Define Chain Scope",
+      "Child Contract Scope Options"
+    ]
+  },
+  {
+    "id": "/battlechain/how-to/execute-attack",
+    "title": "How to Execute an Attack",
+    "content": "Overview Once you've found an attackable contract, execute your exploit and handle funds according to the Safe Harbor terms. Before Attacking 1. Verify contract is in UNDERATTACK or PROMOTIONREQUESTED state 2. Confirm contract is in the agreement's scope 3. Note the recovery address 4. Understand the bounty terms Execute Your Exploit There are no restrictions on how you attack in-scope contracts: Handle Recovered Funds If Retainable = true Keep your bounty, send the rest: If Retainable = false Send all funds to recovery: Multiple Token Types Handle each token type: Bounty Calculation Example: - Recovered: \\$10M - Percentage: 10% - Cap: \\$5M - Your Bounty: min(\\$1M, \\$5M) = \\$1M After the Attack 1. Document everything: Keep transaction hashes, calculations 2. Meet identity requirements: If required by the agreement 3. Consider mainnet implications: If vulnerability exists on mainnet, contact the protocol privately If the vulnerability also exists on mainnet, do NOT publicly disclose. Co",
+    "url": "/battlechain/how-to/execute-attack",
+    "category": "battlechain",
+    "headings": [
+      "Overview",
+      "Before Attacking",
+      "Execute Your Exploit",
+      "Handle Recovered Funds",
+      "If Retainable = true"
+    ]
+  },
+  {
+    "id": "/battlechain/how-to/find-attackable-contracts",
+    "title": "How to Find Attackable Contracts",
+    "content": "Overview The AttackRegistry tracks which contracts are in attack mode. This guide shows how to find and verify targets. Check a Specific Contract Monitor for New Targets Watch for AgreementStateChanged events: Get Agreement Details Verify Agreement Validity Always verify before attacking: Check Time Remaining For contracts in PROMOTION_REQUESTED: Red Flags Be cautious of: - Suspiciously high bounties - Very new agreements (less community vetting) - Missing contact details - Contracts identical to mainnet protocols Next: Execute your attack properly",
+    "url": "/battlechain/how-to/find-attackable-contracts",
+    "category": "battlechain",
+    "headings": [
+      "Overview",
+      "Check a Specific Contract",
+      "Monitor for New Targets",
+      "Get Agreement Details",
+      "Verify Agreement Validity"
+    ]
+  },
+  {
+    "id": "/battlechain/how-to/instant-promotion",
+    "title": "How to Use Instant Promotion",
+    "content": "Overview The DAO can instantly promote contracts to production, bypassing the 3-day delay. This is an emergency power for protecting the ecosystem. Use instant promotion only for genuine emergencies. When to Use Copycat Discovery A mainnet contract mirrors an attackable BattleChain contract: 1. Whitehat finds vulnerability on BattleChain 2. Someone deploys identical contract to mainnet 3. Mainnet contract is now vulnerable 4. Action: Instant promote to stop further disclosure TVL Surge Unexpected liquidity growth creates unreasonable risk: 1. Protocol deployed with \\$100K TVL 2. TVL grows to \\$10M unexpectedly 3. Risk/reward ratio changes dramatically 4. Action: Consider instant promotion if protocol requests Protocol Emergency Protocol discovers critical issue and needs to exit attack mode: 1. Protocol finds vulnerability themselves 2. Need to patch without whitehats exploiting 3. Action: Instant promote to protect users Execute Instant Promotion Valid from these states: - ATTACK_REQU",
+    "url": "/battlechain/how-to/instant-promotion",
+    "category": "battlechain",
+    "headings": [
+      "Overview",
+      "When to Use",
+      "Copycat Discovery",
+      "TVL Surge",
+      "Protocol Emergency"
+    ]
+  },
+  {
+    "id": "/battlechain/how-to/promote-to-production",
+    "title": "How to Promote to Production",
+    "content": "Overview After successful stress testing, promote your contracts to production mode. This removes Safe Harbor protection and treats contracts like mainnet deployments. Once promoted, there's no going back. Contracts cannot re-enter attack mode. Request Promotion This starts a 3-day countdown. During this time: - Contracts are still attackable - Safe Harbor still applies - You can cancel if issues are found Cancel Promotion If an issue is discovered during the 3-day wait: This returns the agreement to UNDER_ATTACK state. Check Promotion Status Mark as Corrupted If a whitehat successfully exploits your contracts: This sets state to CORRUPTED (terminal), signaling the contracts are compromised. Transfer Attack Moderator The attack moderator controls promotion. To transfer: After Promotion 1. Deploy to mainnet: Your contracts are battle-tested 2. Keep monitoring: Continue to watch your BattleChain deployment 3. Mirror updates: Keep BattleChain and mainnet in sync 4. Use for staging: Future",
+    "url": "/battlechain/how-to/promote-to-production",
+    "category": "battlechain",
+    "headings": [
+      "Overview",
+      "Request Promotion",
+      "Cancel Promotion",
+      "Check Promotion Status",
+      "Mark as Corrupted"
+    ]
+  },
+  {
+    "id": "/battlechain/how-to/request-attack-mode",
+    "title": "How to Request Attack Mode",
+    "content": "Overview After deploying contracts and creating an agreement, request attack mode to enable Safe Harbor protection and allow whitehats to test your contracts. Prerequisites Before requesting: 1. Contracts deployed (via BattleChainDeployer or any other method) 2. Agreement created via AgreementFactory 3. Agreement adopted via adoptSafeHarbor() 4. Commitment window extends at least 7 days Request Attack Mode This validates: - Agreement was created by official factory - You're the agreement owner - All contracts were deployed via BattleChainDeployer - Commitment window meets minimum requirements For Non-BattleChainDeployer Contracts If contracts weren't deployed via BattleChainDeployer: This path requires extra DAO scrutiny since there's no on-chain proof of deployment. Skip Attack Mode Entirely To go directly to production without attack testing: This immediately sets state to PRODUCTION with no Safe Harbor protection. Check Request Status What Happens Next | Outcome | Timeline | |------",
+    "url": "/battlechain/how-to/request-attack-mode",
+    "category": "battlechain",
+    "headings": [
+      "Overview",
+      "Prerequisites",
+      "Request Attack Mode",
+      "For Non-BattleChainDeployer Contracts",
+      "Skip Attack Mode Entirely"
+    ]
+  },
+  {
+    "id": "/battlechain/quickstart/deploy-first-contract",
+    "title": "Deploy Your First Contract",
+    "content": "This tutorial walks you through deploying a contract to BattleChain and getting it ready for stress testing. By the end, you'll have a contract in attack mode, open for whitehats to test. Prerequisites: You should have an audited smart contract ready to deploy and some test funds for liquidity. What You'll Do 1. Deploy your contract via BattleChainDeployer 2. Create a Safe Harbor agreement 3. Request attack mode 4. Wait for DAO approval Step 1: Deploy Your Contract The recommended way to deploy is through BattleChainDeployer, which automatically registers your contract with the AttackRegistry. Your contract is now deployed and registered. You (the deployer) are automatically authorized to request attack mode. If your contract was deployed through other means, you can still request attack mode using requestUnderAttackByNonAuthorized. This function allows any contract to enter the attack flow, but requires DAO approval like normal. In Step 5, use this instead: Step 2: Create a Safe Harbo",
+    "url": "/battlechain/quickstart/deploy-first-contract",
+    "category": "battlechain",
+    "headings": [
+      "What You'll Do",
+      "Step 1: Deploy Your Contract",
+      "Step 2: Create a Safe Harbor Agreement",
+      "Step 3: Extend Commitment Window",
+      "Step 4: Adopt the Agreement"
+    ]
+  },
+  {
+    "id": "/battlechain/quickstart/execute-first-attack",
+    "title": "Execute Your First Attack",
+    "content": "This tutorial walks you through finding an attackable contract, verifying its Safe Harbor terms, and executing a legal attack. By the end, you'll understand the complete whitehat workflow. Prerequisites: Familiarity with smart contract security and Solidity. What You'll Do 1. Find an attackable contract 2. Review the Safe Harbor agreement 3. Execute an attack 4. Handle recovered funds correctly Step 1: Find an Attackable Contract Query the AttackRegistry to check if a contract is attackable: To find contracts to attack, monitor for AgreementStateChanged events: Step 2: Get the Agreement Details Once you find an attackable contract, get its agreement: You now know the bounty terms. In this example: 10% bounty, \\$5M cap, retainable. Step 3: Verify the Contract is in Scope Double-check the contract is covered: Step 4: Get the Recovery Address Note where to send recovered funds: Step 5: Execute Your Attack Now execute your exploit. Here's an example attacking a reentrancy vulnerability: St",
+    "url": "/battlechain/quickstart/execute-first-attack",
+    "category": "battlechain",
+    "headings": [
+      "What You'll Do",
+      "Step 1: Find an Attackable Contract",
+      "Step 2: Get the Agreement Details",
+      "Step 3: Verify the Contract is in Scope",
+      "Step 4: Get the Recovery Address"
+    ]
+  },
+  {
+    "id": "/battlechain/quickstart/review-first-request",
+    "title": "Review Your First Request",
+    "content": "This tutorial walks you through reviewing an attack mode request as a DAO member. By the end, you'll understand how to evaluate requests and approve or reject them. Prerequisites: You must be the registry moderator or part of the DAO multisig. What You'll Do 1. Find pending requests 2. Review the protocol and contracts 3. Check for copycat contracts 4. Approve or reject the request Step 1: Monitor for New Requests Watch for AgreementStateChanged events with ATTACK_REQUESTED state: Or query directly: Step 2: Get Agreement Details Fetch the agreement information: Check the contracts in scope: solidity // Approve the attack request attackRegistry.approveAttack(agreementAddress); solidity // Reject the attack request attackRegistry.rejectAttackRequest(agreementAddress); `` This: - Returns state to NOT_DEPLOYED` - Clears contract mappings - Protocol can resubmit with fixes You've completed your first review! The protocol will see the state change via events. Step 5: Document Your Decision R",
+    "url": "/battlechain/quickstart/review-first-request",
+    "category": "battlechain",
+    "headings": [
+      "What You'll Do",
+      "Step 1: Monitor for New Requests",
+      "Step 2: Get Agreement Details",
+      "Step 3: Review Checklist",
+      "Step 4: Make Your Decision"
+    ]
+  },
+  {
+    "id": "/battlechain/reference/bounty-terms",
+    "title": "Bounty Terms",
+    "content": "BountyTerms Structure Fields bountyPercentage Percentage of recovered funds the whitehat receives. - Range: 0-100 - Typical: 10% - Note: Actual bounty is min(recovered x percentage, bountyCapUsd) bountyCapUsd Maximum bounty per whitehat in USD. - Typical: \\$1M - \\$5M - Note: Requires oracle conversion to token amounts retainable Whether whitehats keep bounty from recovered funds. | Value | Meaning | |-------|---------| | true | Whitehat keeps bounty, sends rest to recovery | | false | Whitehat sends all to recovery, protocol pays separately | identity Identity verification requirements. diligenceRequirements Additional requirements for Named identity. May specify KYC provider, documentation needed, etc. aggregateBountyCapUsd Total cap across all whitehats for a single exploit. - Value 0: No aggregate cap - Non-zero: Total payouts ≤ this value - Note: Cannot use with retainable = true Bounty Calculation Examples Standard Terms High-Value Protocol Validation Rules - bountyPercentage cann",
+    "url": "/battlechain/reference/bounty-terms",
+    "category": "battlechain",
+    "headings": [
+      "BountyTerms Structure",
+      "Fields",
+      "bountyPercentage",
+      "bountyCapUsd",
+      "retainable"
+    ]
+  },
+  {
+    "id": "/battlechain/reference/contract-states",
+    "title": "Contract States",
+    "content": "State Enum State Details | State | Value | Attackable | Terminal | Description | |-------|-------|------------|----------|-------------| | NOT_DEPLOYED | 0 | No | No | Not registered or rejected | | NEW_DEPLOYMENT | 1 | No | No | Deployed via BattleChainDeployer | | ATTACK_REQUESTED | 2 | No | No | Awaiting DAO approval | | UNDER_ATTACK | 3 | Yes | No | Open for whitehats | | PROMOTION_REQUESTED | 4 | Yes | No | 3-day promotion countdown | | PRODUCTION | 5 | No | Yes | Protected like mainnet | | CORRUPTED | 6 | No | Yes | Successfully exploited | Querying State State Transitions From NOT_DEPLOYED - → NEW_DEPLOYMENT: Deploy via BattleChainDeployer From NEW_DEPLOYMENT - → ATTACK_REQUESTED: Call requestUnderAttack() - → PRODUCTION: Call goToProduction() From ATTACK_REQUESTED - → UNDER_ATTACK: DAO calls approveAttack() - → NOT_DEPLOYED: DAO calls rejectAttackRequest() - → PRODUCTION: DAO calls instantPromote() or auto after 14 days From UNDER_ATTACK - → PROMOTION_REQUESTED: Attack moderato",
+    "url": "/battlechain/reference/contract-states",
+    "category": "battlechain",
+    "headings": [
+      "State Enum",
+      "State Details",
+      "Querying State",
+      "State Transitions",
+      "From NOT_DEPLOYED"
+    ]
+  },
+  {
+    "id": "/battlechain/reference/contracts",
+    "title": "Contract API Reference",
+    "content": "Deployed Addresses | Contract | Testnet | Mainnet | |----------|---------|---------| | AttackRegistry (Proxy) | 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 | TBD | | SafeHarborRegistry (Proxy) | 0xCb2A561395118895e2572A04C2D8AB8eCA8d7E5D | TBD | | AgreementFactory (Proxy) | 0x0EbBEeB3aBeF51801a53Fdd1fb263Ac0f2E3Ed36 | TBD | | BattleChainDeployer | 0x8f57054CBa2021bEE15631067dd7B7E0B43F17Dc | TBD | --- AttackRegistry Tracks attack/production status of contracts. State-Changing Functions View Functions Events --- Agreement Per-protocol Safe Harbor terms. Owner Functions View Functions --- AgreementFactory Creates Agreement contracts. --- BattleChainSafeHarborRegistry Maps protocols to agreements. --- BattleChainDeployer Deploys contracts with automatic registration. Supports all CreateX methods: - deployCreate(), deployCreateAndInit(), deployCreateClone() - deployCreate2(), deployCreate2AndInit(), deployCreate2Clone() - deployCreate3(), deployCreate3AndInit() All deployments automatically",
+    "url": "/battlechain/reference/contracts",
+    "category": "battlechain",
+    "headings": [
+      "Deployed Addresses",
+      "AttackRegistry",
+      "State-Changing Functions",
+      "View Functions",
+      "Events"
+    ]
+  },
+  {
+    "id": "/battlechain/reference/governance-parameters",
+    "title": "Governance Parameters",
+    "content": "Registry Moderator The address that can approve/reject requests and instant promote. Valid Chains CAIP-2 chain IDs that can be used in agreements. Common Chain IDs | Chain | CAIP-2 ID | |-------|-----------| | Ethereum Mainnet | eip155:1 | | Arbitrum One | eip155:42161 | | Optimism | eip155:10 | | Base | eip155:8453 | | BattleChain Testnet | eip155:627 | Time Constants Set at deployment (require upgrade to change): | Constant | Value | Effect | |----------|-------|--------| | PROMOTION_WINDOW | 14 days | Auto-promote if DAO inactive | | PROMOTION_DELAY | 3 days | Delay after promote() | | MIN_COMMITMENT | 7 days | Minimum agreement commitment | Agreement Factory Creates and validates agreements. Safe Harbor Registry Links protocols to agreements. BattleChain Deployer Registers new deployments. Contract Upgrades Both AttackRegistry and AgreementFactory use UUPS upgradeable pattern:",
+    "url": "/battlechain/reference/governance-parameters",
+    "category": "battlechain",
+    "headings": [
+      "Registry Moderator",
+      "Valid Chains",
+      "Common Chain IDs",
+      "Time Constants",
+      "Agreement Factory"
+    ]
+  },
+  {
+    "id": "/battlechain/reference/identity-requirements",
+    "title": "Identity Requirements",
+    "content": "Identity Enum Levels Anonymous (0) No identity verification required. | Aspect | Detail | |--------|--------| | Verification | None | | Privacy | Full | | Typical Bounty Cap | \\$100K - \\$1M | | Best For | Maximum participation | Pseudonymous (1) Consistent pseudonym required. | Aspect | Detail | |--------|--------| | Verification | Provide consistent username/handle | | Privacy | Real identity protected | | Typical Bounty Cap | \\$500K - \\$5M | | Best For | Building reputation while private | How to comply: - Choose a consistent pseudonym - Use same name in all protocol communications - Optionally link to reputation (GitHub, Twitter) Named (2) Legal name verification required. | Aspect | Detail | |--------|--------| | Verification | Legal name confirmed via specified process | | Privacy | Identity disclosed to protocol | | Typical Bounty Cap | \\$1M - \\$10M+ | | Best For | High-value bounties, regulated protocols | How to comply: - Check diligenceRequirements field - Complete specified K",
+    "url": "/battlechain/reference/identity-requirements",
+    "category": "battlechain",
+    "headings": [
+      "Identity Enum",
+      "Levels",
+      "Anonymous (0)",
+      "Pseudonymous (1)",
+      "Named (2)"
+    ]
+  },
+  {
+    "id": "/battlechain/tutorials/approving-requests",
+    "title": "Approving Requests: DAO Member Tutorial",
+    "content": "This tutorial teaches DAO members how to evaluate attack mode requests, make approval decisions, and handle edge cases like copycats and emergencies. Audience: AttackRegistry DAO members and registry moderators. Prerequisites: You must be the registry moderator or part of the DAO multisig. Your Role As a DAO member, you are the gatekeeper for BattleChain's attack mode. Your primary responsibilities: 1. Approve legitimate requests — let real protocols stress-test their contracts 2. Reject copycats — prevent mainnet contracts from being copied and exploited 3. Handle emergencies — use instant promotion when needed 4. Act promptly — if you don't act within 14 days, requests auto-promote to production Understanding the Review Flow When a protocol requests attack mode, the agreement state changes to ATTACK_REQUESTED. You have three options: | Action | Effect | When to Use | |--------|--------|-------------| | approveAttack() | → UNDER_ATTACK | Request passes all checks | | rejectAttackReque",
+    "url": "/battlechain/tutorials/approving-requests",
+    "category": "battlechain",
+    "headings": [
+      "Your Role",
+      "Understanding the Review Flow",
+      "Step 1: Monitor for Requests",
+      "Step 2: Gather Information",
+      "Step 3: The Review Checklist"
+    ]
+  },
+  {
+    "id": "/battlechain/tutorials/attacking-contracts",
+    "title": "Attacking Contracts: Whitehat Tutorial",
+    "content": "This tutorial teaches you the full whitehat workflow on BattleChain — from finding targets to earning bounties — and explains the legal protections that make it possible. Audience: Security researchers and whitehats. Prerequisites: Familiarity with smart contract security, Solidity, and common vulnerability patterns. Why BattleChain for Whitehats? Traditional bug bounties ask you to report vulnerabilities. BattleChain lets you exploit them: - Legal protection: Safe Harbor agreements protect you from prosecution - Immediate reward: Keep your bounty from recovered funds (if retainable) - No coordination required: Attack first, no need for prior disclosure - Real exploits: Test against contracts with real liquidity, not toy examples Understanding Safe Harbor Before attacking, understand what protects you. When a protocol enters attack mode: 1. They've adopted a Safe Harbor agreement committing to not pursue legal action 2. Their contracts are in UNDERATTACK or PROMOTIONREQUESTED state 3. ",
+    "url": "/battlechain/tutorials/attacking-contracts",
+    "category": "battlechain",
+    "headings": [
+      "Why BattleChain for Whitehats?",
+      "Understanding Safe Harbor",
+      "Step 1: Find Targets",
+      "Check a Specific Contract",
+      "Monitor for New Targets"
+    ]
+  },
+  {
+    "id": "/battlechain/tutorials/deploying-contracts",
+    "title": "Deploying Contracts to BattleChain",
+    "content": "This tutorial teaches you how to deploy contracts to BattleChain and why the deployment method matters for the attack mode workflow. Audience: Developers deploying contracts to BattleChain. Prerequisites: Familiarity with Solidity and smart contract deployment. Why BattleChainDeployer? BattleChain tracks which contracts are eligible for attack mode through the AttackRegistry. When you deploy via BattleChainDeployer, your contracts are automatically registered, which means: - You're recorded as the deployer on-chain - You can request attack mode without extra authorization steps - The DAO has on-chain proof of deployment origin Without BattleChainDeployer, you can still enter attack mode, but the process requires more DAO scrutiny. Deployment Methods BattleChainDeployer wraps CreateX, giving you access to all standard deployment patterns: CREATE (Simple Deployment) CREATE2 (Deterministic Address) Use CREATE2 when you need the same contract address across BattleChain and mainnet. CREATE2",
+    "url": "/battlechain/tutorials/deploying-contracts",
+    "category": "battlechain",
+    "headings": [
+      "Why BattleChainDeployer?",
+      "Deployment Methods",
+      "CREATE (Simple Deployment)",
+      "CREATE2 (Deterministic Address)",
+      "CREATE2 with Initialization"
+    ]
+  },
+  {
+    "id": "/battlechain/tutorials/going-attackable",
+    "title": "Going Attackable: End-to-End Protocol Tutorial",
+    "content": "This tutorial covers the full journey of taking your protocol from deployment to attack mode on BattleChain. You'll learn not just the mechanics, but why each step matters for your security. Audience: Protocol teams and developers preparing contracts for BattleChain. Prerequisites: An audited smart contract and test funds for liquidity. Why Go Attackable? Traditional security audits review code statically. BattleChain adds a dynamic layer: real attackers with real economic incentives trying to break your contracts. This means: - Exploits get found before mainnet — whitehats are motivated by bounties, not just reports - You control the risk — set your own bounty terms and liquidity levels - Legal protection works both ways — Safe Harbor protects whitehats, and you set the rules Part 1: Deploy Your Contracts Deploy through BattleChainDeployer so your contracts are automatically registered with the AttackRegistry. Deploy the exact same bytecode you'll use on mainnet. Only change construct",
+    "url": "/battlechain/tutorials/going-attackable",
+    "category": "battlechain",
+    "headings": [
+      "Why Go Attackable?",
+      "Part 1: Deploy Your Contracts",
+      "Part 2: Create Your Safe Harbor Agreement",
+      "Contact Details",
+      "Define Scope"
+    ]
+  },
+  {
+    "id": "/battlechain/tutorials/prediction-market",
+    "title": "Prediction Market",
+    "content": "Coming Soon The BattleChain Prediction Market will allow participants to bet on the outcomes of attack periods. Will a protocol survive unscathed, or will whitehats find vulnerabilities? This feature is under development. Check back for updates. Planned Features - Bet on attack outcomes: Will this protocol get exploited during its attack period? - Market-driven security signals: Market prices reflect collective confidence in a protocol's security - Incentive alignment: Creates additional economic incentives for thorough security research How It Will Work 1. A protocol enters attack mode 2. A prediction market opens for that protocol's attack period 3. Participants bet on whether the protocol will be exploited 4. Markets resolve when the protocol promotes to production or is marked corrupted Stay Updated Join the community for announcements: Join the Cyfrin Discord for updates Follow the BattleChain repository",
+    "url": "/battlechain/tutorials/prediction-market",
+    "category": "battlechain",
+    "headings": [
+      "Coming Soon",
+      "Planned Features",
+      "How It Will Work",
+      "Stay Updated"
+    ]
+  },
+  {
     "id": "/index",
     "title": "Welcome to Cyfrin",
     "content": "Powering the future of smart contract security Cyfrin is: The complete platform for Web3 security researchers, developers, and learners. From competitive audits to professional certifications, Cyfrin powers the future of smart contract security. Competitive Security Audits Compete to find vulnerabilities in smart contracts. Earn rewards, build your reputation, and protect Web3. Web3 Education Platform Learn smart contract development and security. Get certified and advance your career in blockchain. Vulnerability Research Navigate 20,000+ security findings. Research, learn, and contribute to the community knowledge base. Security-First Blockchain Coming soon - Revolutionary blockchain infrastructure for decentralized security and audit coordination. Unified Accounts One profile across the entire ecosystem. Manage your settings, wallets, and credentials in one place. Quick Start Sign up for a free Cyfrin account to access all platforms Create account → - Security Researcher? Join CodeHa",
@@ -15,38 +378,12 @@
   {
     "id": "/overview",
     "title": "Battlechain",
-    "content": "The Arena Battlechain is Cyfrin's PvP security-focused blockchain—an extremely antagonistic environment where smart contracts face open exploitation before production deployment. Trial by Fire Only battle-tested code survives. Deploy your contracts into the arena and let attackers find every weakness. This isn't testing—it's war. Why Battlechain? No Rules. No Mercy. Your contracts face real attackers in a live PvP environment. Every vulnerability will be found. Survive the Arena Contracts that make it through Battlechain are hardened against real-world attacks. Bounties for Exploits Attackers earn rewards for finding vulnerabilities. The more devastating, the bigger the bounty. Proven in Combat Deploy with confidence knowing your code survived the most hostile environment in Web3. Coming Soon Comprehensive documentation for Battlechain is launching soon. Prepare your contracts for the arena. Battlechain is in active development. Documentation will be updated as features launch.",
+    "content": "Get Started Choose your path based on your role in the BattleChain ecosystem. Deploy your contracts into the arena and let attackers find every weakness before you go to mainnet. Find vulnerabilities, exploit them legally, and earn bounties — all protected under Safe Harbor. Review attack requests, protect the ecosystem from copycats, and govern the registry. How It Works BattleChain is a pre-mainnet, post-testnet environment with real funds. It fills a critical gap in the Web3 development lifecycle: 1. Protocols deploy audited contracts with real liquidity 2. Whitehats legally attack contracts and earn bounties under Safe Harbor 3. The DAO moderates to prevent abuse (e.g. mainnet copycats) 4. Battle-tested contracts promote to production and deploy to mainnet with confidence Understand the problem BattleChain solves and why it exists Learn how contracts move through attack mode to production Understand the legal framework protecting whitehats Guidelines for protocols, whitehats, and D",
     "url": "/overview",
     "category": "overview.mdx",
     "headings": [
-      "The Arena",
-      "Trial by Fire",
-      "Why Battlechain?",
-      "Coming Soon"
-    ]
-  },
-  {
-    "id": "/security-arena/defense-strategies",
-    "title": "Defense Strategies",
-    "content": "Defense Strategies Coming soon Learn how to harden your smart contracts against exploitation in the most antagonistic blockchain environment. Core Concepts - Designing for adversarial conditions - Common attack vectors in PvP environments - Testing methodologies for battle-ready contracts Best Practices Detailed strategies for building contracts that can survive the Battlechain security arena.",
-    "url": "/security-arena/defense-strategies",
-    "category": "security-arena",
-    "headings": [
-      "Defense Strategies",
-      "Core Concepts",
-      "Best Practices"
-    ]
-  },
-  {
-    "id": "/security-arena/exploitation-rules",
-    "title": "Exploitation Rules",
-    "content": "Exploitation Rules Coming soon The Battlechain security arena operates under specific rules that govern how smart contracts can be attacked and exploited during the trial by fire period. Key Principles - Open exploitation is encouraged during the testing phase - All vulnerabilities must be documented - Rewards are distributed based on severity and impact Engagement Guidelines Details about engagement rules, boundaries, and ethics will be documented here.",
-    "url": "/security-arena/exploitation-rules",
-    "category": "security-arena",
-    "headings": [
-      "Exploitation Rules",
-      "Key Principles",
-      "Engagement Guidelines"
+      "Get Started",
+      "How It Works"
     ]
   }
 ]

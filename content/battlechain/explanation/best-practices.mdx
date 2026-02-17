@@ -1,0 +1,119 @@
+---
+title: "Best Practices"
+description: "Guidelines for getting the most out of BattleChain"
+---
+
+## For Protocols
+
+### Deploy Identical Code
+
+Deploy the exact same bytecode you'll use on mainnet. Only differ in:
+- Constructor parameters (addresses, chain IDs)
+- Configuration values that legitimately differ per-chain
+
+```solidity
+// Good: Same contract, different config
+new MyVault(battleChainOracle, chainSpecificFee);
+
+// Bad: Different code for BattleChain
+new MyVaultTestVersion();  // Don't do this
+```
+
+### Start with Reasonable Liquidity
+
+Deploy enough to attract whitehats, but not more than you're comfortable losing:
+
+| Protocol Type | Suggested Liquidity |
+|--------------|---------------------|
+| DEX/AMM | \$50K - \$200K |
+| Lending | \$100K - \$500K |
+| Yield Aggregator | \$50K - \$150K |
+| NFT/Gaming | \$10K - \$50K |
+
+### Complete Audit First
+
+BattleChain is for stress testing, not finding obvious bugs:
+
+```
+Audit → BattleChain → Mainnet
+```
+
+### Set Competitive Bounty Terms
+
+Attract whitehats with reasonable terms:
+- 10% bounty (industry standard)
+- \$5M cap (attractive for serious researchers)
+- `retainable = true` (easier for whitehats)
+- `Anonymous` identity (lower barrier)
+
+### Plan Testing Duration
+
+| Risk Level | Minimum Attack Period |
+|------------|----------------------|
+| Low (simple) | 1-2 weeks |
+| Medium (DeFi primitives) | 2-4 weeks |
+| High (complex DeFi) | 4-8 weeks |
+
+## For Whitehats
+
+### Verify Before Attacking
+
+Always check:
+1. Contract is in attackable state
+2. Contract is in agreement scope
+3. Agreement is valid (from official factory)
+4. You understand the bounty terms
+
+### Handle Funds Correctly
+
+Follow the agreement terms exactly:
+- Calculate bounty properly
+- Send correct amount to recovery address
+- Document everything
+
+### Consider Mainnet Implications
+
+If your exploit works on mainnet too:
+- Don't publicly disclose
+- Contact the protocol privately
+- Consider traditional bug bounty
+
+### Keep Records
+
+Document:
+- Target contract and agreement
+- Vulnerability details
+- Transaction hashes
+- Bounty calculations
+- Funds sent to recovery
+
+## For the DAO
+
+### Review Thoroughly
+
+Check every request for:
+- Mainnet copycats (most important)
+- Valid deployment method
+- Reasonable bounty terms
+- Clear scope definition
+
+### Act Promptly
+
+- Approve/reject within days, not weeks
+- Remember: 14-day auto-promotion if no action
+- Reject to reset clock if more time needed
+
+### Document Decisions
+
+Record:
+- What was reviewed
+- Checks performed
+- Decision rationale
+- Any concerns
+
+### Use Instant Promotion Sparingly
+
+Only for genuine emergencies:
+- Copycat discovered on mainnet
+- Unexpected TVL surge
+- Protocol emergency request

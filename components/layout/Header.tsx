@@ -31,21 +31,14 @@ export function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2 -ml-2">
           <Image
-            src={'/logo/dark.svg'}
-            alt="Cyfrin"
-            width={120}
-            height={32}
+            src={'/images/product-logos/battlechain.svg'}
+            alt="BattleChain"
+            width={28}
+            height={28}
             priority
-            className="dark:hidden"
+            className="w-7 h-7"
           />
-          <Image
-            src={'/logo/light.svg'}
-            alt="Cyfrin"
-            width={120}
-            height={32}
-            priority
-            className="hidden dark:block"
-          />
+          <span className="text-lg font-bold text-gray-900 dark:text-white">BattleChain</span>
         </Link>
 
         {/* Search */}

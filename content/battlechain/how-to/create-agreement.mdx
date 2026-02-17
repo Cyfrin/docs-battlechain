@@ -1,0 +1,144 @@
+---
+title: "How to Create a Safe Harbor Agreement"
+description: "Create and configure your Safe Harbor agreement with bounty terms and scope"
+---
+
+## Overview
+
+A Safe Harbor agreement defines the terms under which whitehats can attack your contracts. This guide covers all configuration options.
+
+## Create the Agreement
+
+Use `AgreementFactory` to create your agreement:
+
+```solidity
+AgreementDetails memory details = AgreementDetails({
+    protocolName: "My Protocol",
+    contactDetails: contacts,
+    chains: chains,
+    bountyTerms: bountyTerms,
+    agreementURI: "ipfs://QmYourAgreementHash"
+});
+
+bytes32 salt = keccak256("my-protocol-v1");
+address agreement = agreementFactory.create(details, owner, salt);
+```
+
+## Configure Contact Details
+
+Provide emergency contacts for whitehats:
+
+```solidity
+Contact[] memory contacts = new Contact[](2);
+
+contacts[0] = Contact({
+    name: "Security Lead",
+    contact: "security@myprotocol.com"
+});
+
+contacts[1] = Contact({
+    name: "Emergency Telegram",
+    contact: "@myprotocol_security"
+});
+```
+
+## Define Chain Scope
+
+Specify which contracts on which chains are covered:
+
+```solidity
+Account[] memory accounts = new Account[](2);
+
+accounts[0] = Account({
+    accountAddress: "0x1234...MyVault",
+    childContractScope: ChildContractScope.All
+});
+
+accounts[1] = Account({
+    accountAddress: "0x5678...MyStrategy",
+    childContractScope: ChildContractScope.None
+});
+
+Chain[] memory chains = new Chain[](1);
+chains[0] = Chain({
+    caip2ChainId: "eip155:325",  // BattleChain
+    assetRecoveryAddress: "0xYourRecoveryMultisig",
+    accounts: accounts
+});
+```
+
+### Child Contract Scope Options
+
+| Value | Meaning |
+|-------|---------|
+| `None` | Only the listed contract |
+| `ExistingOnly` | Contract + children created before agreement |
+| `All` | Contract + all children (past and future) |
+| `FutureOnly` | Contract + children created after agreement |
+
+## Configure Bounty Terms
+
+```solidity
+BountyTerms memory bountyTerms = BountyTerms({
+    bountyPercentage: 10,              // 10% of recovered funds
+    bountyCapUsd: 5_000_000,           // Max $5M per whitehat
+    retainable: true,                  // Whitehat keeps bounty from recovered
+    identity: IdentityRequirements.Anonymous,
+    diligenceRequirements: "",         // Only for Named identity
+    aggregateBountyCapUsd: 0           // 0 = no aggregate cap
+});
+```
+
+### Retainable vs Return-All
+
+- **Retainable** (`true`): Whitehat keeps bounty from recovered funds, sends rest to recovery
+- **Return-All** (`false`): Whitehat sends all funds to recovery, protocol pays bounty separately
+
+### Identity Options
+
+| Level | Requirement |
+|-------|-------------|
+| `Anonymous` | No identity verification |
+| `Pseudonymous` | Consistent pseudonym required |
+| `Named` | Legal name verification (specify process in `diligenceRequirements`) |
+
+## Extend Commitment Window
+
+Agreements must commit to terms for at least 7 days:
+
+```solidity
+// Extend to 30 days
+agreement.extendCommitmentWindow(block.timestamp + 30 days);
+```
+
+During the commitment window, you cannot make unfavorable changes to whitehats.
+
+## Adopt the Agreement
+
+Link your protocol to the agreement:
+
+```solidity
+safeHarborRegistry.adoptSafeHarbor(agreement);
+```
+
+## Modify an Existing Agreement
+
+You can update agreements, with restrictions during commitment:
+
+```solidity
+// Always allowed
+agreement.setProtocolName("New Name");
+agreement.setContactDetails(newContacts);
+agreement.addAccounts("eip155:325", newAccounts);
+
+// Only favorable changes during commitment
+agreement.setBountyTerms(betterTerms);
+
+// Blocked during commitment
+agreement.removeChains(chainIds);        // Reverts
+agreement.removeAccounts(chainId, addrs); // Reverts
+```
+
+<Card title="How to Request Attack Mode" icon="arrow-right" href="/battlechain/how-to/request-attack-mode">
+  Next: Submit your contracts for attack mode
+</Card>

@@ -1,0 +1,196 @@
+---
+title: "Attacking Contracts: Whitehat Tutorial"
+description: "A complete tutorial for whitehats on finding, attacking, and earning bounties on BattleChain"
+---
+
+This tutorial teaches you the full whitehat workflow on BattleChain — from finding targets to earning bounties — and explains the legal protections that make it possible.
+
+<Note>
+**Audience**: Security researchers and whitehats.
+
+**Prerequisites**: Familiarity with smart contract security, Solidity, and common vulnerability patterns.
+</Note>
+
+## Why BattleChain for Whitehats?
+
+Traditional bug bounties ask you to *report* vulnerabilities. BattleChain lets you *exploit* them:
+
+- **Legal protection**: Safe Harbor agreements protect you from prosecution
+- **Immediate reward**: Keep your bounty from recovered funds (if retainable)
+- **No coordination required**: Attack first, no need for prior disclosure
+- **Real exploits**: Test against contracts with real liquidity, not toy examples
+
+## Understanding Safe Harbor
+
+Before attacking, understand what protects you. When a protocol enters attack mode:
+
+1. They've adopted a **Safe Harbor agreement** committing to not pursue legal action
+2. Their contracts are in `UNDER_ATTACK` or `PROMOTION_REQUESTED` state
+3. You're protected as long as you:
+   - Attack in-scope contracts only
+   - Keep only your bounty entitlement
+   - Meet any identity requirements
+
+Read the full [Safe Harbor explanation](/battlechain/explanation/safe-harbor) for details on what is and isn't protected.
+
+## Step 1: Find Targets
+
+### Check a Specific Contract
+
+```solidity
+bool attackable = attackRegistry.isTopLevelContractUnderAttack(targetContract);
+```
+
+### Monitor for New Targets
+
+Watch for `AgreementStateChanged` events:
+
+```solidity
+event AgreementStateChanged(address indexed agreementAddress, ContractState newState);
+// newState = 3 (UNDER_ATTACK) → newly attackable
+// newState = 4 (PROMOTION_REQUESTED) → still attackable, 3-day countdown
+```
+
+See [How to Find Attackable Contracts](/battlechain/how-to/find-attackable-contracts) for advanced querying techniques.
+
+## Step 2: Evaluate the Target
+
+Before investing time in finding exploits, evaluate the opportunity:
+
+```solidity
+address agreementAddr = attackRegistry.getAgreementForContract(targetContract);
+IAgreement agreement = IAgreement(agreementAddr);
+
+// Get bounty terms
+BountyTerms memory terms = agreement.getBountyTerms();
+uint256 bountyPercent = terms.bountyPercentage;
+uint256 bountyCap = terms.bountyCapUsd;
+bool canRetain = terms.retainable;
+```
+
+### Checklist Before Attacking
+
+<AccordionGroup>
+  <Accordion title="Is the agreement valid?">
+    ```solidity
+    bool valid = safeHarborRegistry.isAgreementValid(agreementAddr);
+    ```
+    Only attack contracts with valid agreements from the official factory.
+  </Accordion>
+
+  <Accordion title="Is the contract in scope?">
+    ```solidity
+    bool inScope = agreement.isContractInScope(targetContract);
+    ```
+    Attacking out-of-scope contracts voids your Safe Harbor protection.
+  </Accordion>
+
+  <Accordion title="Are the bounty terms acceptable?">
+    Check the percentage, cap, retainability, and identity requirements. Make sure the economics work for your effort level.
+  </Accordion>
+
+  <Accordion title="Is the commitment window valid?">
+    ```solidity
+    uint256 cantChangeUntil = agreement.getCantChangeUntil();
+    ```
+    Ensure terms can't change unfavorably before you finish your attack.
+  </Accordion>
+</AccordionGroup>
+
+## Step 3: Execute Your Attack
+
+There are no restrictions on exploitation methods for in-scope contracts. Common approaches:
+
+- Reentrancy attacks
+- Flash loan exploits
+- Oracle manipulation
+- Access control bypasses
+- Logic errors in state transitions
+
+```solidity
+contract Attacker {
+    function attack(address target) external {
+        // Your exploit logic
+        IVulnerable(target).vulnerableFunction();
+    }
+}
+```
+
+## Step 4: Handle Funds Correctly
+
+This is critical. Mishandling funds can void your Safe Harbor protection.
+
+### If Retainable = true
+
+Calculate your bounty and send the rest to the recovery address:
+
+```solidity
+uint256 recovered = address(this).balance;
+uint256 bounty = (recovered * bountyPercent) / 100;
+
+// Respect the cap
+// Note: Convert bountyCapUsd to token amount using current prices
+
+// Send remainder to recovery
+payable(recoveryAddress).transfer(recovered - bounty);
+// Keep your bounty
+```
+
+### If Retainable = false
+
+Send **everything** to the recovery address. The protocol pays your bounty separately:
+
+```solidity
+payable(recoveryAddress).transfer(address(this).balance);
+```
+
+### Get the Recovery Address
+
+```solidity
+string memory recoveryStr = agreement.getAssetRecoveryAddress("eip155:627");
+```
+
+See [How to Claim Bounties](/battlechain/how-to/claim-bounties) for detailed calculation examples.
+
+## Step 5: Document Everything
+
+Keep records of:
+- Target contract and agreement addresses
+- The vulnerability exploited
+- All transaction hashes
+- Your bounty calculation (show your work)
+- Funds sent to recovery address
+
+This protects you if there's ever a dispute about your compliance with the agreement terms.
+
+## Important: Mainnet Implications
+
+<Warning>
+If the vulnerability you found also exists on mainnet:
+
+- **Do NOT publicly disclose** the vulnerability
+- **Contact the protocol** through their security contacts
+- **Consider traditional bug bounty** for the mainnet instance
+- Using a BattleChain exploit on mainnet is NOT protected by Safe Harbor
+</Warning>
+
+## Summary
+
+| Step | Action | Why |
+|------|--------|-----|
+| 1 | Find attackable contracts | Query AttackRegistry |
+| 2 | Verify agreement and terms | Ensure legal protection |
+| 3 | Execute exploit | No restrictions on method |
+| 4 | Handle funds correctly | Keep bounty, send rest to recovery |
+| 5 | Document everything | Protect yourself in disputes |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Execute Your First Attack" icon="play" href="/battlechain/quickstart/execute-first-attack">
+    Quick-start guide with code examples
+  </Card>
+  <Card title="Bounty Terms Reference" icon="coins" href="/battlechain/reference/bounty-terms">
+    Understand all bounty configuration options
+  </Card>
+</CardGroup>

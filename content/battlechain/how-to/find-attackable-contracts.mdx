@@ -1,0 +1,94 @@
+---
+title: "How to Find Attackable Contracts"
+description: "Query the AttackRegistry to discover contracts you can legally attack"
+---
+
+## Overview
+
+The `AttackRegistry` tracks which contracts are in attack mode. This guide shows how to find and verify targets.
+
+## Check a Specific Contract
+
+```solidity
+bool attackable = attackRegistry.isTopLevelContractUnderAttack(contractAddress);
+
+if (attackable) {
+    // Safe Harbor protection applies
+    // Contract is in UNDER_ATTACK or PROMOTION_REQUESTED state
+}
+```
+
+## Monitor for New Targets
+
+Watch for `AgreementStateChanged` events:
+
+```solidity
+event AgreementStateChanged(address indexed agreementAddress, ContractState newState);
+
+// newState = 3 (UNDER_ATTACK) - newly attackable
+// newState = 4 (PROMOTION_REQUESTED) - still attackable, 3-day countdown
+// newState = 5 (PRODUCTION) - no longer attackable
+// newState = 6 (CORRUPTED) - no longer attackable
+```
+
+## Get Agreement Details
+
+```solidity
+// Get agreement for a contract
+address agreementAddr = attackRegistry.getAgreementForContract(contractAddress);
+
+// Get all contracts in scope
+IAgreement agreement = IAgreement(agreementAddr);
+address[] memory contracts = agreement.getBattleChainScopeAddresses();
+
+// Get bounty terms
+BountyTerms memory terms = agreement.getBountyTerms();
+```
+
+## Verify Agreement Validity
+
+Always verify before attacking:
+
+```solidity
+// Check agreement was created by official factory
+bool isValid = safeHarborRegistry.isAgreementValid(agreementAddress);
+
+// Verify contract is in scope
+bool inScope = agreement.isContractInScope(targetContract);
+
+// Double-check state
+IAttackRegistry.ContractState state = attackRegistry.getAgreementState(agreementAddress);
+require(
+    state == ContractState.UNDER_ATTACK || state == ContractState.PROMOTION_REQUESTED,
+    "Not attackable"
+);
+```
+
+## Check Time Remaining
+
+For contracts in `PROMOTION_REQUESTED`:
+
+```solidity
+IAttackRegistry.AgreementInfo memory info = attackRegistry.getAgreementInfo(agreementAddress);
+
+if (info.promotionRequestedTimestamp > 0) {
+    uint256 productionAt = info.promotionRequestedTimestamp + 3 days;
+    uint256 timeLeft = productionAt - block.timestamp;
+    // Attack must complete before productionAt
+}
+```
+
+## Red Flags
+
+<Warning>
+Be cautious of:
+
+- Suspiciously high bounties
+- Very new agreements (less community vetting)
+- Missing contact details
+- Contracts identical to mainnet protocols
+</Warning>
+
+<Card title="How to Execute an Attack" icon="arrow-right" href="/battlechain/how-to/execute-attack">
+  Next: Execute your attack properly
+</Card>

@@ -109,7 +109,7 @@ export function Footer() {
 
         {/* Copyright */}
         <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-          © {new Date().getFullYear()} Cyfrin. Built with Next.js.
+          © {new Date().getFullYear()} Cyfrin.
         </div>
       </div>
     </footer>

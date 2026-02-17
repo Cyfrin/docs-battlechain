@@ -20,8 +20,11 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Cyfrin Docs",
+  title: "BattleChain Docs",
   description: "Complete platform for Web3 security researchers, developers, and learners",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({

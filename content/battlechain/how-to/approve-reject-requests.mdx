@@ -1,0 +1,93 @@
+---
+title: "How to Approve or Reject Requests"
+description: "Process attack mode requests as a DAO member"
+---
+
+## Overview
+
+As the registry moderator, you review attack requests and decide whether to approve or reject them.
+
+## Approve a Request
+
+If the request passes review:
+
+```solidity
+attackRegistry.approveAttack(agreementAddress);
+```
+
+Effects:
+- State changes to `UNDER_ATTACK`
+- Safe Harbor protection begins
+- Whitehats can attack
+
+## Reject a Request
+
+If the request fails review:
+
+```solidity
+attackRegistry.rejectAttackRequest(agreementAddress);
+```
+
+Effects:
+- State returns to `NOT_DEPLOYED`
+- Contract mappings cleared
+- Protocol can resubmit with fixes
+
+## Review Checklist
+
+Before deciding, verify:
+
+1. **Deployment method**: Deployed via BattleChainDeployer?
+2. **Not a copycat**: Bytecode doesn't match mainnet contracts
+3. **Legitimate protocol**: Has web presence, audit reports, valid contacts
+4. **Reasonable terms**: Bounty percentage in normal range (5-15%)
+5. **Clear scope**: All contracts properly defined
+
+## Check Deployment Method
+
+```solidity
+address[] memory contracts = agreement.getBattleChainScopeAddresses();
+
+for (uint i = 0; i < contracts.length; i++) {
+    address deployer = attackRegistry.getContractDeployer(contracts[i]);
+
+    if (deployer == address(0)) {
+        // NOT via BattleChainDeployer - extra scrutiny needed
+    }
+}
+```
+
+## Timing
+
+| Scenario | Action |
+|----------|--------|
+| Clear approval | Approve immediately |
+| Clear rejection | Reject with feedback |
+| Needs investigation | Decide before 14-day deadline |
+| Approaching deadline, uncertain | Reject to reset clock |
+
+<Note>
+If no action is taken within 14 days, the agreement auto-promotes to `PRODUCTION`.
+</Note>
+
+## Batch Processing
+
+Process multiple requests efficiently:
+
+```solidity
+function batchProcess(
+    address[] calldata toApprove,
+    address[] calldata toReject
+) external {
+    for (uint i = 0; i < toApprove.length; i++) {
+        attackRegistry.approveAttack(toApprove[i]);
+    }
+    for (uint i = 0; i < toReject.length; i++) {
+        attackRegistry.rejectAttackRequest(toReject[i]);
+    }
+}
+```
+
+<Card title="How to Use Instant Promotion" icon="arrow-right" href="/battlechain/how-to/instant-promotion">
+  Handle emergency copycat situations
+</Card>

@@ -1,0 +1,119 @@
+---
+title: "The Contract Lifecycle"
+description: "Understanding how contracts move through BattleChain states"
+---
+
+## Overview
+
+Every agreement on BattleChain follows a defined lifecycle. Understanding this helps you know what's possible at each stage.
+
+## The State Machine
+
+```
+                              ┌─────────────────┐
+                              │  NOT_DEPLOYED   │
+                              └────────┬────────┘
+                                       │ Deploy via BattleChainDeployer
+                                       ▼
+                              ┌─────────────────┐
+                              │ NEW_DEPLOYMENT  │
+                              └────────┬────────┘
+                                       │ requestUnderAttack()
+                                       ▼
+                              ┌─────────────────┐
+                              │ATTACK_REQUESTED │◄──── DAO reviews here
+                              └────────┬────────┘
+                                       │
+              ┌────────────────────────┼────────────────────────┐
+              │                        │                        │
+              ▼                        ▼                        ▼
+     ┌────────────────┐      ┌────────────────┐       ┌────────────────┐
+     │    REJECTED    │      │  UNDER_ATTACK  │       │   PRODUCTION   │
+     │ (NOT_DEPLOYED) │      │   Attackable!  │       │ (instantPromote)
+     └────────────────┘      └────────┬───────┘       └────────────────┘
+                                      │ promote()
+                                      ▼
+                              ┌─────────────────┐
+                              │   PROMOTION_    │
+                              │   REQUESTED     │ Still attackable!
+                              └────────┬────────┘
+                                       │
+              ┌────────────────────────┼────────────────────────┐
+              │                        │                        │
+              ▼                        ▼                        ▼
+     ┌────────────────┐      ┌────────────────┐       ┌────────────────┐
+     │  UNDER_ATTACK  │      │   PRODUCTION   │       │   CORRUPTED    │
+     │(cancelPromotion)│     │  (after 3 days)│       │ (markCorrupted)│
+     └────────────────┘      └────────────────┘       └────────────────┘
+```
+
+## State Descriptions
+
+### NOT_DEPLOYED
+
+Default state for unregistered contracts or rejected requests.
+
+- **Attackable**: No
+- **Next states**: NEW_DEPLOYMENT (via BattleChainDeployer)
+
+### NEW_DEPLOYMENT
+
+Contracts deployed via BattleChainDeployer start here.
+
+- **Attackable**: No
+- **Next states**: ATTACK_REQUESTED or PRODUCTION (goToProduction)
+
+### ATTACK_REQUESTED
+
+Waiting for DAO approval.
+
+- **Attackable**: No
+- **Next states**: UNDER_ATTACK (approved), NOT_DEPLOYED (rejected), PRODUCTION (instant or auto after 14 days)
+
+### UNDER_ATTACK
+
+**Open for whitehats.** Safe Harbor protection applies.
+
+- **Attackable**: Yes
+- **Next states**: PROMOTION_REQUESTED, CORRUPTED, PRODUCTION (instant)
+
+### PROMOTION_REQUESTED
+
+3-day countdown to production. Still attackable!
+
+- **Attackable**: Yes
+- **Next states**: PRODUCTION (after 3 days), UNDER_ATTACK (cancel), CORRUPTED
+
+### PRODUCTION
+
+**Terminal.** Protected like mainnet.
+
+- **Attackable**: No
+- **Next states**: None
+
+### CORRUPTED
+
+**Terminal.** Successfully exploited.
+
+- **Attackable**: No
+- **Next states**: None
+
+## Key Timeframes
+
+| Constant | Duration | Purpose |
+|----------|----------|---------|
+| `PROMOTION_WINDOW` | 14 days | Auto-promote if DAO doesn't act |
+| `PROMOTION_DELAY` | 3 days | Delay after promote() |
+| `MIN_COMMITMENT` | 7 days | Minimum agreement commitment |
+
+## Who Controls What
+
+| Action | Who Can Do It |
+|--------|---------------|
+| `requestUnderAttack()` | Agreement owner |
+| `promote()` | Attack moderator |
+| `cancelPromotion()` | Attack moderator |
+| `markCorrupted()` | Attack moderator |
+| `approveAttack()` | Registry moderator (DAO) |
+| `rejectAttackRequest()` | Registry moderator (DAO) |
+| `instantPromote()` | Registry moderator (DAO) |

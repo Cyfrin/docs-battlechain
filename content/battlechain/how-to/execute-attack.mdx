@@ -1,0 +1,111 @@
+---
+title: "How to Execute an Attack"
+description: "Properly execute an attack and handle recovered funds"
+---
+
+## Overview
+
+Once you've found an attackable contract, execute your exploit and handle funds according to the Safe Harbor terms.
+
+## Before Attacking
+
+1. Verify contract is in `UNDER_ATTACK` or `PROMOTION_REQUESTED` state
+2. Confirm contract is in the agreement's scope
+3. Note the recovery address
+4. Understand the bounty terms
+
+```solidity
+// Verify everything
+require(attackRegistry.isTopLevelContractUnderAttack(target), "Not attackable");
+require(agreement.isContractInScope(target), "Not in scope");
+
+// Get recovery address
+string memory recoveryStr = agreement.getAssetRecoveryAddress("eip155:325");
+address recovery = parseAddress(recoveryStr);
+
+// Get bounty terms
+BountyTerms memory terms = agreement.getBountyTerms();
+```
+
+## Execute Your Exploit
+
+There are no restrictions on how you attack in-scope contracts:
+
+```solidity
+contract Attacker {
+    function attack(address target) external {
+        // Your exploit logic here
+        IVulnerable(target).vulnerableFunction();
+    }
+}
+```
+
+## Handle Recovered Funds
+
+### If Retainable = true
+
+Keep your bounty, send the rest:
+
+```solidity
+uint256 recovered = address(this).balance;
+uint256 bountyPercent = terms.bountyPercentage;
+
+// Calculate bounty (respect the cap)
+uint256 bounty = (recovered * bountyPercent) / 100;
+// Note: Convert bountyCapUsd to token amount using oracle
+
+// Send remainder to recovery
+payable(recovery).transfer(recovered - bounty);
+```
+
+### If Retainable = false
+
+Send all funds to recovery:
+
+```solidity
+// Send everything
+payable(recovery).transfer(address(this).balance);
+
+// Protocol pays your bounty separately
+```
+
+## Multiple Token Types
+
+Handle each token type:
+
+```solidity
+// ETH
+payable(recovery).transfer(address(this).balance - ethBounty);
+
+// ERC20
+IERC20(token).transfer(recovery, balance - tokenBounty);
+
+// ERC721 (typically return all)
+IERC721(nft).transferFrom(address(this), recovery, tokenId);
+```
+
+## Bounty Calculation
+
+```
+Bounty = min(RecoveredValue x BountyPercentage%, BountyCapUsd)
+```
+
+Example:
+- Recovered: \$10M
+- Percentage: 10%
+- Cap: \$5M
+- **Your Bounty**: min(\$1M, \$5M) = **\$1M**
+
+## After the Attack
+
+1. **Document everything**: Keep transaction hashes, calculations
+2. **Meet identity requirements**: If required by the agreement
+3. **Consider mainnet implications**: If vulnerability exists on mainnet, contact the protocol privately
+
+<Warning>
+If the vulnerability also exists on mainnet, do NOT publicly disclose. Contact the protocol through their security contacts instead.
+</Warning>
+
+<Card title="How to Claim Bounties" icon="arrow-right" href="/battlechain/how-to/claim-bounties">
+  Learn more about bounty terms and caps
+</Card>

@@ -1,0 +1,170 @@
+---
+title: "Going Attackable: End-to-End Protocol Tutorial"
+description: "A complete tutorial for protocols to deploy, configure, and enter attack mode on BattleChain"
+---
+
+This tutorial covers the full journey of taking your protocol from deployment to attack mode on BattleChain. You'll learn not just the mechanics, but *why* each step matters for your security.
+
+<Note>
+**Audience**: Protocol teams and developers preparing contracts for BattleChain.
+
+**Prerequisites**: An audited smart contract and test funds for liquidity.
+</Note>
+
+## Why Go Attackable?
+
+Traditional security audits review code statically. BattleChain adds a dynamic layer: real attackers with real economic incentives trying to break your contracts. This means:
+
+- **Exploits get found before mainnet** — whitehats are motivated by bounties, not just reports
+- **You control the risk** — set your own bounty terms and liquidity levels
+- **Legal protection works both ways** — Safe Harbor protects whitehats, and you set the rules
+
+## Part 1: Deploy Your Contracts
+
+Deploy through `BattleChainDeployer` so your contracts are automatically registered with the `AttackRegistry`.
+
+```solidity
+BattleChainDeployer deployer = BattleChainDeployer(BATTLECHAIN_DEPLOYER_ADDRESS);
+
+bytes memory bytecode = type(MyVault).creationCode;
+bytes32 salt = keccak256("my-vault-v1");
+
+address myVault = deployer.deployCreate2(salt, bytecode);
+```
+
+<Tip>
+Deploy the **exact same bytecode** you'll use on mainnet. Only change constructor parameters like oracle addresses or chain-specific config. Testing different code defeats the purpose.
+</Tip>
+
+See the [deploying contracts tutorial](/battlechain/tutorials/deploying-contracts) for details on deployment methods.
+
+## Part 2: Create Your Safe Harbor Agreement
+
+The agreement defines the rules of engagement for whitehats. Think carefully about these terms — they determine who attacks your contracts and how.
+
+### Contact Details
+
+Provide real, monitored contacts. Whitehats may need to reach you during an active exploit:
+
+```solidity
+Contact[] memory contacts = new Contact[](1);
+contacts[0] = Contact({
+    name: "Security Team",
+    contact: "security@myprotocol.com"
+});
+```
+
+### Define Scope
+
+List every contract whitehats can target. Use `ChildContractScope.All` if your contracts create child contracts:
+
+```solidity
+Account[] memory accounts = new Account[](1);
+accounts[0] = Account({
+    accountAddress: "0x1234...your-vault",
+    childContractScope: ChildContractScope.All
+});
+
+Chain[] memory chains = new Chain[](1);
+chains[0] = Chain({
+    caip2ChainId: "eip155:627",
+    assetRecoveryAddress: "0xYourRecoveryMultisig",
+    accounts: accounts
+});
+```
+
+### Set Bounty Terms
+
+Choose terms that attract skilled whitehats:
+
+```solidity
+BountyTerms memory bountyTerms = BountyTerms({
+    bountyPercentage: 10,
+    bountyCapUsd: 5_000_000,
+    retainable: true,
+    identity: IdentityRequirements.Anonymous,
+    diligenceRequirements: "",
+    aggregateBountyCapUsd: 0
+});
+```
+
+| Decision | Recommended | Why |
+|----------|-------------|-----|
+| Bounty % | 10% | Industry standard, attracts serious researchers |
+| Cap | \$1M - \$5M | High enough to motivate deep analysis |
+| Retainable | `true` | Simpler for whitehats — they keep bounty from recovered funds |
+| Identity | `Anonymous` | Maximizes participation |
+
+### Create and Configure
+
+```solidity
+AgreementDetails memory details = AgreementDetails({
+    protocolName: "My Protocol",
+    contactDetails: contacts,
+    chains: chains,
+    bountyTerms: bountyTerms,
+    agreementURI: "ipfs://QmYourAgreementDocument"
+});
+
+address agreement = agreementFactory.create(details, msg.sender, salt);
+
+// Commit to terms for at least 30 days
+IAgreement(agreement).extendCommitmentWindow(block.timestamp + 30 days);
+
+// Link your protocol to the agreement
+safeHarborRegistry.adoptSafeHarbor(agreement);
+```
+
+For the full configuration reference, see [How to Create a Safe Harbor Agreement](/battlechain/how-to/create-agreement).
+
+## Part 3: Request Attack Mode
+
+```solidity
+attackRegistry.requestUnderAttack(agreement);
+```
+
+Your contracts are now in `ATTACK_REQUESTED` state. The DAO will review and check:
+- Is this a new contract (not a mainnet copy)?
+- Are the bounty terms reasonable?
+- Is the scope clearly defined?
+
+See [How to Request Attack Mode](/battlechain/how-to/request-attack-mode) for details and troubleshooting.
+
+## Part 4: During the Attack Period
+
+Once the DAO approves, your contracts enter `UNDER_ATTACK` state. Here's what to expect:
+
+### Monitor Activity
+
+Watch for unusual transactions on your contracts. Whitehats may:
+- Drain liquidity pools
+- Exploit reentrancy or flash loan vectors
+- Test access control boundaries
+
+### If a Vulnerability is Found
+
+1. Whitehats extract funds and send the remainder to your recovery address
+2. You keep your assets minus the bounty
+3. Consider whether the vulnerability affects your mainnet plans
+
+### When You're Confident
+
+After sufficient testing (see [best practices for timing](/battlechain/explanation/best-practices)), promote to production:
+
+```solidity
+attackRegistry.promote(agreement);
+// 3-day countdown begins — contracts are still attackable
+// After 3 days, contracts enter PRODUCTION
+```
+
+See [How to Promote to Production](/battlechain/how-to/promote-to-production) for the full promotion flow.
+
+## Summary
+
+| Step | Action | Result |
+|------|--------|--------|
+| 1 | Deploy via BattleChainDeployer | Contracts registered |
+| 2 | Create Safe Harbor agreement | Terms defined |
+| 3 | Request attack mode | DAO reviews |
+| 4 | DAO approves | Whitehats can attack |
+| 5 | Promote to production | Battle-tested and ready for mainnet |

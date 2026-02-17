@@ -1,0 +1,79 @@
+---
+title: "How to Promote to Production"
+description: "Move your contracts from attack mode to production after stress testing"
+---
+
+## Overview
+
+After successful stress testing, promote your contracts to production mode. This removes Safe Harbor protection and treats contracts like mainnet deployments.
+
+<Warning>
+Once promoted, there's no going back. Contracts cannot re-enter attack mode.
+</Warning>
+
+## Request Promotion
+
+```solidity
+// Only the attack moderator can promote
+attackRegistry.promote(agreementAddress);
+```
+
+This starts a 3-day countdown. During this time:
+- Contracts are still attackable
+- Safe Harbor still applies
+- You can cancel if issues are found
+
+## Cancel Promotion
+
+If an issue is discovered during the 3-day wait:
+
+```solidity
+attackRegistry.cancelPromotion(agreementAddress);
+```
+
+This returns the agreement to `UNDER_ATTACK` state.
+
+## Check Promotion Status
+
+```solidity
+IAttackRegistry.AgreementInfo memory info = attackRegistry.getAgreementInfo(agreementAddress);
+
+if (info.promotionRequestedTimestamp > 0) {
+    uint256 promotionTime = info.promotionRequestedTimestamp + 3 days;
+
+    if (block.timestamp >= promotionTime) {
+        // Now in PRODUCTION
+    } else {
+        // Still in PROMOTION_REQUESTED, can cancel
+    }
+}
+```
+
+## Mark as Corrupted
+
+If a whitehat successfully exploits your contracts:
+
+```solidity
+attackRegistry.markCorrupted(agreementAddress);
+```
+
+This sets state to `CORRUPTED` (terminal), signaling the contracts are compromised.
+
+## Transfer Attack Moderator
+
+The attack moderator controls promotion. To transfer:
+
+```solidity
+attackRegistry.transferAttackModerator(agreementAddress, newModerator);
+```
+
+## After Promotion
+
+1. **Deploy to mainnet**: Your contracts are battle-tested
+2. **Keep monitoring**: Continue to watch your BattleChain deployment
+3. **Mirror updates**: Keep BattleChain and mainnet in sync
+4. **Use for staging**: Future updates can use BattleChain's attack mode
+
+<Card title="Best Practices" icon="book" href="/battlechain/explanation/best-practices">
+  Learn best practices for using BattleChain
+</Card>

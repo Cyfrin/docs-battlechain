@@ -1,0 +1,173 @@
+---
+title: "Approving Requests: DAO Member Tutorial"
+description: "A complete tutorial for DAO members on reviewing, approving, and managing attack requests"
+---
+
+This tutorial teaches DAO members how to evaluate attack mode requests, make approval decisions, and handle edge cases like copycats and emergencies.
+
+<Note>
+**Audience**: AttackRegistry DAO members and registry moderators.
+
+**Prerequisites**: You must be the registry moderator or part of the DAO multisig.
+</Note>
+
+## Your Role
+
+As a DAO member, you are the gatekeeper for BattleChain's attack mode. Your primary responsibilities:
+
+1. **Approve legitimate requests** — let real protocols stress-test their contracts
+2. **Reject copycats** — prevent mainnet contracts from being copied and exploited
+3. **Handle emergencies** — use instant promotion when needed
+4. **Act promptly** — if you don't act within 14 days, requests auto-promote to production
+
+## Understanding the Review Flow
+
+When a protocol requests attack mode, the agreement state changes to `ATTACK_REQUESTED`. You have three options:
+
+| Action | Effect | When to Use |
+|--------|--------|-------------|
+| `approveAttack()` | → `UNDER_ATTACK` | Request passes all checks |
+| `rejectAttackRequest()` | → `NOT_DEPLOYED` | Red flags found |
+| `instantPromote()` | → `PRODUCTION` | Emergency (skip attack phase) |
+| Do nothing | → `PRODUCTION` after 14 days | **Avoid this** — always act |
+
+## Step 1: Monitor for Requests
+
+Watch for `AgreementStateChanged` events:
+
+```solidity
+event AgreementStateChanged(address indexed agreementAddress, ContractState newState);
+// newState = 2 (ATTACK_REQUESTED) → needs your review
+```
+
+Or query pending requests:
+
+```solidity
+IAttackRegistry.ContractState state = attackRegistry.getAgreementState(agreementAddress);
+if (state == IAttackRegistry.ContractState.ATTACK_REQUESTED) {
+    // Needs review
+}
+```
+
+## Step 2: Gather Information
+
+```solidity
+IAgreement agreement = IAgreement(agreementAddress);
+AgreementDetails memory details = agreement.getDetails();
+
+// Protocol info
+string memory name = details.protocolName;
+Contact[] memory contacts = details.contactDetails;
+
+// Bounty terms
+BountyTerms memory terms = details.bountyTerms;
+
+// Contracts in scope
+address[] memory contracts = agreement.getBattleChainScopeAddresses();
+```
+
+Check deployment method for each contract:
+
+```solidity
+for (uint i = 0; i < contracts.length; i++) {
+    address deployer = attackRegistry.getContractDeployer(contracts[i]);
+    if (deployer == address(0)) {
+        // NOT via BattleChainDeployer — extra scrutiny needed
+    }
+}
+```
+
+## Step 3: The Review Checklist
+
+This is the most important part of your role. Go through each check carefully.
+
+### Check 1: Is This a Mainnet Copycat?
+
+**This is the single most important check.** A copycat is someone who deploys a copy of a mainnet contract on BattleChain to exploit it without consequences.
+
+- Compare bytecode to known mainnet contracts
+- Search for the protocol name on other chains
+- Check if identical contracts exist elsewhere with TVL
+- Look for suspiciously generic protocol names
+
+<Warning>
+If you approve a copycat, whitehats may find vulnerabilities that get exploited on mainnet. This damages the entire ecosystem's trust in BattleChain.
+</Warning>
+
+### Check 2: Is This a Legitimate Protocol?
+
+- Does the protocol have a web presence?
+- Are there social accounts, a team, audit reports?
+- Are the contact details real and responsive?
+- Was it deployed via BattleChainDeployer?
+
+### Check 3: Are Bounty Terms Reasonable?
+
+- Bounty percentage in normal range (5-15%)?
+- Cap appropriate for expected TVL?
+- Identity requirements clearly defined?
+- If `Named`, are diligence requirements specified?
+
+### Check 4: Is the Scope Clear?
+
+- All relevant contracts included?
+- Child contract scope makes sense?
+- Recovery address is a multisig (not an EOA)?
+
+## Step 4: Make Your Decision
+
+### Approve
+
+```solidity
+attackRegistry.approveAttack(agreementAddress);
+```
+
+### Reject
+
+```solidity
+attackRegistry.rejectAttackRequest(agreementAddress);
+```
+
+The protocol can fix issues and resubmit. Rejection is not permanent.
+
+<Tip>
+When in doubt, **reject**. The protocol can always resubmit. Approving a bad actor is much harder to undo.
+</Tip>
+
+## Handling Emergencies
+
+### Instant Promotion
+
+Use `instantPromote()` for genuine emergencies only:
+
+```solidity
+attackRegistry.instantPromote(agreementAddress);
+```
+
+Valid scenarios:
+- **Copycat discovered** after approval
+- **TVL surge** creating unreasonable risk
+- **Protocol emergency** — critical issue found
+
+See [How to Use Instant Promotion](/battlechain/how-to/instant-promotion) for the full process.
+
+## Best Practices
+
+- **Act within days, not weeks** — the 14-day auto-promote is a safety net, not a target
+- **Reject to buy time** — if you need more time, reject and let the protocol resubmit
+- **Document every decision** — record what you checked and why you decided
+- **Use instant promotion sparingly** — it's an emergency power, not a convenience feature
+- **Coordinate with other DAO members** — discuss borderline cases before acting
+
+See [Best Practices for the DAO](/battlechain/explanation/best-practices) for more guidelines.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Review Your First Request" icon="play" href="/battlechain/quickstart/review-first-request">
+    Quick-start walkthrough with code
+  </Card>
+  <Card title="Governance Parameters" icon="sliders" href="/battlechain/reference/governance-parameters">
+    All parameters you control
+  </Card>
+</CardGroup>

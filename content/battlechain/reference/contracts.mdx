@@ -1,0 +1,143 @@
+---
+title: "Contract API Reference"
+description: "Complete API reference for BattleChain contracts"
+---
+
+## Deployed Addresses
+
+| Contract | Testnet | Mainnet |
+|----------|---------|---------|
+| AttackRegistry (Proxy) | <code>0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1</code> | TBD |
+| SafeHarborRegistry (Proxy) | <code>0xCb2A561395118895e2572A04C2D8AB8eCA8d7E5D</code> | TBD |
+| AgreementFactory (Proxy) | <code>0x0EbBEeB3aBeF51801a53Fdd1fb263Ac0f2E3Ed36</code> | TBD |
+| BattleChainDeployer | <code>0x8f57054CBa2021bEE15631067dd7B7E0B43F17Dc</code> | TBD |
+
+---
+
+## AttackRegistry
+
+Tracks attack/production status of contracts.
+
+### State-Changing Functions
+
+```solidity
+// Protocol functions
+function requestUnderAttack(address agreementAddress) external;
+function requestUnderAttackByNonAuthorized(address agreementAddress) external;
+function goToProduction(address agreementAddress) external;
+
+// Attack moderator functions
+function promote(address agreementAddress) external;
+function cancelPromotion(address agreementAddress) external;
+function markCorrupted(address agreementAddress) external;
+function transferAttackModerator(address agreementAddress, address newModerator) external;
+
+// Deployer functions
+function authorizeAgreementOwner(address contractAddress, address newOwner) external;
+
+// DAO functions
+function approveAttack(address agreementAddress) external;
+function rejectAttackRequest(address agreementAddress) external;
+function instantPromote(address agreementAddress) external;
+```
+
+### View Functions
+
+```solidity
+function isTopLevelContractUnderAttack(address contractAddress) external view returns (bool);
+function getAgreementState(address agreementAddress) external view returns (ContractState);
+function getAgreementInfo(address agreementAddress) external view returns (AgreementInfo memory);
+function getAgreementForContract(address contractAddress) external view returns (address);
+function getAttackModerator(address agreementAddress) external view returns (address);
+function getContractDeployer(address contractAddress) external view returns (address);
+function getAuthorizedOwner(address contractAddress) external view returns (address);
+function getRegistryModerator() external view returns (address);
+```
+
+### Events
+
+```solidity
+event AgreementStateChanged(address indexed agreementAddress, ContractState newState);
+event AttackModeratorTransferred(address indexed agreementAddress, address indexed newModerator);
+event ContractRegistered(address indexed contractAddress, address indexed agreementAddress);
+event AgreementOwnerAuthorized(address indexed contractAddress, address indexed authorizedOwner);
+```
+
+---
+
+## Agreement
+
+Per-protocol Safe Harbor terms.
+
+### Owner Functions
+
+```solidity
+function setProtocolName(string calldata protocolName) external;
+function setContactDetails(Contact[] memory contactDetails) external;
+function addOrSetChains(Chain[] memory chains) external;
+function removeChains(string[] memory caip2ChainIds) external;
+function addAccounts(string memory caip2ChainId, Account[] memory newAccounts) external;
+function removeAccounts(string memory caip2ChainId, string[] memory accountAddresses) external;
+function setBountyTerms(BountyTerms memory bountyTerms) external;
+function setAgreementURI(string calldata agreementURI) external;
+function extendCommitmentWindow(uint256 newCantChangeUntil) external;
+```
+
+### View Functions
+
+```solidity
+function getDetails() external view returns (AgreementDetails memory);
+function getProtocolName() external view returns (string memory);
+function getBountyTerms() external view returns (BountyTerms memory);
+function getAgreementURI() external view returns (string memory);
+function getChainIds() external view returns (string[] memory);
+function getChainAccounts(string memory caip2ChainId) external view returns (Account[] memory);
+function getAssetRecoveryAddress(string memory caip2ChainId) external view returns (string memory);
+function getCantChangeUntil() external view returns (uint256);
+function getBattleChainScopeAddresses() external view returns (address[] memory);
+function isContractInScope(address contractAddress) external view returns (bool);
+```
+
+---
+
+## AgreementFactory
+
+Creates Agreement contracts.
+
+```solidity
+function create(
+    AgreementDetails memory details,
+    address owner,
+    bytes32 salt
+) external returns (address agreementAddress);
+
+function isAgreementContract(address agreementAddress) external view returns (bool);
+function getRegistry() external view returns (address);
+function getBattleChainCaip2ChainId() external view returns (string memory);
+```
+
+---
+
+## BattleChainSafeHarborRegistry
+
+Maps protocols to agreements.
+
+```solidity
+function adoptSafeHarbor(address agreementAddress) external;
+function getAgreement(address adopter) external view returns (address);
+function isChainValid(string calldata caip2ChainId) external view returns (bool);
+function isAgreementValid(address agreementAddress) external view returns (bool);
+```
+
+---
+
+## BattleChainDeployer
+
+Deploys contracts with automatic registration.
+
+Supports all CreateX methods:
+- `deployCreate()`, `deployCreateAndInit()`, `deployCreateClone()`
+- `deployCreate2()`, `deployCreate2AndInit()`, `deployCreate2Clone()`
+- `deployCreate3()`, `deployCreate3AndInit()`
+
+All deployments automatically call `AttackRegistry.registerDeployment()`.

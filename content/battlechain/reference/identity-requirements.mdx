@@ -1,0 +1,98 @@
+---
+title: "Identity Requirements"
+description: "Reference for whitehat identity verification levels"
+---
+
+## Identity Enum
+
+```solidity
+enum IdentityRequirements {
+    Anonymous,     // 0
+    Pseudonymous,  // 1
+    Named          // 2
+}
+```
+
+## Levels
+
+### Anonymous (0)
+
+No identity verification required.
+
+| Aspect | Detail |
+|--------|--------|
+| Verification | None |
+| Privacy | Full |
+| Typical Bounty Cap | \$100K - \$1M |
+| Best For | Maximum participation |
+
+### Pseudonymous (1)
+
+Consistent pseudonym required.
+
+| Aspect | Detail |
+|--------|--------|
+| Verification | Provide consistent username/handle |
+| Privacy | Real identity protected |
+| Typical Bounty Cap | \$500K - \$5M |
+| Best For | Building reputation while private |
+
+**How to comply:**
+- Choose a consistent pseudonym
+- Use same name in all protocol communications
+- Optionally link to reputation (GitHub, Twitter)
+
+### Named (2)
+
+Legal name verification required.
+
+| Aspect | Detail |
+|--------|--------|
+| Verification | Legal name confirmed via specified process |
+| Privacy | Identity disclosed to protocol |
+| Typical Bounty Cap | \$1M - \$10M+ |
+| Best For | High-value bounties, regulated protocols |
+
+**How to comply:**
+- Check `diligenceRequirements` field
+- Complete specified KYC process
+- May involve ID verification, video call, legal agreement
+
+## Checking Requirements
+
+```solidity
+BountyTerms memory terms = agreement.getBountyTerms();
+
+if (terms.identity == IdentityRequirements.Anonymous) {
+    // No verification needed
+}
+
+if (terms.identity == IdentityRequirements.Pseudonymous) {
+    // Provide consistent pseudonym
+}
+
+if (terms.identity == IdentityRequirements.Named) {
+    // Check diligenceRequirements
+    string memory requirements = terms.diligenceRequirements;
+    // Complete specified process
+}
+```
+
+## Filtering by Comfort Level
+
+```solidity
+// Only attack contracts matching your privacy preference
+if (uint8(terms.identity) <= maxIdentityLevel) {
+    // Acceptable identity requirement
+}
+```
+
+## Strictness During Commitment
+
+Identity requirements cannot become stricter during the commitment window:
+
+```
+Anonymous < Pseudonymous < Named
+```
+
+A change from `Anonymous` to `Pseudonymous` during commitment would revert.

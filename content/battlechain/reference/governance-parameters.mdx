@@ -1,0 +1,105 @@
+---
+title: "Governance Parameters"
+description: "Reference for DAO-controlled parameters"
+---
+
+## Registry Moderator
+
+The address that can approve/reject requests and instant promote.
+
+```solidity
+// Get current moderator
+address moderator = attackRegistry.getRegistryModerator();
+
+// Change moderator (owner only)
+attackRegistry.changeRegistryModerator(newModerator);
+```
+
+## Valid Chains
+
+CAIP-2 chain IDs that can be used in agreements.
+
+```solidity
+// Check if chain is valid
+bool valid = safeHarborRegistry.isChainValid("eip155:1");
+
+// Set chains as valid (owner only)
+safeHarborRegistry.setValidChains(chainIds);
+
+// Set chains as invalid (owner only)
+safeHarborRegistry.setInvalidChains(chainIds);
+```
+
+### Common Chain IDs
+
+| Chain | CAIP-2 ID |
+|-------|-----------|
+| Ethereum Mainnet | `eip155:1` |
+| Arbitrum One | `eip155:42161` |
+| Optimism | `eip155:10` |
+| Base | `eip155:8453` |
+| BattleChain Testnet | `eip155:627` |
+
+## Time Constants
+
+Set at deployment (require upgrade to change):
+
+```solidity
+uint256 public constant PROMOTION_WINDOW = 14 days;
+uint256 public constant PROMOTION_DELAY = 3 days;
+uint256 public constant MIN_COMMITMENT = 7 days;
+```
+
+| Constant | Value | Effect |
+|----------|-------|--------|
+| `PROMOTION_WINDOW` | 14 days | Auto-promote if DAO inactive |
+| `PROMOTION_DELAY` | 3 days | Delay after `promote()` |
+| `MIN_COMMITMENT` | 7 days | Minimum agreement commitment |
+
+## Agreement Factory
+
+Creates and validates agreements.
+
+```solidity
+// Get factory
+address factory = safeHarborRegistry.getAgreementFactory();
+
+// Set factory (owner only)
+safeHarborRegistry.setAgreementFactory(newFactory);
+
+// Check if agreement is valid
+bool valid = agreementFactory.isAgreementContract(agreementAddress);
+```
+
+## Safe Harbor Registry
+
+Links protocols to agreements.
+
+```solidity
+// Get registry
+address registry = attackRegistry.getSafeHarborRegistry();
+
+// Set registry (owner only)
+attackRegistry.setSafeHarborRegistry(newRegistry);
+```
+
+## BattleChain Deployer
+
+Registers new deployments.
+
+```solidity
+// Get deployer
+address deployer = attackRegistry.getBattleChainDeployer();
+
+// Set deployer (owner only)
+attackRegistry.setBattleChainDeployer(newDeployer);
+```
+
+## Contract Upgrades
+
+Both `AttackRegistry` and `AgreementFactory` use UUPS upgradeable pattern:
+
+```solidity
+// Owner can authorize upgrades
+function _authorizeUpgrade(address newImplementation) internal override onlyOwner;
+```

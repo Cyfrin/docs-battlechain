@@ -41,10 +41,69 @@
             "pages": [
               "overview",
               {
-                "group": "Security Arena",
+                "group": "Quickstart",
                 "pages": [
-                  "security-arena/exploitation-rules",
-                  "security-arena/defense-strategies"
+                  "battlechain/quickstart/deploy-first-contract",
+                  "battlechain/quickstart/execute-first-attack",
+                  "battlechain/quickstart/review-first-request"
+                ]
+              },
+              {
+                "group": "Tutorials",
+                "pages": [
+                  "battlechain/tutorials/going-attackable",
+                  "battlechain/tutorials/deploying-contracts",
+                  "battlechain/tutorials/attacking-contracts",
+                  "battlechain/tutorials/approving-requests",
+                  "battlechain/tutorials/prediction-market"
+                ]
+              },
+              {
+                "group": "How-to Guides",
+                "pages": [
+                  "battlechain/how-to/add-battlechain-to-metamask",
+                  {
+                    "group": "For Protocols",
+                    "pages": [
+                      "battlechain/how-to/create-agreement",
+                      "battlechain/how-to/request-attack-mode",
+                      "battlechain/how-to/promote-to-production"
+                    ]
+                  },
+                  {
+                    "group": "For Whitehats",
+                    "pages": [
+                      "battlechain/how-to/find-attackable-contracts",
+                      "battlechain/how-to/execute-attack",
+                      "battlechain/how-to/claim-bounties"
+                    ]
+                  },
+                  {
+                    "group": "For the DAO",
+                    "pages": [
+                      "battlechain/how-to/approve-reject-requests",
+                      "battlechain/how-to/instant-promotion"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Explanation",
+                "pages": [
+                  "battlechain/explanation/what-is-battlechain",
+                  "battlechain/explanation/contract-lifecycle",
+                  "battlechain/explanation/safe-harbor",
+                  "battlechain/explanation/best-practices"
+                ]
+              },
+              {
+                "group": "Reference",
+                "pages": [
+                  "battlechain/reference/contracts",
+                  "battlechain/reference/contract-states",
+                  "battlechain/reference/bounty-terms",
+                  "battlechain/reference/identity-requirements",
+                  "battlechain/reference/governance-parameters"
                 ]
               }
             ]
@@ -78,7 +137,7 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/cyfrinaudits",
+      "x": "https://x.com/battlechain",
       "github": "https://github.com/Cyfrin",
       "discord": "https://discord.gg/cyfrin",
       "linkedin": "https://linkedin.com/company/cyfrin"
@@ -89,5 +148,8 @@
       "theme": "github-dark-dimmed"
     }
   },
-  "css": ["/styles.css", "/product-themes.css"]
+  "css": [
+    "/styles.css",
+    "/product-themes.css"
+  ]
 }

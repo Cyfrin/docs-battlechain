@@ -1,0 +1,83 @@
+---
+title: "How to Use Instant Promotion"
+description: "Emergency promotion for copycat or high-risk situations"
+---
+
+## Overview
+
+The DAO can instantly promote contracts to production, bypassing the 3-day delay. This is an emergency power for protecting the ecosystem.
+
+<Warning>
+Use instant promotion only for genuine emergencies.
+</Warning>
+
+## When to Use
+
+### Copycat Discovery
+
+A mainnet contract mirrors an attackable BattleChain contract:
+
+1. Whitehat finds vulnerability on BattleChain
+2. Someone deploys identical contract to mainnet
+3. Mainnet contract is now vulnerable
+4. **Action**: Instant promote to stop further disclosure
+
+### TVL Surge
+
+Unexpected liquidity growth creates unreasonable risk:
+
+1. Protocol deployed with \$100K TVL
+2. TVL grows to \$10M unexpectedly
+3. Risk/reward ratio changes dramatically
+4. **Action**: Consider instant promotion if protocol requests
+
+### Protocol Emergency
+
+Protocol discovers critical issue and needs to exit attack mode:
+
+1. Protocol finds vulnerability themselves
+2. Need to patch without whitehats exploiting
+3. **Action**: Instant promote to protect users
+
+## Execute Instant Promotion
+
+```solidity
+attackRegistry.instantPromote(agreementAddress);
+```
+
+Valid from these states:
+- `ATTACK_REQUESTED` → skips attack phase entirely
+- `UNDER_ATTACK` → ends attack immediately
+- `PROMOTION_REQUESTED` → bypasses 3-day delay
+
+## Effects
+
+- State immediately becomes `PRODUCTION`
+- Safe Harbor protection ends
+- Contracts are no longer attackable
+
+## Communication Template
+
+Document and communicate the action:
+
+```
+EMERGENCY INSTANT PROMOTION
+
+Agreement: 0x1234...
+Protocol: [Name]
+Previous State: UNDER_ATTACK
+New State: PRODUCTION
+
+Reason: [Copycat detected / TVL surge / Protocol emergency]
+
+Details: [Specific circumstances]
+
+Actions taken:
+- Instant promotion at block [number]
+- Protocol notified
+- [Other actions]
+```
+
+<Card title="Governance Parameters" icon="sliders" href="/battlechain/reference/governance-parameters">
+  Understand DAO-controlled parameters
+</Card>

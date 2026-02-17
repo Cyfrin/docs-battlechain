@@ -1,0 +1,102 @@
+---
+title: "How to Claim Bounties"
+description: "Understand bounty calculations, caps, and the claiming process"
+---
+
+## Overview
+
+Each Safe Harbor agreement defines bounty terms. Understanding these ensures you receive fair compensation.
+
+## Read Bounty Terms
+
+```solidity
+BountyTerms memory terms = agreement.getBountyTerms();
+
+uint256 percentage = terms.bountyPercentage;      // e.g., 10 for 10%
+uint256 cap = terms.bountyCapUsd;                 // e.g., 5_000_000
+bool canRetain = terms.retainable;                // Keep from recovered?
+IdentityRequirements identity = terms.identity;   // KYC level
+uint256 aggregateCap = terms.aggregateBountyCapUsd;  // Total cap across whitehats
+```
+
+## Calculate Your Bounty
+
+```
+Bounty = min(RecoveredValue x BountyPercentage%, BountyCapUsd)
+```
+
+### Examples
+
+| Recovered | Percentage | Cap | Your Bounty |
+|-----------|------------|-----|-------------|
+| \$500K | 10% | \$5M | \$50K |
+| \$10M | 10% | \$5M | \$1M |
+| \$100M | 10% | \$5M | \$5M (capped) |
+
+## Convert USD Cap to Tokens
+
+Caps are in USD. Convert using current prices:
+
+```solidity
+uint256 capUsd = terms.bountyCapUsd;  // $5,000,000
+uint256 ethPrice = 2000;               // Get from oracle
+uint256 capInEth = capUsd * 1e18 / ethPrice;  // 2,500 ETH
+```
+
+## Retainable vs Return-All
+
+### Retainable (`true`)
+
+```solidity
+uint256 recovered = 100 ether;
+uint256 bounty = (recovered * 10) / 100;  // 10 ETH
+
+// Keep bounty, send rest
+payable(recovery).transfer(recovered - bounty);  // Send 90 ETH
+// You keep 10 ETH
+```
+
+### Return-All (`false`)
+
+```solidity
+// Send everything
+payable(recovery).transfer(recovered);  // Send 100 ETH
+
+// Protocol pays bounty separately through their own process
+```
+
+## Aggregate Bounty Cap
+
+If `aggregateBountyCapUsd > 0`, total bounties across all whitehats are capped:
+
+```
+Total Payouts ≤ AggregateBountyCapUsd
+```
+
+If multiple whitehats exploit the same issue, they share the aggregate cap proportionally.
+
+<Note>
+Aggregate caps cannot be used with `retainable = true`.
+</Note>
+
+## Get Recovery Address
+
+```solidity
+string memory recoveryStr = agreement.getAssetRecoveryAddress("eip155:325");
+// Parse to address for transfers
+```
+
+## Tax Considerations
+
+<Warning>
+Bounties are likely taxable income. Keep records of:
+
+- Date of attack
+- Assets recovered (types and amounts)
+- Bounty received
+- USD value at time of receipt
+</Warning>
+
+<Card title="Safe Harbor Protection" icon="shield" href="/battlechain/explanation/safe-harbor">
+  Understand your legal protections
+</Card>

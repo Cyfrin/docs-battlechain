@@ -1,0 +1,150 @@
+---
+title: "Deploy Your First Contract"
+description: "A step-by-step tutorial to deploy and register your first contract on BattleChain"
+---
+
+This tutorial walks you through deploying a contract to BattleChain and getting it ready for stress testing. By the end, you'll have a contract in attack mode, open for whitehats to test.
+
+<Note>
+**Prerequisites**: You should have an audited smart contract ready to deploy and some test funds for liquidity.
+</Note>
+
+## What You'll Do
+
+1. Deploy your contract via BattleChainDeployer
+2. Create a Safe Harbor agreement
+3. Request attack mode
+4. Wait for DAO approval
+
+## Step 1: Deploy Your Contract
+
+The recommended way to deploy is through `BattleChainDeployer`, which automatically registers your contract with the `AttackRegistry`.
+
+```solidity
+// Get the BattleChainDeployer instance
+BattleChainDeployer deployer = BattleChainDeployer(BATTLECHAIN_DEPLOYER_ADDRESS);
+
+// Deploy your contract using CREATE2 for deterministic addresses
+bytes memory bytecode = type(MyVault).creationCode;
+bytes32 salt = keccak256("my-vault-v1");
+
+address myVault = deployer.deployCreate2(salt, bytecode);
+// myVault is now registered with AttackRegistry
+```
+
+<Check>
+Your contract is now deployed and registered. You (the deployer) are automatically authorized to request attack mode.
+</Check>
+
+<Accordion title="Already deployed without BattleChainDeployer?">
+If your contract was deployed through other means, you can still request attack mode using `requestUnderAttackByNonAuthorized`. This function allows any contract to enter the attack flow, but requires DAO approval like normal.
+
+In Step 5, use this instead:
+```solidity
+attackRegistry.requestUnderAttackByNonAuthorized(agreement);
+```
+</Accordion>
+
+## Step 2: Create a Safe Harbor Agreement
+
+The agreement defines your bounty terms and which contracts are in scope.
+
+```solidity
+// Prepare contact details
+Contact[] memory contacts = new Contact[](1);
+contacts[0] = Contact({
+    name: "Security Team",
+    contact: "security@myprotocol.com"
+});
+
+// Define which contracts are in scope on BattleChain
+Account[] memory accounts = new Account[](1);
+accounts[0] = Account({
+    accountAddress: "0x1234...your-vault-address",  // Use actual address from Step 1
+    childContractScope: ChildContractScope.All
+});
+
+Chain[] memory chains = new Chain[](1);
+chains[0] = Chain({
+    caip2ChainId: "eip155:325",  // BattleChain
+    assetRecoveryAddress: "0xYourRecoveryMultisig",
+    accounts: accounts
+});
+
+// Set bounty terms
+BountyTerms memory bountyTerms = BountyTerms({
+    bountyPercentage: 10,           // 10% bounty
+    bountyCapUsd: 5_000_000,        // $5M max per whitehat
+    retainable: true,               // Whitehats keep bounty from recovered funds
+    identity: IdentityRequirements.Anonymous,
+    diligenceRequirements: "",
+    aggregateBountyCapUsd: 0        // No aggregate cap
+});
+
+// Create the agreement
+AgreementDetails memory details = AgreementDetails({
+    protocolName: "My Protocol",
+    contactDetails: contacts,
+    chains: chains,
+    bountyTerms: bountyTerms,
+    agreementURI: "ipfs://QmYourAgreementDocument"
+});
+
+address agreement = agreementFactory.create(details, msg.sender, salt);
+```
+
+## Step 3: Extend Commitment Window
+
+The agreement needs a commitment window of at least 7 days:
+
+```solidity
+// Extend commitment to 30 days from now
+IAgreement(agreement).extendCommitmentWindow(block.timestamp + 30 days);
+```
+
+## Step 4: Adopt the Agreement
+
+Link your protocol to the agreement:
+
+```solidity
+safeHarborRegistry.adoptSafeHarbor(agreement);
+```
+
+## Step 5: Request Attack Mode
+
+Now request attack mode for your contracts:
+
+```solidity
+attackRegistry.requestUnderAttack(agreement);
+```
+
+<Check>
+Your request is submitted! The agreement state is now `ATTACK_REQUESTED`.
+</Check>
+
+## Step 6: Wait for DAO Approval
+
+The DAO will review your request. They check:
+- Is this a new contract (not a mainnet copy)?
+- Are the bounty terms reasonable?
+- Is the scope clearly defined?
+
+You can check your status:
+
+```solidity
+IAttackRegistry.ContractState state = attackRegistry.getAgreementState(agreement);
+// ATTACK_REQUESTED (2) = waiting for approval
+// UNDER_ATTACK (3) = approved! Whitehats can now attack
+```
+
+## What's Next?
+
+Once approved, your contracts are in attack mode:
+
+- **Monitor for attacks**: Watch for unusual activity
+- **Respond to issues**: If a whitehat finds something, they'll send funds to your recovery address
+- **Promote when ready**: After sufficient testing, promote to production
+
+<Card title="How to Promote to Production" icon="arrow-right" href="/battlechain/how-to/promote-to-production">
+  Learn how to move your contracts to production mode
+</Card>

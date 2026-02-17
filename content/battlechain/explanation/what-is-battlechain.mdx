@@ -1,0 +1,79 @@
+---
+title: "What is BattleChain?"
+description: "Understanding the problem BattleChain solves and how it works"
+---
+
+## The Problem
+
+Web3 has a fundamental gap in its development lifecycle. Traditional software has well-established staging environments where code is tested with production-like conditions. Web3 lacks this:
+
+| Traditional | Web3 Today | With BattleChain |
+|-------------|------------|------------------|
+| Dev → Staging → Production | Dev → Testnet → Mainnet | Dev → Testnet → **BattleChain** → Mainnet |
+| Staging has real-like data | Testnet has fake money | BattleChain has real funds |
+| Issues found before users | Issues found after millions at risk | Issues found with controlled risk |
+
+The consequences:
+- Projects go from \$0 to \$5M TVL overnight after audit
+- Bug bounties don't attract serious testing (report vulnerabilities, don't exploit them)
+- The industry loses billions to preventable exploits
+
+## The Solution
+
+BattleChain is a **pre-mainnet, post-testnet environment** with real funds. It's an incentivized testnet where:
+
+- **Protocols** deploy audited contracts with real liquidity
+- **Whitehats** legally attack contracts and earn bounties
+- **The DAO** moderates to prevent abuse
+
+## How It Works
+
+Every contract on BattleChain exists in one of two modes:
+
+### Attack Mode
+
+Open season for ethical hacking:
+- Whitehats can legally exploit vulnerabilities
+- Safe Harbor agreement protects attackers
+- Bounties paid for successful exploits
+- Protocol learns about vulnerabilities before mainnet
+
+### Production Mode
+
+Protected like mainnet:
+- No Safe Harbor protection for attacks
+- Same security expectations as mainnet
+- Regular bug bounty rules apply
+
+## The Flow
+
+```
+Deploy → Request Attack Mode → DAO Approves → Stress Test → Promote to Production
+```
+
+1. Protocol deploys via `BattleChainDeployer`
+2. Protocol creates Safe Harbor agreement with bounty terms
+3. Protocol requests attack mode
+4. DAO reviews and approves (ensures not a mainnet copycat)
+5. Whitehats attack during the stress test period
+6. Protocol promotes to production when confident
+
+## Why an L2?
+
+BattleChain runs as a ZKSync-based L2:
+
+1. **Isolation**: Attacks don't affect mainnet liquidity
+2. **Branding**: Clear distinction as experimental environment
+3. **Protocol-level tracking**: Contract states tracked at chain level
+4. **Efficiency**: Lower costs for deployment and testing
+
+## Who Should Use BattleChain?
+
+**Everyone.** Whether you're:
+
+- Launching a new protocol
+- Adding features to an existing protocol
+- Testing experimental DeFi mechanisms
+- Stress testing AI trading bots
+
+BattleChain provides safe validation with real economic incentives.

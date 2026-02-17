@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
+
 import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { getNavigation } from '@/lib/navigation'
@@ -209,29 +209,12 @@ export function Sidebar() {
       return null
     }
 
-    // Render Battlechain dropdown as expanded header
+    // Render Battlechain dropdown directly without header
     if (dropdown.dropdown === 'Battlechain') {
       return (
         <div key={`battlechain-${index}`} className="mb-2">
-          {/* Product header */}
-          <div className="flex items-center gap-2 px-3 py-1">
-            {dropdown.icon && (
-              <Image
-                src={dropdown.icon}
-                alt=""
-                width={20}
-                height={20}
-                className="w-5 h-5"
-              />
-            )}
-            <span className="text-base font-bold text-gray-900 dark:text-gray-100">
-              {dropdown.dropdown}
-            </span>
-          </div>
-
-          {/* Always show pages */}
           <ul className="space-y-1">
-            {renderPages(dropdown.pages, 0, true)}
+            {renderPages(dropdown.pages, 0, false)}
           </ul>
         </div>
       )
@@ -246,9 +229,6 @@ export function Sidebar() {
       <nav className="p-4">
         {navigation.tabs.map((tab) => (
           <div key={tab.tab}>
-            <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
-              {tab.tab}
-            </h3>
             {tab.dropdowns?.map((dropdown, index) => renderDropdown(dropdown, index))}
           </div>
         ))}

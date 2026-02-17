@@ -1,0 +1,171 @@
+---
+title: "Review Your First Request"
+description: "A step-by-step tutorial for DAO members to review and approve attack requests"
+---
+
+This tutorial walks you through reviewing an attack mode request as a DAO member. By the end, you'll understand how to evaluate requests and approve or reject them.
+
+<Note>
+**Prerequisites**: You must be the registry moderator or part of the DAO multisig.
+</Note>
+
+## What You'll Do
+
+1. Find pending requests
+2. Review the protocol and contracts
+3. Check for copycat contracts
+4. Approve or reject the request
+
+## Step 1: Monitor for New Requests
+
+Watch for `AgreementStateChanged` events with `ATTACK_REQUESTED` state:
+
+```solidity
+event AgreementStateChanged(address indexed agreementAddress, ContractState newState);
+
+// newState = 2 means ATTACK_REQUESTED - needs review
+```
+
+Or query directly:
+
+```solidity
+IAttackRegistry.ContractState state = attackRegistry.getAgreementState(agreementAddress);
+
+if (state == IAttackRegistry.ContractState.ATTACK_REQUESTED) {
+    // This agreement needs review
+}
+```
+
+## Step 2: Get Agreement Details
+
+Fetch the agreement information:
+
+```solidity
+// Get the agreement contract
+IAgreement agreement = IAgreement(agreementAddress);
+
+// Get full details
+AgreementDetails memory details = agreement.getDetails();
+
+string memory protocolName = details.protocolName;
+BountyTerms memory terms = details.bountyTerms;
+Contact[] memory contacts = details.contactDetails;
+```
+
+Check the contracts in scope:
+
+```solidity
+// Get all contracts covered by this agreement
+address[] memory contracts = agreement.getBattleChainScopeAddresses();
+
+// Check how each was deployed
+for (uint i = 0; i < contracts.length; i++) {
+    address deployer = attackRegistry.getContractDeployer(contracts[i]);
+
+    if (deployer == address(0)) {
+        // NOT deployed via BattleChainDeployer
+        // Requires extra scrutiny
+    } else {
+        // Deployed via BattleChainDeployer
+        // Has on-chain proof
+    }
+}
+```
+
+<Check>
+You now have all the information needed to evaluate the request.
+</Check>
+
+## Step 3: Review Checklist
+
+Go through this checklist:
+
+<AccordionGroup>
+  <Accordion title="1. Is this a legitimate new deployment?">
+    - Was it deployed via BattleChainDeployer?
+    - Does the protocol have a web presence, social accounts, audit reports?
+    - Are the contact details valid?
+  </Accordion>
+
+  <Accordion title="2. Is it NOT a mainnet copycat?">
+    **This is the most important check.**
+
+    - Compare bytecode to known mainnet contracts
+    - Search for similar protocol names on other chains
+    - Check if the same contracts exist elsewhere with TVL
+  </Accordion>
+
+  <Accordion title="3. Are bounty terms reasonable?">
+    - Is the bounty percentage in normal range (5-15%)?
+    - Is the cap appropriate for the expected TVL?
+    - Are identity requirements clear?
+  </Accordion>
+
+  <Accordion title="4. Is the scope clearly defined?">
+    - Are all necessary contracts included?
+    - Is the child contract scope appropriate?
+    - Is the recovery address a secure multisig?
+  </Accordion>
+</AccordionGroup>
+
+## Step 4: Make Your Decision
+
+### If Everything Looks Good: Approve
+
+```solidity
+// Approve the attack request
+attackRegistry.approveAttack(agreementAddress);
+```
+
+This:
+- Changes state to `UNDER_ATTACK`
+- Enables Safe Harbor protection
+- Allows whitehats to attack
+
+### If There Are Issues: Reject
+
+```solidity
+// Reject the attack request
+attackRegistry.rejectAttackRequest(agreementAddress);
+```
+
+This:
+- Returns state to `NOT_DEPLOYED`
+- Clears contract mappings
+- Protocol can resubmit with fixes
+
+<Check>
+You've completed your first review! The protocol will see the state change via events.
+</Check>
+
+## Step 5: Document Your Decision
+
+Record:
+- Agreement address reviewed
+- Contracts in scope
+- Checks performed
+- Decision rationale
+- Any concerns noted
+
+## Red Flags to Watch For
+
+<Warning>
+Reject or investigate further if you see:
+
+- **Bytecode matches mainnet contracts**
+- **Protocol name mimics known protocol**
+- **No verifiable contact information**
+- **Extremely high bounty percentages (>25%)**
+- **Request via non-authorized path with no explanation**
+</Warning>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="How to Use Instant Promotion" icon="bolt" href="/battlechain/how-to/instant-promotion">
+    Learn about emergency promotion for copycat situations
+  </Card>
+  <Card title="Governance Parameters" icon="sliders" href="/battlechain/reference/governance-parameters">
+    Understand the parameters you control
+  </Card>
+</CardGroup>
