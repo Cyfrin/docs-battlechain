@@ -55,9 +55,7 @@ export async function generateStaticParams() {
   for (const dir of directories) {
     const files = getAllMDXFiles(dir)
     for (const file of files) {
-      // Split into slug array
       const slug = file.split('/')
-
       params.push({ product: dir, slug })
     }
   }
@@ -66,14 +64,14 @@ export async function generateStaticParams() {
 }
 
 interface PageProps {
-  params: {
+  params: Promise<{
     product: string
     slug: string[]
-  }
+  }>
 }
 
 export default async function Page({ params }: PageProps) {
-  const { product, slug } = params
+  const { product, slug } = await params
   const path = slug.join('/')
 
   const mdxContent = getMDXContent(product, path)
@@ -109,7 +107,7 @@ export default async function Page({ params }: PageProps) {
 }
 
 export async function generateMetadata({ params }: PageProps) {
-  const { product, slug } = params
+  const { product, slug } = await params
   const path = slug.join('/')
 
   const mdxContent = getMDXContent(product, path)
@@ -124,7 +122,7 @@ export async function generateMetadata({ params }: PageProps) {
   const { frontmatter } = mdxContent
 
   return {
-    title: frontmatter.title || 'Cyfrin Docs',
-    description: frontmatter.description || 'Cyfrin Documentation',
+    title: frontmatter.title || 'BattleChain Docs',
+    description: frontmatter.description || 'BattleChain Documentation',
   }
 }
