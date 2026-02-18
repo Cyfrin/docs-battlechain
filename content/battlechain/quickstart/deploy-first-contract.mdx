@@ -36,16 +36,17 @@ If you hit issues, see the [Foundry installation guide](https://book.getfoundry.
 
 `just` is a command runner used to execute the repo's scripts cleanly. Install it with:
 
+<CodeGroup labels="macOS, Linux/WSL, Cargo">
 ```bash
-# macOS
 brew install just
-
-# Linux/WSL
+```
+```bash
 curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/.local/bin
-
-# Cargo
+```
+```bash
 cargo install just
 ```
+</CodeGroup>
 
 Verify: `just --version`
 
@@ -235,3 +236,22 @@ Approval on testnet typically happens within a few hours. Reach out in [Discord]
 </Note>
 
 Once you see `3`, your vault is live and attackable. Head to [Execute Your First Attack](/battlechain/quickstart/execute-first-attack) to see what happens next.
+
+---
+
+## What You Just Accomplished
+
+You deployed a contract, created a Safe Harbor agreement, and opened it to whitehat attack — all on a testnet built for exactly this workflow.
+
+This matters beyond BattleChain. Safe Harbor agreements protect protocols and whitehats on mainnet too. Every production contract holding real funds benefits from a clear agreement that defines scope, bounties, and recovery rules *before* something goes wrong. The process you just walked through is the same one you'd follow to protect a live deployment.
+
+You now know how to:
+
+- Deploy contracts to a custom chain with Foundry
+- Import keys securely using `cast wallet import` (no plaintext private keys)
+- Create and configure a Safe Harbor agreement on-chain
+- Register contracts for coordinated security testing
+
+<Check>
+You've deployed your first contract to BattleChain and set up a Safe Harbor agreement. These are skills you'll use on mainnet — not just here.
+</Check>

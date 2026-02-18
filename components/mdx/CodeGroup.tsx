@@ -4,13 +4,13 @@ import { ReactNode, useState, Children } from 'react'
 
 interface CodeGroupProps {
   children: ReactNode
+  labels?: string
 }
 
-export function CodeGroup({ children }: CodeGroupProps) {
+export function CodeGroup({ children, labels }: CodeGroupProps) {
   const [activeTab, setActiveTab] = useState(0)
   const childArray = Children.toArray(children)
 
-  // Extract language from pre > code className if available
   const getLanguageFromChild = (child: unknown): string => {
     const childWithProps = child as { props?: { children?: { props?: { className?: string } } } }
     if (childWithProps?.props?.children?.props?.className) {
@@ -20,7 +20,10 @@ export function CodeGroup({ children }: CodeGroupProps) {
     return 'code'
   }
 
-  const tabs = childArray.map((child) => getLanguageFromChild(child))
+  const customLabels = labels
+    ? labels.split(',').map((l) => l.trim())
+    : null
+  const tabs = customLabels ?? childArray.map((child) => getLanguageFromChild(child))
 
   return (
     <div className="code-group my-6 rounded-lg overflow-hidden glass border border-gray-200 dark:border-gray-700">
@@ -36,7 +39,7 @@ export function CodeGroup({ children }: CodeGroupProps) {
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
             }`}
           >
-            {tab.toUpperCase()}
+            {customLabels ? tab : tab.toUpperCase()}
           </button>
         ))}
       </div>

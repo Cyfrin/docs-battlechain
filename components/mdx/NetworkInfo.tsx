@@ -10,12 +10,13 @@ export function NetworkInfo({ network = 'testnet' }: NetworkInfoProps) {
   const config = battlechain[network]
 
   const addToMetaMask = async () => {
-    if (typeof window === 'undefined' || !(window as any).ethereum) {
-      alert('MetaMask is not installed. Please install MetaMask first.')
+    const ethereum = typeof window !== 'undefined' ? (window as any).ethereum : null
+    if (!ethereum) {
+      window.open('https://metamask.io/download/', '_blank')
       return
     }
     try {
-      await (window as any).ethereum.request({
+      await ethereum.request({
         method: 'wallet_addEthereumChain',
         params: [
           {
@@ -24,20 +25,24 @@ export function NetworkInfo({ network = 'testnet' }: NetworkInfoProps) {
             rpcUrls: [config.rpcUrl],
             blockExplorerUrls: [config.explorer],
             nativeCurrency: {
-              name: config.currencySymbol,
+              name: 'Ether',
               symbol: config.currencySymbol,
               decimals: 18,
             },
           },
         ],
       })
-    } catch (error) {
-      console.error('Failed to add network to MetaMask:', error)
+    } catch (error: any) {
+      if (error?.code === 4001) {
+        // User rejected the request
+      } else {
+        alert(`Failed to add network: ${error?.message || 'Unknown error'}`)
+      }
     }
   }
 
   return (
-    <div className="my-6 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div className="not-prose my-6 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
         <h3 className="text-lg font-semibold m-0">{config.name}</h3>
         {typeof config.chainId === 'number' && (

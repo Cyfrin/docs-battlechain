@@ -86,3 +86,31 @@ export function getPageTitle(path: string): string {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ')
 }
+
+export interface AdjacentPage {
+  path: string
+  title: string
+}
+
+export interface AdjacentPages {
+  prev: AdjacentPage | null
+  next: AdjacentPage | null
+}
+
+export function getAdjacentPages(currentPath: string): AdjacentPages {
+  const allPaths = getAllPagePaths()
+  const index = allPaths.indexOf(currentPath)
+
+  if (index === -1) {
+    return { prev: null, next: null }
+  }
+
+  const prev = index > 0
+    ? { path: allPaths[index - 1], title: getPageTitle(allPaths[index - 1]) }
+    : null
+  const next = index < allPaths.length - 1
+    ? { path: allPaths[index + 1], title: getPageTitle(allPaths[index + 1]) }
+    : null
+
+  return { prev, next }
+}

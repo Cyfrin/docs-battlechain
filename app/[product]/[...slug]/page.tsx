@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { getMDXContent, getAllMDXFiles } from '@/lib/mdx'
+import { getAdjacentPages, getPageTitle } from '@/lib/navigation'
+import { PageNav } from '@/components/layout/PageNav'
 import { Card } from '@/components/mdx/Card'
 import { CardGroup } from '@/components/mdx/CardGroup'
 import { Steps, Step } from '@/components/mdx/Steps'
@@ -75,6 +77,7 @@ interface PageProps {
 export default async function Page({ params }: PageProps) {
   const { product, slug } = await params
   const path = slug.join('/')
+  const fullPath = `${product}/${path}`
 
   const mdxContent = getMDXContent(product, path)
 
@@ -83,6 +86,19 @@ export default async function Page({ params }: PageProps) {
   }
 
   const { content, frontmatter } = mdxContent
+  const auto = getAdjacentPages(fullPath)
+
+  const prev = frontmatter.prev === false
+    ? null
+    : typeof frontmatter.prev === 'string'
+      ? { path: frontmatter.prev, title: getPageTitle(frontmatter.prev) }
+      : auto.prev
+
+  const next = frontmatter.next === false
+    ? null
+    : typeof frontmatter.next === 'string'
+      ? { path: frontmatter.next, title: getPageTitle(frontmatter.next) }
+      : auto.next
 
   return (
     <article className="prose prose-slate dark:prose-invert max-w-none">
@@ -104,6 +120,7 @@ export default async function Page({ params }: PageProps) {
           },
         }}
       />
+      <PageNav prev={prev} next={next} />
     </article>
   )
 }
