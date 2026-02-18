@@ -1,0 +1,64 @@
+---
+title: "Verifying Contracts"
+description: "Verify contract source code on the BattleChain block explorer"
+---
+
+## Overview
+
+Verifying a contract publishes its source code on the block explorer so anyone can read, audit, and interact with it. Verified contracts display a checkmark badge and expose a **Contract** tab with the full source, ABI, and constructor arguments.
+
+## Why Verify
+
+- **Transparency** — whitehats and the community can review your code directly on the explorer
+- **Trust** — verified source proves the deployed bytecode matches your published code
+- **Debugging** — the explorer's zkEVM debugger can map execution traces back to source lines for verified contracts
+
+## Verification Form
+
+Navigate to `/contracts/verify` or click **Verify Contract** from any unverified contract page.
+
+### Required Fields
+
+**Contract Address** — the deployed contract address to verify.
+
+**Compiler Type** — choose one:
+
+| Type | Use When |
+|------|----------|
+| Solidity (single file) | Flattened single `.sol` file |
+| Solidity (multi-part) | Multiple `.sol` files (standard project layout) |
+| Vyper (JSON) | Vyper contracts with JSON input |
+
+**Compiler Version** — select the exact version used to compile the contract. The dropdown shows all available versions.
+
+**EVM Version** — the EVM target (e.g., `london`, `paris`). Select "Custom" to enter a specific version string.
+
+**Optimization** — whether optimization was enabled during compilation, and if so, how many optimizer runs.
+
+**Contract Name** — the name of the main contract (e.g., `MyVault`).
+
+### Source Code
+
+- **Single file**: Paste the flattened Solidity source into the built-in editor
+- **Multi-file**: Upload your source files and select the main contract file
+
+### Optional Fields
+
+**Constructor Arguments** — the ABI-encoded constructor arguments used at deployment. Required if the contract's constructor takes parameters.
+
+## Submit
+
+Click **Verify**. The explorer compiles your source with the specified settings and compares the resulting bytecode against what's deployed. If they match, the contract is verified immediately.
+
+If compilation fails, the explorer shows the compiler errors so you can correct your input.
+
+## What Verified Contracts Show
+
+Once verified, the contract's address page gains a **Contract** tab containing:
+
+- **Source code** — full syntax-highlighted source with line numbers
+- **ABI** — the contract's JSON ABI
+- **Compilation details** — compiler version, optimization settings, EVM version
+- **Constructor arguments** — decoded if provided
+
+The **Events** tab also benefits from verification — event names and parameter types are decoded rather than shown as raw hex topics.

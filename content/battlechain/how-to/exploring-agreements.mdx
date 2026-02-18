@@ -1,0 +1,95 @@
+---
+title: "Exploring Agreements"
+description: "Browse Safe Harbor Agreements, filter by state, and inspect bounty terms and contract coverage"
+---
+
+## Overview
+
+The Agreements page (`/agreements`) is the central place to discover which protocols on BattleChain have Safe Harbor Agreements, what bounty terms they offer, and which contracts are in scope.
+
+## The Agreements Table
+
+The main table lists all agreements with these columns:
+
+| Column | Description |
+|--------|-------------|
+| Protocol Name | The protocol's display name |
+| State | Current [lifecycle state](/battlechain/explanation/contract-lifecycle) with a color-coded badge |
+| Bounty % | Percentage of recovered funds offered to whitehats |
+| Bounty Cap | Maximum bounty in USD (or "No cap") |
+| Created At | When the agreement was registered |
+
+Click any column header to sort ascending or descending.
+
+## Filtering by State
+
+Use the state filter tabs above the table to narrow results:
+
+| Filter | States Shown | Description |
+|--------|-------------|-------------|
+| **All** | Everything | Browse all agreements regardless of state |
+| **Registered** | `NEW_DEPLOYMENT` | Newly created agreements not yet requesting attack mode |
+| **Warming Up** | `ATTACK_REQUESTED` | Agreements awaiting DAO approval for attack mode |
+| **Attackable** | `UNDER_ATTACK` | **Open for ethical hacking — whitehats start here** |
+| **Promotion Pending** | `PROMOTION_REQUESTED` | In a 3-day countdown to production; still attackable |
+| **Production** | `PRODUCTION` | Fully promoted and no longer attackable |
+| **Compromised** | `CORRUPTED` | Exploited during the attack phase |
+
+<Tip>
+Whitehats: filter by **Attackable** to see all contracts currently open for ethical hacking. Contracts in **Promotion Pending** are also still attackable during the 3-day countdown.
+</Tip>
+
+## Agreement Details
+
+Click any row to expand it and view the full agreement. The expanded view contains several sections:
+
+### Bounty Terms
+
+- **Bounty Percentage** — what percentage of recovered value the whitehat earns
+- **Bounty Cap (USD)** — maximum per-rescue payout, or "No cap"
+- **Aggregate Bounty Cap (USD)** — maximum total across all rescues, if set
+- **Identity Requirement** — what level of identification is needed to claim the bounty:
+
+| Level | Meaning |
+|-------|---------|
+| Anonymous OK | No identity verification required |
+| Pseudonym Required | A consistent handle or alias is required |
+| ID Required | Full identity verification required |
+
+- **Funds Retainable** — whether the whitehat keeps the bounty from recovered funds directly, or must return everything and receive a separate payout
+
+For full details on bounty configuration, see the [Bounty Terms Reference](/battlechain/reference/bounty-terms).
+
+### Contact Information
+
+Emergency contacts for the protocol's security team — email, Discord, Telegram, Twitter, or other channels. Whitehats should use these for coordinated disclosure.
+
+### Covered Contracts
+
+The list of contract addresses protected by this agreement. Each entry shows its **child contract scope**:
+
+| Scope | Meaning |
+|-------|---------|
+| This contract only | Only the listed address |
+| + existing children | Includes child contracts that existed when the agreement was created |
+| + all children | Includes all child contracts — past and future |
+| + future children | Only child contracts created after the agreement |
+
+### Commitment Window
+
+Shows when the agreement's terms are locked. During a commitment window, the protocol can only make whitehat-favorable changes (increase bounties, loosen identity requirements, add contracts, extend the window). They cannot decrease bounties, remove contracts, or tighten requirements.
+
+### Agreement Document
+
+A link to the full legal agreement document, hosted on IPFS, Arweave, or HTTP. Opens in a new tab.
+
+## Agreements on Contract Pages
+
+When you visit any contract's address page, the explorer shows whether it's covered by a Safe Harbor Agreement:
+
+- **Covered contracts** display an agreement summary with the current state badge, bounty terms, and a link to the full agreement
+- **Uncovered contracts** show a warning banner noting that no Safe Harbor Agreement exists and that default network rescue terms may apply
+
+<Card title="Managing Agreements" icon="arrow-right" href="/battlechain/how-to/managing-agreements-in-explorer">
+  Next: Create and manage agreements through the explorer UI
+</Card>
