@@ -10,8 +10,8 @@ export function CardGroup({ cols = 2, children }: CardGroupProps) {
   const gridColsClass = {
     1: 'grid-cols-1',
     2: 'md:grid-cols-2',
-    3: 'md:grid-cols-2 lg:grid-cols-3',
-    4: 'md:grid-cols-2 lg:grid-cols-4',
+    3: 'sm:grid-cols-2 md:grid-cols-3',
+    4: 'sm:grid-cols-2 md:grid-cols-4',
   }[cols] || 'md:grid-cols-2'
 
   return (
