@@ -46,8 +46,7 @@
                 "pages": [
                   "battlechain/quickstart/deploy-first-contract",
                   "battlechain/quickstart/execute-first-attack",
-                  "battlechain/quickstart/review-first-request",
-                  "battlechain/quickstart/both-sides-of-the-arena"
+                  "battlechain/quickstart/review-first-request"
                 ]
               },
               {

