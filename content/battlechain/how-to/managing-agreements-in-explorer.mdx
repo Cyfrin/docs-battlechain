@@ -1,0 +1,117 @@
+---
+title: "Managing Agreements in the Explorer"
+description: "Create, edit, and manage Safe Harbor Agreements and the attack lifecycle through the block explorer UI"
+---
+
+## Overview
+
+The block explorer provides a full UI for managing Safe Harbor Agreements — no CLI or direct contract calls required. You'll need MetaMask to sign transactions.
+
+## Connect Your Wallet
+
+Click **Connect MetaMask** in the top navigation bar. Once connected, the explorer shows your shortened address and enables all management actions on agreements and contracts you own.
+
+<Note>
+Management actions are only visible when you're connected as the agreement owner (or attack moderator, for promotion controls).
+</Note>
+
+## Create a New Agreement
+
+You can create an agreement from two places:
+
+- **The Agreements page** (`/agreements`) — click the **Create** button in the page header
+- **A contract page** — if the contract has no existing agreement, a warning banner appears with a **Create Safe Harbor Agreement** button (visible to the contract owner for BattleChainDeployer contracts, or to anyone for external contracts)
+
+Either path opens the same two-step wizard.
+
+### Step 1: Configure the Agreement
+
+Fill in the following fields:
+
+**Protocol Name** (required) — your protocol's display name.
+
+**Bounty Terms** (required):
+- Bounty Percentage (1–100%)
+- Bounty Cap in USD
+- Identity Requirement — Anonymous, Pseudonymous, or Named
+- Allow Whitehats to Retain Recovered Funds (toggle)
+- Diligence Requirements (only when Named identity is selected)
+- Aggregate Bounty Cap in USD (optional)
+
+**Contact Information** (at least one required):
+- Add contacts by type: Email, Discord, Telegram, Twitter, or Other
+- You can add multiple contacts
+
+**Chain Configuration** (required):
+- Asset Recovery Address — where recovered funds are sent (`0x` format)
+- Covered Contracts — the contract addresses protected by this agreement
+- Child Contract Scope for each covered contract (This only, + Existing children, + All children, + Future children)
+
+**Agreement Document URI** (optional) — link to the full legal document on IPFS, Arweave, or HTTP.
+
+After filling in the form, click **Create Agreement** and approve the transaction in MetaMask. The `AgreementFactory` deploys your agreement contract.
+
+### Step 2: Adopt the Agreement (Optional)
+
+After creation, you can optionally adopt the agreement in the BattleChain Safe Harbor Registry. This links your protocol identity to the agreement on-chain. You can skip this step — the agreement contract is valid either way.
+
+## Edit an Existing Agreement
+
+When viewing an agreement you own, inline edit buttons appear next to each section. You can modify:
+
+- Protocol name
+- Bounty terms (percentage, cap, identity requirement, retainability, aggregate cap)
+- Contact information (add or remove contacts)
+- Covered contracts (add new addresses, mark for removal, change child contract scope)
+- Agreement document URI
+
+<Warning>
+During an active commitment window, you can only make **whitehat-favorable changes**: increase bounties, loosen identity requirements, add contracts, or extend the window. You cannot decrease bounties, remove contracts, or tighten identity requirements until the window expires.
+</Warning>
+
+## Request Attackable Mode
+
+From a contract page, click **Request Attackable Mode** to submit the contract for ethical hacking. This opens a three-step modal:
+
+### Step 1: Select an Agreement
+
+Choose one of:
+- **Detected agreements** — the explorer automatically finds agreements that cover this contract
+- **Paste an agreement address** — enter one manually
+- **Create a new agreement** — opens the creation wizard inline
+
+### Step 2: Review and Submit
+
+Review the selected agreement and affected contracts. The explorer checks the commitment window — if it's less than 7 days, you'll need to extend it before proceeding.
+
+To extend, pick a new deadline (must be at least 7 days in the future) and confirm the transaction.
+
+Once the commitment window is valid, submit the request and approve the transaction.
+
+### Step 3: Confirmation
+
+The request is submitted. Your contract moves to **Warming Up** (`ATTACK_REQUESTED`) and awaits DAO approval.
+
+<Note>
+For contracts not deployed via BattleChainDeployer, the request goes through `requestUnderAttackByNonAuthorized()` and requires DAO approval. A note in the UI indicates this.
+</Note>
+
+## Request Promotion to Production
+
+When a contract is in **Attackable** state, the attack moderator can click **Request Promotion to Production**. This starts a 3-day countdown during which the contract remains attackable.
+
+## Cancel Promotion
+
+During the 3-day promotion countdown, the attack moderator can click **Cancel Promotion** to return the contract to **Attackable** immediately.
+
+## Skip to Production
+
+From a contract in **Registered** state, the owner can click **Go to Production** to skip attack mode entirely. A confirmation modal warns that the contract will not be stress-tested by whitehats.
+
+<Tip>
+For details on how agreement states and transitions work, see [The Contract Lifecycle](/battlechain/explanation/contract-lifecycle).
+</Tip>
+
+<Card title="Verifying Contracts" icon="arrow-right" href="/battlechain/how-to/verifying-contracts">
+  Next: Verify your contract source code on the explorer
+</Card>

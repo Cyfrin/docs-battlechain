@@ -63,6 +63,14 @@
                 "pages": [
                   "battlechain/how-to/add-battlechain-to-metamask",
                   {
+                    "group": "Block Explorer",
+                    "pages": [
+                      "battlechain/how-to/exploring-agreements",
+                      "battlechain/how-to/managing-agreements-in-explorer",
+                      "battlechain/how-to/verifying-contracts"
+                    ]
+                  },
+                  {
                     "group": "For Protocols",
                     "pages": [
                       "battlechain/how-to/create-agreement",
