@@ -6,50 +6,77 @@ icon: "link"
 
 <BattlechainHero />
 
-<div className="pt-16 pb-8">
+<div className="pt-16 pb-8 flex justify-center">
 
-## Get Started
-
-Choose your path based on your role in the BattleChain ecosystem.
+<a href="/battlechain/quickstart/deploy-first-contract" className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-lg transition-colors no-underline shadow-[0_0_40px_0_rgba(6,182,212,0.4)] hover:shadow-[0_0_60px_0_rgba(6,182,212,0.6)]">
+  Get Started
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+</a>
 
 </div>
 
+<div className="mt-16 rounded-2xl border border-red-700/60 bg-red-950/20 px-8 pt-8 pb-6" style={{boxShadow: '0 0 80px 0 rgba(185,28,28,0.25)'}}>
+
+<div className="flex items-center gap-3 mb-4">
+  <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_2px_rgba(239,68,68,0.6)]" />
+  <span className="text-xs font-semibold uppercase tracking-widest text-red-400">The Problem</span>
+</div>
+
+Web3 has a fundamental gap in its development lifecycle. Code goes from audit to mainnet with nothing in between — and the industry pays for it.
+
+Projects go from $0 to $5M TVL overnight after an audit. Bug bounties don't attract serious testing.
+
+<p className="mt-3 text-base font-bold text-red-400">The industry loses billions to preventable exploits.</p>
+
 <CardGroup cols={3}>
-  <Card title="I'm a Protocol / Developer" icon="code" href="/battlechain/quickstart/deploy-first-contract">
-    Deploy your contracts into the arena and let attackers find every weakness before you go to mainnet.
+  <Card title="Web2 Development" icon="code">
+    <strong>Dev → Staging → Production</strong>
+    <br/>Staging uses real-like data. Issues are found before users are affected.
   </Card>
-
-  <Card title="I'm a Whitehat" icon="bug" href="/battlechain/quickstart/execute-first-attack">
-    Find vulnerabilities, exploit them legally, and earn bounties — all protected under Safe Harbor.
+  <Card title="Web3 Today" icon="flag">
+    <strong>Dev → Testnet → Mainnet</strong>
+    <br/>Testnet uses fake money. Issues are found after millions are at risk.
   </Card>
-
-  <Card title="I'm a DAO Member" icon="users" href="/battlechain/quickstart/review-first-request">
-    Review attack requests, protect the ecosystem from copycats, and govern the registry.
+  <Card title="With BattleChain" icon="shield-check">
+    <strong>Dev → Testnet → BattleChain → Mainnet</strong>
+    <br/>Real funds, controlled risk. Issues found before they matter.
   </Card>
 </CardGroup>
 
-<div className="mt-16">
+</div>
+
+<div className="mt-16 space-y-6">
 
 ## How It Works
 
-BattleChain is a **pre-mainnet, post-testnet environment** with real funds. It fills a critical gap in the Web3 development lifecycle:
+BattleChain is a **pre-mainnet, post-testnet environment** with real funds. Protocols deploy audited contracts, whitehats legally attack them for bounties, and battle-tested contracts promote to mainnet with confidence.
 
 ```
 Audit → Deploy to BattleChain → Stress Test (Attack Mode) → Promote to Production → Deploy to Mainnet
 ```
 
-1. **Protocols** deploy audited contracts with real liquidity
-2. **Whitehats** legally attack contracts and earn bounties under Safe Harbor
-3. **The DAO** moderates to prevent abuse (e.g. mainnet copycats)
-4. Battle-tested contracts **promote to production** and deploy to mainnet with confidence
+Every contract on BattleChain exists in one of two modes:
+
+<CardGroup cols={2}>
+  <Card title="Attack Mode" icon="bug">
+    Open season for ethical hacking. Whitehats can legally exploit vulnerabilities, earn bounties, and operate under Safe Harbor protection. Protocols learn about weaknesses before they matter.
+  </Card>
+  <Card title="Production Mode" icon="shield">
+    Protected like mainnet. No Safe Harbor coverage for attacks — same security expectations apply. Contracts reach this state once battle-tested and DAO-promoted.
+  </Card>
+</CardGroup>
+
+### Why an L2?
+
+BattleChain runs as a ZKSync-based L2 to keep attacks isolated from mainnet liquidity, track contract states at the protocol level, and keep deployment costs low. It's purpose-built for this workflow — not a repurposed testnet.
 
 </div>
 
-<CardGroup cols={2}>
-  <Card title="What is BattleChain?" icon="circle-question" href="/battlechain/explanation/what-is-battlechain">
-    Understand the problem BattleChain solves and why it exists
-  </Card>
+<div className="mt-16 mb-8">
 
+## Learn More
+
+<CardGroup cols={2}>
   <Card title="The Contract Lifecycle" icon="arrows-spin" href="/battlechain/explanation/contract-lifecycle">
     Learn how contracts move through attack mode to production
   </Card>
@@ -62,6 +89,8 @@ Audit → Deploy to BattleChain → Stress Test (Attack Mode) → Promote to Pro
     Guidelines for protocols, whitehats, and DAO members
   </Card>
 </CardGroup>
+
+</div>
 
 <Note>
   BattleChain Testnet is live. Mainnet details will be announced soon.

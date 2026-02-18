@@ -1,0 +1,334 @@
+---
+title: "Both Sides of the Arena"
+description: "Deploy a vulnerable vault to BattleChain, put it in attack mode, then exploit it yourself. One wallet. Both sides."
+---
+
+This tutorial puts you through the full BattleChain cycle — from both ends. You'll deploy a deliberately vulnerable contract as a protocol, set up its Safe Harbor agreement, and open it for attack. Then you'll switch sides and drain it as a whitehat.
+
+Same wallet. Same chain. Two perspectives.
+
+By the end you'll understand CEI violations, reentrancy exploits, and how Safe Harbor makes this whole thing legal and structured.
+
+---
+
+## Prerequisites
+
+Before you touch any code, make sure you have the following.
+
+### Visual Studio Code
+
+Any editor works, but VSCode is recommended. Extensions like **Solidity** by Nomic Foundation give you syntax highlighting and inline error checking for the contracts you'll be reading.
+
+[Download VSCode →](https://code.visualstudio.com/download)
+
+### Foundry
+
+Foundry is the Ethereum development toolkit you'll use to compile, deploy, and run scripts. It's fast, scriptable, and runs entirely from the command line.
+
+**Install:**
+
+```bash
+curl -L https://foundry.paradigm.xyz | bash
+```
+
+Then open a new terminal and run:
+
+```bash
+foundryup
+```
+
+This installs `forge` (compiler + test runner), `cast` (chain interaction), and `anvil` (local node). Verify it worked:
+
+```bash
+forge --version
+```
+
+You should see something like `forge 0.2.0 (...)`. If you hit issues, the [Foundry Book](https://book.getfoundry.sh/getting-started/installation) covers platform-specific steps.
+
+### Git
+
+You'll need Git to clone the starter repo.
+
+```bash
+git --version
+```
+
+If it's not installed, grab it at [git-scm.com](https://git-scm.com/).
+
+### A Wallet and BattleChain Testnet ETH
+
+You'll need an EVM wallet (MetaMask or any EOA) with ETH on the BattleChain testnet to pay for gas.
+
+Add BattleChain to your wallet:
+
+| Field | Value |
+|-------|-------|
+| Network Name | BattleChain Testnet |
+| RPC URL | `http://testnet.battlechain.com:3051` |
+| Chain ID | `627` |
+| Currency Symbol | `ETH` |
+
+<Note>
+The [Add BattleChain to MetaMask](/battlechain/how-to/add-battlechain-to-metamask) guide walks through this in detail if you need it.
+</Note>
+
+### The Demo Token
+
+This tutorial uses a deployed ERC20 with a transfer callback hook that makes the reentrancy exploit possible. You'll need some of this token in your wallet before seeding the vault.
+
+Token address: `TOKEN_ADDRESS` *(placeholder — update once deployed)*
+
+---
+
+## Setup
+
+Clone the starter repo and install dependencies:
+
+```bash
+git clone https://github.com/Cyfrin/battlechain-starter
+cd battlechain-starter
+forge install
+```
+
+Copy the environment file and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and set the following:
+
+```bash
+# Your wallet's private key — never commit this
+PRIVATE_KEY=your_private_key_here
+
+# The deployed token with onTransfer callback (see Prerequisites)
+TOKEN_ADDRESS=0x...
+
+# Filled in as you run each script
+VAULT_ADDRESS=
+AGREEMENT_ADDRESS=
+RECOVERY_ADDRESS=
+```
+
+<Warning>
+Keep your private key out of version control. The `.gitignore` already excludes `.env`, but double-check before pushing anything.
+</Warning>
+
+---
+
+<div className="flex items-start gap-4 my-10 p-5 rounded-xl border border-cyan-500/40 bg-cyan-950/20">
+  <div className="text-4xl mt-1">🏛</div>
+  <div>
+    <div className="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-1">You are the Protocol</div>
+    <div className="text-base font-semibold text-gray-100 mb-1">Your contract is audited. You're ready for real stress testing.</div>
+    <div className="text-sm text-gray-400">In this phase, you're a protocol team deploying a vault to BattleChain and opening it for whitehat attack. You want to find weaknesses before you go to mainnet.</div>
+  </div>
+</div>
+
+## Part 1 — Deploy the Vault
+
+The `VulnerableVault` contract accepts token deposits and lets users withdraw their full balance. It's clean, simple, and broken in exactly one way.
+
+Open `src/VulnerableVault.sol` and look at `withdrawAll()`:
+
+```solidity
+function withdrawAll() external {
+    uint256 amount = balances[msg.sender];
+    require(amount > 0, "VulnerableVault: nothing to withdraw");
+
+    // ❌ INTERACTION before EFFECT
+    token.transfer(msg.sender, amount); // external call — may trigger a callback
+
+    // ❌ Effect happens here — but re-entrant calls already passed the check above
+    balances[msg.sender] = 0;
+}
+```
+
+The bug is subtle: the token transfer fires **before** the balance is cleared. If the token notifies the recipient on transfer — which ours does — an attacker can call `withdrawAll()` again inside that notification, before the balance ever hits zero.
+
+This is the **Checks-Effects-Interactions** (CEI) violation. The correct version clears the balance first:
+
+```solidity
+// ✅ Correct CEI order
+balances[msg.sender] = 0;          // Effect first
+token.transfer(msg.sender, amount); // Interaction second
+```
+
+You've shipped the wrong one. Now deploy it.
+
+<Tip>
+Make sure you have enough demo tokens in your wallet to seed the vault (the script transfers `1,000` tokens from your address on deployment).
+</Tip>
+
+```bash
+forge script script/Setup.s.sol --rpc-url battlechain --broadcast
+```
+
+Expected output:
+
+```
+VulnerableVault deployed: 0x...
+Vault seeded with 1000 tokens
+
+--- Add to your .env ---
+VAULT_ADDRESS=0x...
+```
+
+Copy `VAULT_ADDRESS` into your `.env`.
+
+<Check>
+Your vault is live on BattleChain and registered with the AttackRegistry. A motivated whitehat could already be looking at it.
+</Check>
+
+---
+
+## Part 2 — Create a Safe Harbor Agreement
+
+The Safe Harbor agreement is the legal contract between you and anyone who attacks your vault. It defines the bounty terms and which contracts are in scope.
+
+```bash
+forge script script/CreateAgreement.s.sol --rpc-url battlechain --broadcast
+```
+
+This script:
+
+1. Creates an agreement with a **10% bounty**, retainable from recovered funds
+2. Puts `VAULT_ADDRESS` in scope on BattleChain (`eip155:627`)
+3. Sets your wallet as the asset recovery address — stolen funds come back here
+4. Locks the terms for **30 days** so they can't be changed mid-attack
+
+Expected output:
+
+```
+Agreement created: 0x...
+Commitment window extended 30 days
+Safe Harbor adopted
+
+--- Add to your .env ---
+AGREEMENT_ADDRESS=0x...
+```
+
+Copy `AGREEMENT_ADDRESS` into your `.env`. Also set `RECOVERY_ADDRESS` to the wallet address you're deploying from.
+
+---
+
+## Part 3 — Request Attack Mode
+
+Submit the vault for DAO review. Once approved, it's open season.
+
+```bash
+forge script script/RequestAttackMode.s.sol --rpc-url battlechain --broadcast
+```
+
+Your agreement is now in `ATTACK_REQUESTED` state. The DAO will verify:
+- The vault is a new deployment, not a mainnet copy
+- The bounty terms are reasonable
+- The scope is clearly defined
+
+To check approval status:
+
+```bash
+cast call 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \
+  "getAgreementState(address)(uint8)" \
+  $AGREEMENT_ADDRESS \
+  --rpc-url http://testnet.battlechain.com:3051
+```
+
+| Value | Meaning |
+|-------|---------|
+| `2` | `ATTACK_REQUESTED` — awaiting DAO approval |
+| `3` | `UNDER_ATTACK` — approved, vault is attackable |
+
+Wait until you see `3` before continuing.
+
+<Note>
+Approval is manual. For the testnet tutorial, it typically happens within a few hours. If you're blocked, reach out in [Discord](https://discord.gg/cyfrin).
+</Note>
+
+---
+
+<div className="flex items-start gap-4 my-10 p-5 rounded-xl border border-red-600/40 bg-red-950/20">
+  <div className="text-4xl mt-1">⚔️</div>
+  <div>
+    <div className="text-xs font-bold uppercase tracking-widest text-red-400 mb-1">You are the Whitehat</div>
+    <div className="text-base font-semibold text-gray-100 mb-1">The vault is live. The DAO approved it. You've been watching.</div>
+    <div className="text-sm text-gray-400">Same wallet. New mindset. You spotted the CEI violation in the deployed bytecode and you know exactly how to use it. The Safe Harbor agreement is in place — what you're about to do is legal, structured, and profitable.</div>
+  </div>
+</div>
+
+## Part 4 — Understand the Exploit
+
+Before running anything, understand exactly what's about to happen. Open `src/Attacker.sol`.
+
+The attack exploits the token's transfer callback. When the vault calls `token.transfer(attacker, amount)`, the token fires `onTokenReceived` on the recipient — your `Attacker` contract. At that moment, the vault's `balances[attacker]` hasn't been cleared yet. So you call `withdrawAll()` again. And again. Until the vault is empty.
+
+The reentrancy chain looks like this:
+
+```
+attack()
+└── vault.withdrawAll()
+    └── token.transfer() → onTokenReceived()
+        └── vault.withdrawAll()          ← balance still non-zero
+            └── token.transfer() → onTokenReceived()
+                └── vault.withdrawAll()  ← balance still non-zero
+                    └── ...              ← repeats until vault is empty
+```
+
+Once the vault is drained, the `_attacking` flag stops the loop. Then comes the Safe Harbor settlement:
+
+```solidity
+uint256 total = token.balanceOf(address(this));
+uint256 bounty = (total * bountyBps) / 10_000; // 10%
+
+token.transfer(recoveryAddress, total - bounty); // return 90% to protocol
+token.transfer(owner, bounty);                   // keep 10%
+```
+
+You're not stealing — you're collecting. The protocol gets most of their funds back. You keep the agreed bounty. Everyone knew the rules.
+
+---
+
+## Part 5 — Execute the Attack
+
+```bash
+forge script script/Attack.s.sol --rpc-url battlechain --broadcast
+```
+
+Watch the output:
+
+```
+Vault balance before: 1000 tokens
+Deploying attacker...
+
+--- Vault drained ---
+Vault before:        1000 tokens
+Vault after:           0 tokens
+Bounty kept:         100 tokens
+Returned to protocol: 900 tokens
+```
+
+<Check>
+You just executed a legal reentrancy exploit on BattleChain. The vault is empty. The protocol's recovery address received 900 tokens. You kept 100 as your bounty.
+</Check>
+
+---
+
+## What Just Happened
+
+Step back and look at the full picture.
+
+As the **protocol**, you deployed a contract with a real vulnerability and put real tokens at risk on a live chain. The DAO reviewed your terms and opened your vault to the world. You didn't know when or how it would be hit.
+
+As the **whitehat**, you found the vulnerability, built an exploit, and executed it cleanly within the Safe Harbor framework. You returned the majority of funds and kept your earned bounty.
+
+This is exactly the dynamic BattleChain is designed to create — real economic pressure, real exploits, real consequences, without the real disaster of it happening on mainnet.
+
+<CardGroup cols={2}>
+  <Card title="Promote to Production" icon="rocket" href="/battlechain/how-to/promote-to-production">
+    Once you've fixed the vulnerability and redeployed, learn how to promote a battle-tested contract to production.
+  </Card>
+  <Card title="Safe Harbor Reference" icon="shield" href="/battlechain/explanation/safe-harbor">
+    Understand the full legal framework that made this attack protected.
+  </Card>
+</CardGroup>

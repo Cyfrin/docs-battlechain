@@ -40,12 +40,14 @@
             "icon": "/images/product-logos/battlechain.svg",
             "pages": [
               "overview",
+              { "divider": true },
               {
                 "group": "Quickstart",
                 "pages": [
                   "battlechain/quickstart/deploy-first-contract",
                   "battlechain/quickstart/execute-first-attack",
-                  "battlechain/quickstart/review-first-request"
+                  "battlechain/quickstart/review-first-request",
+                  "battlechain/quickstart/both-sides-of-the-arena"
                 ]
               },
               {
@@ -88,15 +90,6 @@
                 ]
               },
               {
-                "group": "Explanation",
-                "pages": [
-                  "battlechain/explanation/what-is-battlechain",
-                  "battlechain/explanation/contract-lifecycle",
-                  "battlechain/explanation/safe-harbor",
-                  "battlechain/explanation/best-practices"
-                ]
-              },
-              {
                 "group": "Reference",
                 "pages": [
                   "battlechain/reference/contracts",
@@ -105,7 +98,11 @@
                   "battlechain/reference/identity-requirements",
                   "battlechain/reference/governance-parameters"
                 ]
-              }
+              },
+              { "divider": true },
+              "battlechain/explanation/contract-lifecycle",
+              "battlechain/explanation/safe-harbor",
+              "battlechain/explanation/best-practices"
             ]
           }
         ]

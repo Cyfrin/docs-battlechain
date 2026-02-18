@@ -10,10 +10,14 @@ export interface NavGroup {
   pages: (string | NavPage)[]
 }
 
+export interface NavDivider {
+  divider: true
+}
+
 export interface NavDropdown {
   dropdown: string
   icon: string
-  pages: (string | NavPage | NavGroup)[]
+  pages: (string | NavPage | NavGroup | NavDivider)[]
 }
 
 export interface NavTab {
@@ -46,10 +50,12 @@ export function getAllPagePaths(): string[] {
   const navigation = getNavigation()
   const paths: string[] = []
 
-  function extractPaths(items: (string | NavPage | NavGroup)[]): void {
+  function extractPaths(items: (string | NavPage | NavGroup | NavDivider)[]): void {
     items.forEach((item) => {
       if (typeof item === 'string') {
         paths.push(item)
+      } else if ('divider' in item) {
+        // skip dividers
       } else if ('group' in item) {
         extractPaths(item.pages)
       } else if ('pages' in item) {

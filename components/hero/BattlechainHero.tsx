@@ -270,7 +270,7 @@ export function BattlechainHero() {
   }, [])
 
   return (
-    <div className="relative w-full h-[65vh] min-h-[500px] max-h-[700px]">
+    <div className="relative w-1/2 mx-auto h-[45vh] min-h-[350px] max-h-[450px]">
       {/* Contained spotlight gradient - fully within bounds */}
       <div
         className="absolute inset-0"
@@ -294,7 +294,7 @@ export function BattlechainHero() {
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4 pointer-events-none">
         {/* Title */}
         <h1
-          className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold text-white mb-6"
+          className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4"
           style={{
             color: 'white',
             WebkitTextFillColor: 'white',
@@ -309,7 +309,7 @@ export function BattlechainHero() {
 
         {/* Tagline */}
         <p
-          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white font-bold mb-4"
+          className="text-2xl sm:text-3xl md:text-4xl text-white font-bold mb-3"
           style={{
             textShadow: '0 0 30px rgba(0,0,0,0.9), 0 4px 30px rgba(0,0,0,0.7), 0 2px 15px rgba(0,0,0,0.6)'
           }}
@@ -319,7 +319,7 @@ export function BattlechainHero() {
 
         {/* Subtitle */}
         <p
-          className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-3xl mt-2"
+          className="text-sm sm:text-base md:text-lg text-white/90 max-w-xl mt-2"
           style={{
             textShadow: '0 0 30px rgba(0,0,0,0.9), 0 4px 30px rgba(0,0,0,0.7), 0 2px 15px rgba(0,0,0,0.6)'
           }}

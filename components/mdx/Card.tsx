@@ -48,6 +48,8 @@ import {
   UserPlus,
   Wallet,
   Wrench,
+  Users,
+  RefreshCw,
   LucideIcon
 } from 'lucide-react'
 
@@ -56,10 +58,11 @@ interface CardProps {
   icon?: string
   href?: string
   color?: string
+  compact?: boolean
   children: ReactNode
 }
 
-export function Card({ title, icon, href, color, children }: CardProps) {
+export function Card({ title, icon, href, color, compact, children }: CardProps) {
   const isExternal = href?.startsWith('http')
 
   // Icon mapping from FontAwesome names to Lucide components
@@ -114,6 +117,9 @@ export function Card({ title, icon, href, color, children }: CardProps) {
     'tags': Tags,
     'wallet': Wallet,
     'wrench': Wrench,
+    'users': Users,
+    'arrows-spin': RefreshCw,
+    'arrows-rotate': RefreshCw,
   }
 
   const IconComponent = icon ? iconMap[icon] : null
@@ -121,14 +127,14 @@ export function Card({ title, icon, href, color, children }: CardProps) {
   const cardContent = (
     <>
       {IconComponent && (
-        <div className="mb-3">
-          <IconComponent className="w-8 h-8 text-current opacity-80" strokeWidth={1.5} />
+        <div className={compact ? 'mb-2' : 'mb-3'}>
+          <IconComponent className={`${compact ? 'w-5 h-5' : 'w-8 h-8'} text-current opacity-80`} strokeWidth={1.5} />
         </div>
       )}
       <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100" data-toc-ignore>
         {title}
       </h3>
-      <div className="text-sm text-gray-600 dark:text-gray-400">
+      <div className="text-sm leading-relaxed text-gray-500 dark:text-gray-300">
         {children}
       </div>
     </>
@@ -152,7 +158,7 @@ export function Card({ title, icon, href, color, children }: CardProps) {
   // Detect Battlechain (white) cards
   const isBattlechain = color?.toUpperCase() === '#FFFFFF' || color?.toUpperCase() === '#FFF'
 
-  const cardClasses = "card p-6 block no-underline group"
+  const cardClasses = `card ${compact ? 'p-3' : 'p-6'} block no-underline group`
 
   // If no href, render as a div
   if (!href) {

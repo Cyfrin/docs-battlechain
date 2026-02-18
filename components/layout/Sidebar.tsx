@@ -5,7 +5,8 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { getNavigation } from '@/lib/navigation'
-import type { NavDropdown, NavGroup, NavPage } from '@/lib/navigation'
+import type { NavDropdown, NavDivider, NavGroup, NavPage } from '@/lib/navigation'
+import { PageActions } from './PageActions'
 
 export function Sidebar() {
   const pathname = usePathname()
@@ -27,7 +28,7 @@ export function Sidebar() {
 
   // Auto-expand sections that contain the active page
   useEffect(() => {
-    const hasActivePage = (pages: (string | NavPage | NavGroup)[]): boolean => {
+    const hasActivePage = (pages: (string | NavPage | NavGroup | NavDivider)[]): boolean => {
       return pages.some((item) => {
         if (typeof item === 'string') {
           return pathname === `/${item}`
@@ -43,7 +44,7 @@ export function Sidebar() {
     }
 
     // Recursively find all group IDs that contain the active page
-    const findGroupsToExpand = (pages: (string | NavPage | NavGroup)[]): string[] => {
+    const findGroupsToExpand = (pages: (string | NavPage | NavGroup | NavDivider)[]): string[] => {
       const groupsToExpand: string[] = []
 
       pages.forEach((item, index) => {
@@ -122,10 +123,20 @@ export function Sidebar() {
     })
   }
 
-  const renderPages = (pages: (string | NavPage | NavGroup)[], level: number = 0, skipFirstGroup: boolean = false): JSX.Element[] => {
+  const renderPages = (pages: (string | NavPage | NavGroup | NavDivider)[], level: number = 0, skipFirstGroup: boolean = false): JSX.Element[] => {
     const result: JSX.Element[] = []
 
     pages.forEach((item, index) => {
+      // Handle dividers
+      if (typeof item === 'object' && 'divider' in item) {
+        result.push(
+          <li key={`divider-${index}`}>
+            <hr className="my-2 border-gray-200 dark:border-gray-700" />
+          </li>
+        )
+        return
+      }
+
       // Handle string pages (simple links)
       if (typeof item === 'string') {
         const href = `/${item}`
@@ -224,15 +235,22 @@ export function Sidebar() {
     return null
   }
 
+  const isOverview = pathname === '/' || pathname === '/overview'
+
   return (
-    <aside className="sticky top-16 h-[calc(100vh-4rem)] w-64 flex-shrink-0 overflow-y-auto border-r border-gray-200 dark:border-gray-800 bg-white/50 dark:bg-gray-900/50 backdrop-blur-md">
-      <nav className="p-4">
+    <aside className="sticky top-16 h-[calc(100vh-4rem)] w-64 flex-shrink-0 overflow-y-auto border-r border-gray-200 dark:border-gray-800 bg-white/50 dark:bg-gray-900/50 backdrop-blur-md flex flex-col">
+      <nav className="p-4 flex-1">
         {navigation.tabs.map((tab) => (
           <div key={tab.tab}>
             {tab.dropdowns?.map((dropdown, index) => renderDropdown(dropdown, index))}
           </div>
         ))}
       </nav>
+      {isOverview && (
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+          <PageActions />
+        </div>
+      )}
     </aside>
   )
 }

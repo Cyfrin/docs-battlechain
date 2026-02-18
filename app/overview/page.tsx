@@ -12,6 +12,7 @@ import { Expandable } from '@/components/mdx/Expandable'
 import { ResponseField } from '@/components/mdx/ResponseField'
 import { SnippetIntro } from '@/components/mdx/SnippetIntro'
 import { BattlechainHero } from '@/components/hero/BattlechainHero'
+import { Pre } from '@/components/mdx/Pre'
 import remarkGfm from 'remark-gfm'
 import rehypePrismPlus from 'rehype-prism-plus'
 import fs from 'fs'
@@ -36,6 +37,7 @@ const components = {
   ResponseField,
   SnippetIntro,
   BattlechainHero,
+  pre: Pre,
 }
 
 export default async function OverviewPage() {

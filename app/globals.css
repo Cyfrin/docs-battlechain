@@ -74,15 +74,19 @@ body::before {
 }
 
 .dark .card {
-  background: rgba(var(--card-rgb-fallback), 0.15);
-  border: 1px solid rgba(var(--card-rgb-fallback), 0.35);
-  box-shadow: 0 8px 32px 0 rgba(var(--card-rgb-fallback), 0.25);
+  background: rgba(var(--card-rgb-fallback), 0.18);
+  border: 1px solid rgba(var(--card-rgb-fallback), 0.45);
+  box-shadow:
+    0 4px 20px 0 rgba(var(--card-rgb-fallback), 0.35),
+    0 0 60px 0 rgba(var(--card-rgb-fallback), 0.15);
 }
 
 .dark .card:hover {
-  background: rgba(var(--card-rgb-fallback), 0.22);
-  border: 1px solid rgba(var(--card-rgb-fallback), 0.5);
-  box-shadow: 0 12px 40px 0 rgba(var(--card-rgb-fallback), 0.35);
+  background: rgba(var(--card-rgb-fallback), 0.26);
+  border: 1px solid rgba(var(--card-rgb-fallback), 0.6);
+  box-shadow:
+    0 8px 30px 0 rgba(var(--card-rgb-fallback), 0.45),
+    0 0 80px 0 rgba(var(--card-rgb-fallback), 0.25);
 }
 
 /* Battlechain "black lightsaber" effect in light mode */

@@ -6,7 +6,7 @@ import { ProductThemeProvider } from "@/components/theme/ProductThemeProvider";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Footer } from "@/components/layout/Footer";
-import { TableOfContents } from "@/components/layout/TableOfContents";
+import { ContentLayout } from "@/components/layout/ContentLayout";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -83,12 +83,7 @@ export default function RootLayout({
               <div className="flex flex-1">
                 <Sidebar />
                 <main className="flex-1 overflow-auto">
-                  <div className="mx-auto px-4 py-8 max-w-7xl flex gap-8">
-                    <div className="flex-1 max-w-4xl">
-                      {children}
-                    </div>
-                    <TableOfContents />
-                  </div>
+                  <ContentLayout>{children}</ContentLayout>
                 </main>
               </div>
               <Footer />
