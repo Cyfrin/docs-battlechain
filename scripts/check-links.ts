@@ -52,11 +52,17 @@ function normalizeLink(link: string): string {
   return normalized
 }
 
+const PUBLIC_DIR = path.join(process.cwd(), 'public')
+
 function isCrossProduct(normalized: string): boolean {
   return CROSS_PRODUCT_PREFIXES.some(
     (prefix) => normalized === prefix
       || normalized.startsWith(`${prefix}/`)
   )
+}
+
+function isStaticFile(normalized: string): boolean {
+  return fs.existsSync(path.join(PUBLIC_DIR, normalized))
 }
 
 function stripFencedCodeBlocks(body: string): string {
@@ -128,7 +134,11 @@ function checkMDXFile(
 
   for (const { line, link } of extractLinksFromBody(content)) {
     const normalized = normalizeLink(link)
-    if (normalized === '' || isCrossProduct(normalized)) {
+    if (
+      normalized === ''
+      || isCrossProduct(normalized)
+      || isStaticFile(normalized)
+    ) {
       continue
     }
     if (!validPaths.has(normalized)) {
