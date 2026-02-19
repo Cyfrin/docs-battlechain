@@ -11,6 +11,7 @@
 - [Deploy Your First Contract](/battlechain/quickstart/deploy-first-contract): Deploy a vulnerable vault to BattleChain, create a Safe Harbor agreement, and open it for attack.
 - [Execute Your First Attack](/battlechain/quickstart/execute-first-attack): Exploit the CEI violation in a live BattleChain vault, collect your bounty, and walk away clean under Safe Harbor.
 - [Review Your First Request](/battlechain/quickstart/review-first-request): Evaluate an attack mode request as a DAO member — check for mainnet copycats, verify terms, and approve or reject.
+- [Configure Your AI Tools](/battlechain/quickstart/configure-ai-tools): Add BattleChain context to your AI coding tools so they deploy to BattleChain and set up Safe Harbor by default
 
 ## Tutorials
 

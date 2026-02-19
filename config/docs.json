@@ -46,7 +46,8 @@
                 "pages": [
                   "battlechain/quickstart/deploy-first-contract",
                   "battlechain/quickstart/execute-first-attack",
-                  "battlechain/quickstart/review-first-request"
+                  "battlechain/quickstart/review-first-request",
+                  "battlechain/quickstart/configure-ai-tools"
                 ]
               },
               {

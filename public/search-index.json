@@ -212,13 +212,12 @@
   {
     "id": "/battlechain/how-to/use-ai-with-docs",
     "title": "How to Use AI with BattleChain Docs",
-    "content": "Overview BattleChain publishes machine-readable versions of these docs so AI agents can ingest them directly: | File | Contents | Size | |------|----------|------| | /llms.txt | Table of contents with page titles, descriptions, and links | ~4 KB | | /llms-full.txt | Complete text of every page as clean markdown | ~100 KB | Both files follow the llms.txt convention and are regenerated on every deploy. Claude Start a conversation with full BattleChain docs loaded as context Or paste this prompt manually: In Claude Code or Claude with MCP tools, you can also fetch the URL directly: ChatGPT Start a conversation with full BattleChain docs loaded as context Or paste this prompt manually: Cursor Add BattleChain as a doc source so Cursor indexes it automatically. Go to Cursor Settings → Features → Docs, click Add, and enter: Once indexed, Cursor's AI will have full BattleChain context when you reference @docs in chat. Custom Agents If you're building an agent that interacts with BattleChain, f",
+    "content": "Overview BattleChain publishes machine-readable versions of these docs so AI agents can ingest them directly: | File | Contents | Size | |------|----------|------| | /llms.txt | Table of contents with page titles, descriptions, and links | ~4 KB | | /llms-full.txt | Complete text of every page as clean markdown | ~100 KB | Both files follow the llms.txt convention and are regenerated on every deploy. Open in Your AI Start a conversation with full BattleChain docs loaded as context: Open in Claude Open in ChatGPT Or paste this prompt into any AI: Cursor Add BattleChain as a doc source so Cursor indexes it automatically. Go to Cursor Settings → Features → Docs, click Add, and enter: Once indexed, Cursor's AI will have full BattleChain context when you reference @docs in chat. Custom Agents If you're building an agent that interacts with BattleChain, fetch the docs at startup and include them as context: - Full context — fetch /llms-full.txt and add it to the system prompt (~100 KB, fits ",
     "url": "/battlechain/how-to/use-ai-with-docs",
     "category": "battlechain",
     "headings": [
       "Overview",
-      "Claude",
-      "ChatGPT",
+      "Open in Your AI",
       "Cursor",
       "Custom Agents"
     ]
@@ -235,6 +234,20 @@
       "Verification Form",
       "Required Fields",
       "Source Code"
+    ]
+  },
+  {
+    "id": "/battlechain/quickstart/configure-ai-tools",
+    "title": "Configure Your AI Tools",
+    "content": "Why This Matters AI coding agents write your deploy scripts, scaffold your tests, and set up infrastructure. If they don't know about BattleChain, they'll deploy straight to mainnet — skipping the battle-testing step entirely. Adding a short instruction block to your project tells every AI tool to: - Deploy contracts to BattleChain first, not mainnet directly - Create a Safe Harbor agreement as part of project setup - Follow the full BattleChain workflow before promoting to production The Prompt Add the following to your AI tool's configuration file. It works with any tool that reads project-level instructions: Where to Add It Each AI tool reads instructions from a different file. Add the prompt above to whichever tools your team uses: Claude Code Add to CLAUDE.md in your project root. Claude Code loads this file automatically at the start of every session. ``bash Create or append to CLAUDE.md cat >> CLAUDE.md The docs URL https://docs.battlechain.com/llms-full.txt` is the key piece. A",
+    "url": "/battlechain/quickstart/configure-ai-tools",
+    "category": "battlechain",
+    "headings": [
+      "Why This Matters",
+      "The Prompt",
+      "BattleChain",
+      "Deployment workflow",
+      "Requirements"
     ]
   },
   {

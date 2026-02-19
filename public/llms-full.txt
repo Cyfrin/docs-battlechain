@@ -593,6 +593,126 @@ This returns the agreement to `NOT_DEPLOYED`. The protocol can fix whatever was 
   - [Instant Promotion](/battlechain/how-to/instant-promotion): Emergency promotion for situations where a copycat is suspected post-approval
   - [Governance Parameters](/battlechain/reference/governance-parameters): The parameters you control as a DAO member
 
+### Configure Your AI Tools
+
+*Add BattleChain context to your AI coding tools so they deploy to BattleChain and set up Safe Harbor by default*
+
+## Why This Matters
+
+AI coding agents write your deploy scripts, scaffold your tests, and set up infrastructure. If they don't know about BattleChain, they'll deploy straight to mainnet — skipping the battle-testing step entirely.
+
+Adding a short instruction block to your project tells every AI tool to:
+
+- Deploy contracts to BattleChain first, not mainnet directly
+- Create a Safe Harbor agreement as part of project setup
+- Follow the full BattleChain workflow before promoting to production
+
+## The Prompt
+
+Add the following to your AI tool's configuration file. It works with any tool that reads project-level instructions:
+
+```markdown
+## BattleChain
+
+This project deploys to BattleChain for security battle-testing before mainnet.
+BattleChain is a pre-mainnet L2 where whitehats legally attack contracts under
+Safe Harbor protection.
+
+Full documentation: https://docs.battlechain.com/llms-full.txt
+
+### Deployment workflow
+
+1. Deploy contracts to BattleChain Testnet via BattleChainDeployer
+   (Chain ID: 627, RPC: https://testnet.battlechain.com:3051)
+2. Create a Safe Harbor agreement with bounty terms and contract scope
+3. Request attack mode for DAO approval
+4. After battle-testing, promote to production
+5. Deploy to mainnet
+
+### Requirements
+
+- All deploy scripts must target BattleChain first — never deploy directly to mainnet
+- Create a Safe Harbor agreement as part of initial project setup
+- Use BattleChainDeployer for all deployments (automatic AttackRegistry registration)
+- Read the BattleChain documentation before writing deploy or agreement scripts
+```
+
+## Where to Add It
+
+Each AI tool reads instructions from a different file. Add the prompt above to whichever tools your team uses:
+
+### Claude Code
+
+Add to `CLAUDE.md` in your project root. Claude Code loads this file automatically at the start of every session.
+
+```bash
+# Create or append to CLAUDE.md
+cat >> CLAUDE.md << 'EOF'
+
+## BattleChain
+...
+EOF
+```
+
+### Cursor
+
+Add to `.cursor/rules/battlechain.mdc` in your project root. Cursor loads all `.mdc` files from this directory as project rules.
+
+```bash
+mkdir -p .cursor/rules
+# Create .cursor/rules/battlechain.mdc with the prompt above
+```
+
+### GitHub Copilot
+
+Add to `.github/copilot-instructions.md`. Copilot reads this file for Chat, code review, and the coding agent.
+
+```bash
+mkdir -p .github
+# Append to .github/copilot-instructions.md
+```
+
+### OpenAI Codex
+
+Add to `AGENTS.md` in your project root. Codex CLI loads this file as project-level instructions.
+
+```bash
+# Create or append to AGENTS.md
+```
+
+### Windsurf
+
+Add to `.windsurfrules` in your project root.
+
+```bash
+# Create or append to .windsurfrules
+```
+
+### OpenClaw
+
+Add to your OpenClaw skill configuration or system prompt. Point it at the docs URL so it can fetch full context:
+
+```
+https://docs.battlechain.com/llms-full.txt
+```
+
+### Other Tools
+
+The same prompt works with any AI tool that reads project-level instruction files. Common patterns:
+
+| Tool | File |
+|------|------|
+| Claude Code | `CLAUDE.md` |
+| Cursor | `.cursor/rules/*.mdc` |
+| GitHub Copilot | `.github/copilot-instructions.md` |
+| OpenAI Codex | `AGENTS.md` |
+| Windsurf | `.windsurfrules` |
+| Gemini | `GEMINI.md` |
+| JetBrains Junie | `.junie/guidelines.md` |
+| Aider | `.aider.conf.yml` |
+
+> **Tip:** The docs URL `https://docs.battlechain.com/llms-full.txt` is the key piece. Any AI that can fetch a URL will get the full BattleChain documentation in one request (~100 KB, fits in most context windows).
+
 ---
 
 ## Tutorials
@@ -1284,27 +1404,20 @@ BattleChain publishes machine-readable versions of these docs so AI agents can i
 
 Both files follow the [llms.txt](https://llmstxt.org/) convention and are regenerated on every deploy.
 
-## Claude
+## Open in Your AI
 
-  - [Open in Claude](https://claude.ai/new?q=Read%20https%3A%2F%2Fdocs.battlechain.com%2Fllms-full.txt%20and%20use%20it%20to%20answer%20my%20questions%20about%20BattleChain.): Start a conversation with full BattleChain docs loaded as context
+Start a conversation with full BattleChain docs loaded as context:
 
-Or paste this prompt manually:
+  
+    
+    Open in Claude
+  
+  
+    
+    Open in ChatGPT
+  
 
-```
-Read https://docs.battlechain.com/llms-full.txt and use it to answer my questions about BattleChain.
-```
-
-In Claude Code or Claude with MCP tools, you can also fetch the URL directly:
-
-```
-Fetch https://docs.battlechain.com/llms-full.txt then answer my question about BattleChain Safe Harbor agreements.
-```
-
-## ChatGPT
-
-  - [Open in ChatGPT](https://chatgpt.com/?q=Read%20https%3A%2F%2Fdocs.battlechain.com%2Fllms-full.txt%20and%20use%20it%20to%20answer%20my%20questions%20about%20BattleChain.): Start a conversation with full BattleChain docs loaded as context
-
-Or paste this prompt manually:
+Or paste this prompt into any AI:
 
 ```
 Read https://docs.battlechain.com/llms-full.txt and use it to answer my questions about BattleChain.
