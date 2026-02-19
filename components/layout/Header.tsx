@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useTheme } from '../theme/ThemeProvider'
 import { getDocsConfig } from '@/lib/navigation'
 import { SearchButton } from '../search/SearchButton'
+import { useMobileSidebar } from '@/lib/mobile-sidebar'
 
 interface NavLink {
   label: string
@@ -24,37 +25,52 @@ export function Header() {
   const { theme, toggleTheme } = useTheme()
   const config = getDocsConfig()
   const navbar = config.navbar as NavbarConfig
+  const { toggle } = useMobileSidebar()
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md">
-      <div className="container flex h-16 items-center justify-between px-4 mx-auto">
-        {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2 -ml-2">
-          <Image
-            src={'/images/product-logos/battlechain.svg'}
-            alt="BattleChain"
-            width={28}
-            height={28}
-            priority
-            className="w-7 h-7"
-          />
-          <span className="text-lg font-bold text-gray-900 dark:text-white">BattleChain</span>
-        </Link>
+      <div className="container flex h-14 md:h-16 items-center justify-between px-4 mx-auto gap-4">
+        {/* Hamburger + Logo */}
+        <div className="flex items-center gap-2">
+          {/* Hamburger - mobile only */}
+          <button
+            type="button"
+            onClick={toggle}
+            className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            aria-label="Toggle navigation"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+
+          <Link href="/" className="flex items-center space-x-2">
+            <Image
+              src={'/images/product-logos/battlechain.svg'}
+              alt="BattleChain"
+              width={28}
+              height={28}
+              priority
+              className="w-7 h-7"
+            />
+            <span className="text-base md:text-lg font-bold text-gray-900 dark:text-white">BattleChain</span>
+          </Link>
+        </div>
 
         {/* Search */}
-        <div className="flex-1 flex justify-center max-w-2xl mx-8">
+        <div className="flex-1 flex justify-center max-w-xs sm:max-w-md md:max-w-2xl">
           <SearchButton />
         </div>
 
         {/* Navigation Links */}
-        <nav className="flex items-center space-x-6">
+        <nav className="flex items-center space-x-2 md:space-x-6">
           {navbar?.links?.map((link, index) => (
             <a
               key={index}
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-cyfrin-primary dark:hover:text-cyfrin-light transition-colors"
+              className="hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-cyfrin-primary dark:hover:text-cyfrin-light transition-colors"
             >
               {link.label}
             </a>

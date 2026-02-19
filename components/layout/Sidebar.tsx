@@ -7,11 +7,13 @@ import { useState, useEffect } from 'react'
 import { getNavigation } from '@/lib/navigation'
 import type { NavDropdown, NavDivider, NavGroup, NavPage } from '@/lib/navigation'
 import { PageActions } from './PageActions'
+import { useMobileSidebar } from '@/lib/mobile-sidebar'
 
 export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const navigation = getNavigation()
+  const { isOpen, close } = useMobileSidebar()
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
 
   // Load expanded sections from localStorage on mount
@@ -149,6 +151,7 @@ export function Sidebar() {
           <li key={`${item}-${index}`}>
             <Link
               href={href}
+              onClick={close}
               className={`block px-3 py-2 rounded-lg text-sm transition-all ${
                 isActive
                   ? 'sidebar-link-active font-medium'
@@ -238,7 +241,24 @@ export function Sidebar() {
   const isOverview = pathname === '/' || pathname === '/overview'
 
   return (
-    <aside className="sticky top-16 h-[calc(100vh-4rem)] w-64 flex-shrink-0 overflow-y-auto border-r border-gray-200 dark:border-gray-800 bg-white/50 dark:bg-gray-900/50 backdrop-blur-md flex flex-col">
+    <>
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          onClick={close}
+        />
+      )}
+    <aside className={`
+      fixed top-14 left-0 bottom-0 z-40
+      md:sticky md:top-16 md:h-[calc(100vh-4rem)] md:z-auto
+      w-64 flex-shrink-0 overflow-y-auto
+      border-r border-gray-200 dark:border-gray-800
+      bg-white dark:bg-gray-900
+      backdrop-blur-md flex flex-col
+      transition-transform duration-200 ease-in-out
+      ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+    `}>
       <nav className="p-4 flex-1">
         {navigation.tabs.map((tab) => (
           <div key={tab.tab}>
@@ -252,5 +272,6 @@ export function Sidebar() {
         </div>
       )}
     </aside>
+    </>
   )
 }

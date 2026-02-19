@@ -270,7 +270,7 @@ export function BattlechainHero() {
   }, [])
 
   return (
-    <div className="relative w-1/2 mx-auto h-[45vh] min-h-[350px] max-h-[450px]">
+    <div className="relative w-full sm:w-3/4 md:w-1/2 mx-auto h-[35vh] sm:h-[40vh] md:h-[45vh] min-h-[260px] sm:min-h-[300px] md:min-h-[350px] max-h-[450px]">
       {/* Contained spotlight gradient - fully within bounds */}
       <div
         className="absolute inset-0"
