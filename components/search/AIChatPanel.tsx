@@ -136,24 +136,87 @@ export function AIChatPanel({ onClose }: { onClose?: () => void }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: userMessage,
-          conversationHistory: messages.map((m) => ({ role: m.role, content: m.content })),
+          conversationHistory: messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
         }),
       })
 
-      const data = await response.json()
-
-      if (data.error) {
+      if (!response.ok) {
+        let errorMessage =
+          'Sorry, I encountered an error. Please try again.'
+        try {
+          const data = await response.json()
+          if (data.error) {
+            errorMessage =
+              response.status === 429
+                ? 'Too many requests. Please wait a moment and try again.'
+                : data.error
+          }
+        } catch {
+          // Response wasn't JSON — use default error
+        }
         setMessages((prev) => [
           ...prev,
-          { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' },
+          { role: 'assistant', content: errorMessage },
         ])
-      } else {
-        setMessages((prev) => [...prev, { role: 'assistant', content: data.response }])
+        return
+      }
+
+      const reader = response.body?.getReader()
+      if (!reader) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: 'Sorry, I encountered an error. Please try again.',
+          },
+        ])
+        return
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: '' },
+      ])
+
+      const decoder = new TextDecoder()
+      let accumulated = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        accumulated += decoder.decode(value, { stream: true })
+        const snapshot = accumulated
+        setMessages((prev) => {
+          const updated = [...prev]
+          updated[updated.length - 1] = {
+            role: 'assistant',
+            content: snapshot,
+          }
+          return updated
+        })
+      }
+
+      if (accumulated.length === 0) {
+        setMessages((prev) => {
+          const updated = [...prev]
+          updated[updated.length - 1] = {
+            role: 'assistant',
+            content:
+              "I wasn't able to generate a response. Please try again.",
+          }
+          return updated
+        })
       }
     } catch (error) {
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' },
+        {
+          role: 'assistant',
+          content: 'Sorry, I encountered an error. Please try again.',
+        },
       ])
     } finally {
       setIsLoading(false)
@@ -214,7 +277,7 @@ export function AIChatPanel({ onClose }: { onClose?: () => void }) {
                 <div
                   className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
                     message.role === 'user'
-                      ? 'bg-[var(--product-primary)] text-white'
+                      ? 'bg-[var(--product-primary)] text-white dark:bg-white/15 dark:text-gray-100'
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
                   }`}
                 >
@@ -251,7 +314,7 @@ export function AIChatPanel({ onClose }: { onClose?: () => void }) {
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="p-2 bg-[var(--product-primary)] text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 bg-[var(--product-primary)] text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed dark:bg-white/15 dark:text-gray-100 dark:hover:bg-white/25"
           >
             <Send className="w-4 h-4" />
           </button>
