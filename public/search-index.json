@@ -210,6 +210,20 @@
     ]
   },
   {
+    "id": "/battlechain/how-to/use-ai-with-docs",
+    "title": "How to Use AI with BattleChain Docs",
+    "content": "Overview BattleChain publishes machine-readable versions of these docs so AI agents can ingest them directly: | File | Contents | Size | |------|----------|------| | /llms.txt | Table of contents with page titles, descriptions, and links | ~4 KB | | /llms-full.txt | Complete text of every page as clean markdown | ~100 KB | Both files follow the llms.txt convention and are regenerated on every deploy. Claude Start a conversation with full BattleChain docs loaded as context Or paste this prompt manually: In Claude Code or Claude with MCP tools, you can also fetch the URL directly: ChatGPT Start a conversation with full BattleChain docs loaded as context Or paste this prompt manually: Cursor Add BattleChain as a doc source so Cursor indexes it automatically. Go to Cursor Settings → Features → Docs, click Add, and enter: Once indexed, Cursor's AI will have full BattleChain context when you reference @docs in chat. Custom Agents If you're building an agent that interacts with BattleChain, f",
+    "url": "/battlechain/how-to/use-ai-with-docs",
+    "category": "battlechain",
+    "headings": [
+      "Overview",
+      "Claude",
+      "ChatGPT",
+      "Cursor",
+      "Custom Agents"
+    ]
+  },
+  {
     "id": "/battlechain/how-to/verifying-contracts",
     "title": "Verifying Contracts",
     "content": "Overview Verifying a contract publishes its source code on the block explorer so anyone can read, audit, and interact with it. Verified contracts display a checkmark badge and expose a Contract tab with the full source, ABI, and constructor arguments. Why Verify - Transparency — whitehats and the community can review your code directly on the explorer - Trust — verified source proves the deployed bytecode matches your published code - Debugging — the explorer's zkEVM debugger can map execution traces back to source lines for verified contracts Verification Form Navigate to /contracts/verify or click Verify Contract from any unverified contract page. Required Fields Contract Address — the deployed contract address to verify. Compiler Type — choose one: | Type | Use When | |------|----------| | Solidity (single file) | Flattened single .sol file | | Solidity (multi-part) | Multiple .sol files (standard project layout) | | Vyper (JSON) | Vyper contracts with JSON input | Compiler Version ",
@@ -226,7 +240,7 @@
   {
     "id": "/battlechain/quickstart/deploy-first-contract",
     "title": "Deploy Your First Contract",
-    "content": "🏛 You are the Protocol Your contract is audited. Time to stress-test it for real. You'll deploy a deliberately vulnerable vault, put it under a Safe Harbor agreement, and open it to whitehat attack — before anything like this can happen on mainnet. Prerequisites Git If not installed: git-scm.com Foundry If you hit issues, see the Foundry installation guide. Just just is a command runner used to execute the repo's scripts cleanly. Install it with: Verify: just --version A Wallet with BattleChain Testnet ETH You'll need an EVM wallet with ETH on BattleChain to pay for gas. Add the network: | Field | Value | |-------|-------| | Network Name | BattleChain Testnet | | RPC URL | https://testnet.battlechain.com:3051 | | Chain ID | 627 | See Add BattleChain to MetaMask for a step-by-step guide. --- Setup Clone the starter repo and install dependencies: Import your key into Foundry's keystore Never put your private key in a file. Instead, import it into Foundry's encrypted keystore: You'll be ",
+    "content": "🏛 You are the Protocol Your contract is audited. Time to stress-test it for real. You'll deploy a deliberately vulnerable vault, put it under a Safe Harbor agreement, and open it to whitehat attack — before anything like this can happen on mainnet. Prerequisites Git If not installed: git-scm.com Foundry If you hit issues, see the Foundry installation guide. Just just is a command runner used to execute the repo's scripts cleanly. Install it with: Verify: just --version A Wallet with BattleChain Testnet ETH You'll need an EVM wallet with ETH on BattleChain to pay for gas. Three steps: 1. Add BattleChain to your wallet | Field | Value | |-------|-------| | Network Name | BattleChain Testnet | | RPC URL | https://testnet.battlechain.com:3051 | | Chain ID | 627 | See Add BattleChain to MetaMask for a step-by-step guide. 2. Get Sepolia ETH You need Sepolia ETH to bridge to BattleChain. Go to the Google Cloud faucet, paste your wallet address, and request testnet ETH. You only need a small ",
     "url": "/battlechain/quickstart/deploy-first-contract",
     "category": "battlechain",
     "headings": [

@@ -122,10 +122,16 @@ export function Card({ title, icon, href, color, compact, children }: CardProps)
     'arrows-rotate': RefreshCw,
   }
 
-  const IconComponent = icon ? iconMap[icon] : null
+  const isImageIcon = icon?.startsWith('/')
+  const IconComponent = icon && !isImageIcon ? iconMap[icon] : null
 
   const cardContent = (
     <>
+      {isImageIcon && (
+        <div className={compact ? 'mb-2' : 'mb-3'}>
+          <img src={icon} alt="" className={`${compact ? 'w-5 h-5' : 'w-8 h-8'}`} />
+        </div>
+      )}
       {IconComponent && (
         <div className={compact ? 'mb-2' : 'mb-3'}>
           <IconComponent className={`${compact ? 'w-5 h-5' : 'w-8 h-8'} text-current opacity-80`} strokeWidth={1.5} />

@@ -62,6 +62,7 @@
               {
                 "group": "How-to Guides",
                 "pages": [
+                  "battlechain/how-to/use-ai-with-docs",
                   "battlechain/how-to/add-battlechain-to-metamask",
                   {
                     "group": "Block Explorer",
