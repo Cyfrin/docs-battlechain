@@ -136,24 +136,87 @@ export function AIChatPanel({ onClose }: { onClose?: () => void }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: userMessage,
-          conversationHistory: messages.map((m) => ({ role: m.role, content: m.content })),
+          conversationHistory: messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
         }),
       })
 
-      const data = await response.json()
-
-      if (data.error) {
+      if (!response.ok) {
+        let errorMessage =
+          'Sorry, I encountered an error. Please try again.'
+        try {
+          const data = await response.json()
+          if (data.error) {
+            errorMessage =
+              response.status === 429
+                ? 'Too many requests. Please wait a moment and try again.'
+                : data.error
+          }
+        } catch {
+          // Response wasn't JSON — use default error
+        }
         setMessages((prev) => [
           ...prev,
-          { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' },
+          { role: 'assistant', content: errorMessage },
         ])
-      } else {
-        setMessages((prev) => [...prev, { role: 'assistant', content: data.response }])
+        return
+      }
+
+      const reader = response.body?.getReader()
+      if (!reader) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: 'Sorry, I encountered an error. Please try again.',
+          },
+        ])
+        return
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: '' },
+      ])
+
+      const decoder = new TextDecoder()
+      let accumulated = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        accumulated += decoder.decode(value, { stream: true })
+        const snapshot = accumulated
+        setMessages((prev) => {
+          const updated = [...prev]
+          updated[updated.length - 1] = {
+            role: 'assistant',
+            content: snapshot,
+          }
+          return updated
+        })
+      }
+
+      if (accumulated.length === 0) {
+        setMessages((prev) => {
+          const updated = [...prev]
+          updated[updated.length - 1] = {
+            role: 'assistant',
+            content:
+              "I wasn't able to generate a response. Please try again.",
+          }
+          return updated
+        })
       }
     } catch (error) {
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' },
+        {
+          role: 'assistant',
+          content: 'Sorry, I encountered an error. Please try again.',
+        },
       ])
     } finally {
       setIsLoading(false)
