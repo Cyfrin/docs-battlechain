@@ -58,7 +58,7 @@
   {
     "id": "/battlechain/how-to/add-battlechain-to-metamask",
     "title": "How to Add BattleChain to MetaMask",
-    "content": "Overview To interact with contracts on BattleChain, you need to add the network to your wallet. This guide covers MetaMask, but the same details work for any EVM-compatible wallet. One-Click Setup Click the button below to add BattleChain Testnet to MetaMask automatically: Manual Setup If you prefer to add the network manually: 1. Open MetaMask and click the network selector at the top 2. Click Add Network → Add a network manually 3. Enter the following details: - Network Name: BattleChain Testnet - RPC URL: http://testnet.battlechain.com:3051 - Chain ID: 627 - Currency Symbol: ETH - Block Explorer URL: https://block-explorer-app-mu.vercel.app/ 4. Click Save BattleChain Testnet is now available in your MetaMask network list. Mainnet BattleChain Mainnet details will be announced when the network launches. Check back here for updates. Troubleshooting | Issue | Solution | |-------|----------| | Cannot connect to RPC | Ensure the RPC URL is entered exactly as shown above | | Wrong chain ID",
+    "content": "Overview To interact with contracts on BattleChain, you need to add the network to your wallet. This guide covers MetaMask, but the same details work for any EVM-compatible wallet. One-Click Setup Click the button below to add BattleChain Testnet to MetaMask automatically: Manual Setup If you prefer to add the network manually: 1. Open MetaMask and click the network selector at the top 2. Click Add Network → Add a network manually 3. Enter the following details: - Network Name: BattleChain Testnet - RPC URL: https://testnet.battlechain.com:3051 - Chain ID: 627 - Currency Symbol: ETH - Block Explorer URL: https://explorer.testnet.battlechain.com/ 4. Click Save BattleChain Testnet is now available in your MetaMask network list. Mainnet BattleChain Mainnet details will be announced when the network launches. Check back here for updates. Troubleshooting | Issue | Solution | |-------|----------| | Cannot connect to RPC | Ensure the RPC URL is entered exactly as shown above | | Wrong chain I",
     "url": "/battlechain/how-to/add-battlechain-to-metamask",
     "category": "battlechain",
     "headings": [
@@ -126,6 +126,20 @@
     ]
   },
   {
+    "id": "/battlechain/how-to/exploring-agreements",
+    "title": "Exploring Agreements",
+    "content": "Overview The Agreements page (/agreements) is the central place to discover which protocols on BattleChain have Safe Harbor Agreements, what bounty terms they offer, and which contracts are in scope. The Agreements Table The main table lists all agreements with these columns: | Column | Description | |--------|-------------| | Protocol Name | The protocol's display name | | State | Current lifecycle state with a color-coded badge | | Bounty % | Percentage of recovered funds offered to whitehats | | Bounty Cap | Maximum bounty in USD (or \"No cap\") | | Created At | When the agreement was registered | Click any column header to sort ascending or descending. Filtering by State Use the state filter tabs above the table to narrow results: | Filter | States Shown | Description | |--------|-------------|-------------| | All | Everything | Browse all agreements regardless of state | | Registered | NEW_DEPLOYMENT | Newly created agreements not yet requesting attack mode | | Warming Up | ATTACK_R",
+    "url": "/battlechain/how-to/exploring-agreements",
+    "category": "battlechain",
+    "headings": [
+      "Overview",
+      "The Agreements Table",
+      "Filtering by State",
+      "Agreement Details",
+      "Bounty Terms"
+    ]
+  },
+  {
     "id": "/battlechain/how-to/find-attackable-contracts",
     "title": "How to Find Attackable Contracts",
     "content": "Overview The AttackRegistry tracks which contracts are in attack mode. This guide shows how to find and verify targets. Check a Specific Contract Monitor for New Targets Watch for AgreementStateChanged events: Get Agreement Details Verify Agreement Validity Always verify before attacking: Check Time Remaining For contracts in PROMOTION_REQUESTED: Red Flags Be cautious of: - Suspiciously high bounties - Very new agreements (less community vetting) - Missing contact details - Contracts identical to mainnet protocols Next: Execute your attack properly",
@@ -151,6 +165,20 @@
       "Copycat Discovery",
       "TVL Surge",
       "Protocol Emergency"
+    ]
+  },
+  {
+    "id": "/battlechain/how-to/managing-agreements-in-explorer",
+    "title": "Managing Agreements in the Explorer",
+    "content": "Overview The block explorer provides a full UI for managing Safe Harbor Agreements — no CLI or direct contract calls required. You'll need MetaMask to sign transactions. Connect Your Wallet Click Connect MetaMask in the top navigation bar. Once connected, the explorer shows your shortened address and enables all management actions on agreements and contracts you own. Management actions are only visible when you're connected as the agreement owner (or attack moderator, for promotion controls). Create a New Agreement You can create an agreement from two places: - The Agreements page (/agreements) — click the Create button in the page header - A contract page — if the contract has no existing agreement, a warning banner appears with a Create Safe Harbor Agreement button (visible to the contract owner for BattleChainDeployer contracts, or to anyone for external contracts) Either path opens the same two-step wizard. Step 1: Configure the Agreement Fill in the following fields: Protocol Name",
+    "url": "/battlechain/how-to/managing-agreements-in-explorer",
+    "category": "battlechain",
+    "headings": [
+      "Overview",
+      "Connect Your Wallet",
+      "Create a New Agreement",
+      "Step 1: Configure the Agreement",
+      "Step 2: Adopt the Agreement (Optional)"
     ]
   },
   {
@@ -182,45 +210,59 @@
     ]
   },
   {
+    "id": "/battlechain/how-to/verifying-contracts",
+    "title": "Verifying Contracts",
+    "content": "Overview Verifying a contract publishes its source code on the block explorer so anyone can read, audit, and interact with it. Verified contracts display a checkmark badge and expose a Contract tab with the full source, ABI, and constructor arguments. Why Verify - Transparency — whitehats and the community can review your code directly on the explorer - Trust — verified source proves the deployed bytecode matches your published code - Debugging — the explorer's zkEVM debugger can map execution traces back to source lines for verified contracts Verification Form Navigate to /contracts/verify or click Verify Contract from any unverified contract page. Required Fields Contract Address — the deployed contract address to verify. Compiler Type — choose one: | Type | Use When | |------|----------| | Solidity (single file) | Flattened single .sol file | | Solidity (multi-part) | Multiple .sol files (standard project layout) | | Vyper (JSON) | Vyper contracts with JSON input | Compiler Version ",
+    "url": "/battlechain/how-to/verifying-contracts",
+    "category": "battlechain",
+    "headings": [
+      "Overview",
+      "Why Verify",
+      "Verification Form",
+      "Required Fields",
+      "Source Code"
+    ]
+  },
+  {
     "id": "/battlechain/quickstart/deploy-first-contract",
     "title": "Deploy Your First Contract",
-    "content": "This tutorial walks you through deploying a contract to BattleChain and getting it ready for stress testing. By the end, you'll have a contract in attack mode, open for whitehats to test. Prerequisites: You should have an audited smart contract ready to deploy and some test funds for liquidity. What You'll Do 1. Deploy your contract via BattleChainDeployer 2. Create a Safe Harbor agreement 3. Request attack mode 4. Wait for DAO approval Step 1: Deploy Your Contract The recommended way to deploy is through BattleChainDeployer, which automatically registers your contract with the AttackRegistry. Your contract is now deployed and registered. You (the deployer) are automatically authorized to request attack mode. If your contract was deployed through other means, you can still request attack mode using requestUnderAttackByNonAuthorized. This function allows any contract to enter the attack flow, but requires DAO approval like normal. In Step 5, use this instead: Step 2: Create a Safe Harbo",
+    "content": "🏛 You are the Protocol Your contract is audited. Time to stress-test it for real. You'll deploy a deliberately vulnerable vault, put it under a Safe Harbor agreement, and open it to whitehat attack — before anything like this can happen on mainnet. Prerequisites Git If not installed: git-scm.com Foundry If you hit issues, see the Foundry installation guide. Just just is a command runner used to execute the repo's scripts cleanly. Install it with: Verify: just --version A Wallet with BattleChain Testnet ETH You'll need an EVM wallet with ETH on BattleChain to pay for gas. Add the network: | Field | Value | |-------|-------| | Network Name | BattleChain Testnet | | RPC URL | https://testnet.battlechain.com:3051 | | Chain ID | 627 | See Add BattleChain to MetaMask for a step-by-step guide. --- Setup Clone the starter repo and install dependencies: Import your key into Foundry's keystore Never put your private key in a file. Instead, import it into Foundry's encrypted keystore: You'll be ",
     "url": "/battlechain/quickstart/deploy-first-contract",
     "category": "battlechain",
     "headings": [
-      "What You'll Do",
-      "Step 1: Deploy Your Contract",
-      "Step 2: Create a Safe Harbor Agreement",
-      "Step 3: Extend Commitment Window",
-      "Step 4: Adopt the Agreement"
+      "Prerequisites",
+      "Git",
+      "Foundry",
+      "Just",
+      "A Wallet with BattleChain Testnet ETH"
     ]
   },
   {
     "id": "/battlechain/quickstart/execute-first-attack",
     "title": "Execute Your First Attack",
-    "content": "This tutorial walks you through finding an attackable contract, verifying its Safe Harbor terms, and executing a legal attack. By the end, you'll understand the complete whitehat workflow. Prerequisites: Familiarity with smart contract security and Solidity. What You'll Do 1. Find an attackable contract 2. Review the Safe Harbor agreement 3. Execute an attack 4. Handle recovered funds correctly Step 1: Find an Attackable Contract Query the AttackRegistry to check if a contract is attackable: To find contracts to attack, monitor for AgreementStateChanged events: Step 2: Get the Agreement Details Once you find an attackable contract, get its agreement: You now know the bounty terms. In this example: 10% bounty, \\$5M cap, retainable. Step 3: Verify the Contract is in Scope Double-check the contract is covered: Step 4: Get the Recovery Address Note where to send recovered funds: Step 5: Execute Your Attack Now execute your exploit. Here's an example attacking a reentrancy vulnerability: St",
+    "content": "⚔️ You are the Whitehat The vault is live. The DAO approved it. You know exactly what's wrong with it. You spotted a CEI violation and you have a contract that exploits it. The Safe Harbor agreement is in place — what you're about to do is legal, structured, and profitable. Prerequisites You'll need Foundry and just installed, and the starter repo cloned: If you haven't already, import your key into Foundry's encrypted keystore: You'll also need a VAULTADDRESS and TOKENADDRESS to target. If you're attacking your own vault from Deploy Your First Contract, those are already in your .env. If you're targeting someone else's vault, get those addresses from them or by querying the AttackRegistry. Your .env should have: No private key — your keystore handles signing when prompted. --- Verify the Vault is Attackable Before doing anything, confirm the vault is in UNDER_ATTACK state: You need to see 3. If you see 2, the DAO hasn't approved yet. Anything else and the vault isn't eligible. --- Und",
     "url": "/battlechain/quickstart/execute-first-attack",
     "category": "battlechain",
     "headings": [
-      "What You'll Do",
-      "Step 1: Find an Attackable Contract",
-      "Step 2: Get the Agreement Details",
-      "Step 3: Verify the Contract is in Scope",
-      "Step 4: Get the Recovery Address"
+      "Prerequisites",
+      "Verify the Vault is Attackable",
+      "Understand the Exploit",
+      "Run the Attack",
+      "Verify the Math"
     ]
   },
   {
     "id": "/battlechain/quickstart/review-first-request",
     "title": "Review Your First Request",
-    "content": "This tutorial walks you through reviewing an attack mode request as a DAO member. By the end, you'll understand how to evaluate requests and approve or reject them. Prerequisites: You must be the registry moderator or part of the DAO multisig. What You'll Do 1. Find pending requests 2. Review the protocol and contracts 3. Check for copycat contracts 4. Approve or reject the request Step 1: Monitor for New Requests Watch for AgreementStateChanged events with ATTACK_REQUESTED state: Or query directly: Step 2: Get Agreement Details Fetch the agreement information: Check the contracts in scope: solidity // Approve the attack request attackRegistry.approveAttack(agreementAddress); solidity // Reject the attack request attackRegistry.rejectAttackRequest(agreementAddress); `` This: - Returns state to NOT_DEPLOYED` - Clears contract mappings - Protocol can resubmit with fixes You've completed your first review! The protocol will see the state change via events. Step 5: Document Your Decision R",
+    "content": "⚖️ You are the DAO A protocol wants to open their contracts for attack. You decide if they're allowed to. Your job is to prevent abuse — mainly ensuring no one copies a live mainnet protocol onto BattleChain to have it \"attacked\" and drained under Safe Harbor cover. Prerequisites: You must be the registry moderator or part of the DAO multisig to approve or reject requests. --- Find Pending Requests Watch for AgreementStateChanged events where newState = 2 (ATTACK_REQUESTED), or query directly: | Value | State | |-------|-------| | 2 | ATTACK_REQUESTED — needs your review | | 3 | UNDER_ATTACK — already approved | --- Get the Agreement Details Pull the full agreement to review scope and terms: Check which contracts are in scope and how they were deployed: bash cast send 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \\ \"approveAttack(address)\" \\ $AGREEMENT_ADDRESS \\ --rpc-url https://testnet.battlechain.com:3051 \\ --account battlechain bash cast send 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1",
     "url": "/battlechain/quickstart/review-first-request",
     "category": "battlechain",
     "headings": [
-      "What You'll Do",
-      "Step 1: Monitor for New Requests",
-      "Step 2: Get Agreement Details",
-      "Step 3: Review Checklist",
-      "Step 4: Make Your Decision"
+      "Find Pending Requests",
+      "Get the Agreement Details",
+      "Review Checklist",
+      "Make Your Decision",
+      "Approve"
     ]
   },
   {
@@ -378,12 +420,13 @@
   {
     "id": "/overview",
     "title": "Battlechain",
-    "content": "Get Started Choose your path based on your role in the BattleChain ecosystem. Deploy your contracts into the arena and let attackers find every weakness before you go to mainnet. Find vulnerabilities, exploit them legally, and earn bounties — all protected under Safe Harbor. Review attack requests, protect the ecosystem from copycats, and govern the registry. How It Works BattleChain is a pre-mainnet, post-testnet environment with real funds. It fills a critical gap in the Web3 development lifecycle: 1. Protocols deploy audited contracts with real liquidity 2. Whitehats legally attack contracts and earn bounties under Safe Harbor 3. The DAO moderates to prevent abuse (e.g. mainnet copycats) 4. Battle-tested contracts promote to production and deploy to mainnet with confidence Understand the problem BattleChain solves and why it exists Learn how contracts move through attack mode to production Understand the legal framework protecting whitehats Guidelines for protocols, whitehats, and D",
+    "content": "Get Started The Problem Web3 has a fundamental gap in its development lifecycle. Code goes from audit to mainnet with nothing in between — and the industry pays for it. Projects go from $0 to $5M TVL overnight after an audit. Bug bounties don't attract serious testing. The industry loses billions to preventable exploits. Dev → Staging → Production Staging uses real-like data. Issues are found before users are affected. Dev → Testnet → Mainnet Testnet uses fake money. Issues are found after millions are at risk. Dev → Testnet → BattleChain → Mainnet Real funds, controlled risk. Issues found before they matter. How It Works BattleChain is a pre-mainnet, post-testnet environment with real funds. Protocols deploy audited contracts, whitehats legally attack them for bounties, and battle-tested contracts promote to mainnet with confidence. Every contract on BattleChain exists in one of two modes: Open season for ethical hacking. Whitehats can legally exploit vulnerabilities, earn bounties, a",
     "url": "/overview",
     "category": "overview.mdx",
     "headings": [
-      "Get Started",
-      "How It Works"
+      "How It Works",
+      "Why an L2?",
+      "Learn More"
     ]
   }
 ]

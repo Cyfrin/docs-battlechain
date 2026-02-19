@@ -2,8 +2,9 @@ export const battlechain = {
   testnet: {
     name: "BattleChain Testnet",
     chainId: 627,
-    rpcUrl: "http://testnet.battlechain.com:3051",
-    explorer: "https://block-explorer-app-mu.vercel.app/",
+    rpcUrl: "https://testnet.battlechain.com:3051",
+    explorer: "https://explorer.testnet.battlechain.com/",
+    portal: "https://portal.battlechain.com/bridge",
     currencySymbol: "ETH",
     caip2: "eip155:627",
     contracts: {

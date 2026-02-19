@@ -26,7 +26,7 @@ Watch for `AgreementStateChanged` events where `newState = 2` (`ATTACK_REQUESTED
 cast call 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \
   "getAgreementState(address)(uint8)" \
   $AGREEMENT_ADDRESS \
-  --rpc-url http://testnet.battlechain.com:3051
+  --rpc-url https://testnet.battlechain.com:3051
 ```
 
 | Value | State |
@@ -104,7 +104,7 @@ for (uint i = 0; i < contracts.length; i++) {
 cast send 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \
   "approveAttack(address)" \
   $AGREEMENT_ADDRESS \
-  --rpc-url http://testnet.battlechain.com:3051 \
+  --rpc-url https://testnet.battlechain.com:3051 \
   --account battlechain
 ```
 
@@ -116,7 +116,7 @@ This moves the agreement to `UNDER_ATTACK`, enables Safe Harbor protection, and 
 cast send 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \
   "rejectAttackRequest(address)" \
   $AGREEMENT_ADDRESS \
-  --rpc-url http://testnet.battlechain.com:3051 \
+  --rpc-url https://testnet.battlechain.com:3051 \
   --account battlechain
 ```
 
