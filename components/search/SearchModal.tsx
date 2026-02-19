@@ -168,17 +168,17 @@ export function SearchModal({ isOpen, onClose, searchIndex }: SearchModalProps) 
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[10vh] px-4">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[5vh] md:pt-[10vh] px-2 md:px-4">
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
 
       <div
         ref={modalRef}
-        className="relative w-full max-w-6xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden"
+        className="relative w-full max-w-2xl md:max-w-6xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden"
         style={{ animation: 'modalSlideIn 0.2s ease-out' }}
       >
-        <div className="flex h-[70vh]">
+        <div className="flex h-[80vh] md:h-[70vh]">
           {/* Search Panel */}
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col min-w-0">
             {/* Search Input */}
             <div className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-700">
               <Search className="w-5 h-5 text-gray-400" />
@@ -260,8 +260,8 @@ export function SearchModal({ isOpen, onClose, searchIndex }: SearchModalProps) 
             </div>
           </div>
 
-          {/* AI Chat Panel */}
-          <div className="w-96 flex-shrink-0">
+          {/* AI Chat Panel - hidden on mobile */}
+          <div className="hidden md:block w-96 flex-shrink-0">
             <AIChatPanel onClose={onClose} />
           </div>
         </div>

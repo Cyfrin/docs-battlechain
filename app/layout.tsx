@@ -82,7 +82,7 @@ export default function RootLayout({
               <Header />
               <div className="flex flex-1">
                 <Sidebar />
-                <main className="flex-1 overflow-auto">
+                <main className="flex-1 overflow-auto min-w-0">
                   <ContentLayout>{children}</ContentLayout>
                 </main>
               </div>
