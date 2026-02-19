@@ -277,7 +277,7 @@ export function AIChatPanel({ onClose }: { onClose?: () => void }) {
                 <div
                   className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
                     message.role === 'user'
-                      ? 'bg-[var(--product-primary)] text-white'
+                      ? 'bg-[var(--product-primary)] text-white dark:bg-white/15 dark:text-gray-100'
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
                   }`}
                 >
@@ -314,7 +314,7 @@ export function AIChatPanel({ onClose }: { onClose?: () => void }) {
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="p-2 bg-[var(--product-primary)] text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 bg-[var(--product-primary)] text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed dark:bg-white/15 dark:text-gray-100 dark:hover:bg-white/25"
           >
             <Send className="w-4 h-4" />
           </button>
