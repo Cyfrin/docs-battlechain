@@ -52,7 +52,9 @@ Verify: `just --version`
 
 ### A Wallet with BattleChain Testnet ETH
 
-You'll need an EVM wallet with ETH on BattleChain to pay for gas. Add the network:
+You'll need an EVM wallet with ETH on BattleChain to pay for gas. Three steps:
+
+#### 1. Add BattleChain to your wallet
 
 | Field | Value |
 |-------|-------|
@@ -63,6 +65,20 @@ You'll need an EVM wallet with ETH on BattleChain to pay for gas. Add the networ
 <Note>
 See [Add BattleChain to MetaMask](/battlechain/how-to/add-battlechain-to-metamask) for a step-by-step guide.
 </Note>
+
+#### 2. Get Sepolia ETH
+
+You need Sepolia ETH to bridge to BattleChain. Go to the [Google Cloud faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia), paste your wallet address, and request testnet ETH. You only need a small amount — 0.05 ETH is plenty for this tutorial.
+
+#### 3. Bridge to BattleChain
+
+Open the [BattleChain Portal](https://portal.battlechain.com/bridge), connect your wallet, and bridge Sepolia ETH to BattleChain Testnet:
+
+1. Select **Sepolia** as the source network and **BattleChain Testnet** as the destination
+2. Enter the amount to bridge
+3. Confirm the transaction in your wallet
+
+Wait for the bridge transaction to finalize — this usually takes a few minutes. Once your BattleChain balance shows ETH, you're ready to deploy.
 
 ---
 
