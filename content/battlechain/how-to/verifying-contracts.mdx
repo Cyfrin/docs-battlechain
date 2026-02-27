@@ -13,6 +13,49 @@ Verifying a contract publishes its source code on the block explorer so anyone c
 - **Trust** — verified source proves the deployed bytecode matches your published code
 - **Debugging** — the explorer's zkEVM debugger can map execution traces back to source lines for verified contracts
 
+## Verify with Forge
+
+If you're deploying via Foundry, you can verify without leaving the terminal using `forge verify-contract`:
+
+```bash
+forge verify-contract <CONTRACT_ADDRESS> <PATH>:<CONTRACT_NAME> \
+  --chain-id 627 \
+  --verifier-url https://block-explorer-api.testnet.battlechain.com/api \
+  --verifier custom \
+  --etherscan-api-key "1234" \
+  --rpc-url https://testnet.battlechain.com:3051
+```
+
+Replace `<CONTRACT_ADDRESS>` with your deployed address and `<PATH>:<CONTRACT_NAME>` with the source path and contract name (e.g., `src/MyVault.sol:MyVault`).
+
+| Flag | Value | Notes |
+|------|-------|-------|
+| `--chain-id` | `627` | BattleChain testnet |
+| `--verifier-url` | `https://block-explorer-api.testnet.battlechain.com/api` | BattleChain explorer API |
+| `--verifier` | `custom` | Required when using a non-Etherscan explorer |
+| `--etherscan-api-key` | `"1234"` | Not validated — any non-empty string works |
+| `--rpc-url` | `https://testnet.battlechain.com:3051` | BattleChain testnet RPC |
+
+On success you'll see:
+
+```
+Start verifying contract `0x...` deployed on 627
+
+Submitting verification for [src/MyVault.sol:MyVault] 0x...
+Submitted contract for verification:
+        Response: `OK`
+        GUID: `<guid>`
+        URL: https://block-explorer-api.testnet.battlechain.com/address/0x...
+```
+
+The URL in the response links directly to the contract's verified page on the explorer.
+
+<Note>
+If your contract has constructor arguments, add `--constructor-args $(cast abi-encode "constructor(type,...)" arg1 arg2)` to the command.
+</Note>
+
+---
+
 ## Verification Form
 
 Navigate to `/contracts/verify` or click **Verify Contract** from any unverified contract page.
