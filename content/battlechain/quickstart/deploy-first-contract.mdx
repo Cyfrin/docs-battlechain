@@ -166,6 +166,19 @@ You've shipped the wrong version. That's the point.
 
 ## Step 1 — Deploy
 
+<Warning>
+**Known issue: out-of-gas failures**
+
+Forge estimates gas locally rather than via an RPC call, which can significantly underestimate costs on BattleChain. Transactions may fail with a generic error that doesn't mention gas.
+
+If any `just` command fails unexpectedly, retry with one of these workarounds:
+
+- **`-g 300`** — tells Forge to use 3× the estimated gas: `forge script ... -g 300`
+- **`--skip-simulation`** — skips gas estimation entirely: `forge script ... --skip-simulation`
+
+If the justfile doesn't expose these flags directly, add the flag to the underlying `forge script` call in the relevant `justfile` recipe.
+</Warning>
+
 `just setup` deploys `MockToken` and `VulnerableVault`, then seeds the vault with 1,000 tokens to simulate protocol liquidity:
 
 ```bash
@@ -189,6 +202,10 @@ Copy both addresses into your `.env`.
 <Check>
 Your vault is live on BattleChain and registered with the AttackRegistry.
 </Check>
+
+<Note>
+To verify your contracts on the block explorer, see [Verifying Contracts](/battlechain/how-to/verifying-contracts).
+</Note>
 
 ---
 
