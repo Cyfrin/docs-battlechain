@@ -6,7 +6,6 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { getNavigation } from '@/lib/navigation'
 import type { NavDropdown, NavDivider, NavGroup, NavPage } from '@/lib/navigation'
-import { PageActions } from './PageActions'
 import { useMobileSidebar } from '@/lib/mobile-sidebar'
 
 export function Sidebar() {
@@ -239,8 +238,6 @@ export function Sidebar() {
     return null
   }
 
-  const isOverview = pathname === '/' || pathname === '/overview'
-
   return (
     <>
       {/* Mobile overlay */}
@@ -267,11 +264,6 @@ export function Sidebar() {
           </div>
         ))}
       </nav>
-      {isOverview && (
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-          <PageActions />
-        </div>
-      )}
     </aside>
     </>
   )

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { PageActions } from './PageActions'
 
 interface Heading {
   id: string
@@ -125,9 +124,6 @@ export function TableOfContents() {
         </div>
       )}
 
-      <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-        <PageActions />
-      </div>
     </aside>
   )
 }

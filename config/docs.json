@@ -21,7 +21,7 @@
       },
       {
         "label": "GitHub",
-        "href": "https://github.com/Cyfrin"
+        "href": "https://github.com/Cyfrin/docs-battlechain"
       }
     ],
     "primary": {
@@ -40,7 +40,9 @@
             "icon": "/images/product-logos/battlechain.svg",
             "pages": [
               "overview",
-              { "divider": true },
+              {
+                "divider": true
+              },
               {
                 "group": "Quickstart",
                 "pages": [
@@ -108,7 +110,9 @@
                   "battlechain/reference/governance-parameters"
                 ]
               },
-              { "divider": true },
+              {
+                "divider": true
+              },
               "battlechain/explanation/contract-lifecycle",
               "battlechain/explanation/safe-harbor",
               "battlechain/explanation/best-practices"
@@ -144,7 +148,7 @@
   "footer": {
     "socials": {
       "x": "https://x.com/battlechain",
-      "github": "https://github.com/Cyfrin",
+      "github": "https://github.com/Cyfrin/docs-battlechain",
       "discord": "https://discord.gg/cyfrin",
       "linkedin": "https://linkedin.com/company/cyfrin"
     }

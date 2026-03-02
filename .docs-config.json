@@ -1,0 +1,7 @@
+{
+  "github_repo": "Cyfrin/docs-battlechain",
+  "github_branch": "main",
+  "production_url": "docs.battlechain.com",
+  "site_title": "battlechain-docs",
+  "site_description": "Pre-mainnet, post-testnet, layer 2 specifically designed for stress testing smart contracts."
+}
