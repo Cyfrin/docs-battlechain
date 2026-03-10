@@ -43,6 +43,8 @@ const components = {
   pre: Pre,
 }
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   const directories = [
     'profiles',
