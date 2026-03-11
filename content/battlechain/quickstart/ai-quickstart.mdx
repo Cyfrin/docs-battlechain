@@ -40,33 +40,11 @@ Once your BattleChain balance shows ETH, you're ready.
 
 ---
 
-## Before the First Prompt — Import Your Key
-
-Your AI will be running transactions on your behalf, but it should never touch your private key. Foundry's encrypted keystore handles signing locally — you import your key once, set a password, and from that point your AI just asks for the password when it needs to sign.
-
-Do this step yourself in a terminal **before** starting the prompts:
-
-```bash
-cast wallet import battlechain --interactive
-```
-
-You'll be asked to paste your private key and set an encryption password. The key is stored encrypted at `~/.foundry/keystores/battlechain` — your raw private key is never written to disk or passed to any tool.
-
-Verify it worked:
-
-```bash
-cast wallet list
-```
-
-You should see `battlechain` listed. From here on, your AI will prompt you for the password when it needs to sign a transaction — that's the only thing you need to provide.
-
----
-
 ## How This Works
 
 You're going to paste five prompts into your AI tool. Each one does a concrete thing: set up the project, deploy your contracts, create a Safe Harbor agreement, open for attack, then exploit the vault and collect the bounty.
 
-Your AI handles all the commands. You enter your keystore password when prompted — that's it.
+There is one thing your AI will **not** handle: importing your private key. That step is yours — your key should never be passed to any tool. Foundry's encrypted keystore takes care of signing locally, and we'll walk you through it after Prompt 1 once the tooling is installed.
 
 **Optional: give your AI a head start**
 
@@ -87,9 +65,11 @@ Open Claude Code in a new empty folder and paste this:
 ```
 Read https://docs.battlechain.com/llms-full.txt to understand BattleChain, then do the following:
 
-1. Clone https://github.com/Cyfrin/battlechain-starter into the current directory
-2. cd into it and run `forge install`
-3. Copy .env.example to .env and set SENDER_ADDRESS to my wallet address
+1. Install Foundry if not already installed (https://getfoundry.sh)
+2. Install `just` if not already installed (https://just.systems)
+3. Clone https://github.com/Cyfrin/battlechain-starter into the current directory
+4. cd into it and run `forge install`
+5. Copy .env.example to .env and set SENDER_ADDRESS to my wallet address
 
 My wallet address is: [paste your wallet address here]
 ```
@@ -97,6 +77,28 @@ My wallet address is: [paste your wallet address here]
 <Check>
 When setup is done, confirm your wallet address is set in `.env` and `forge install` completed without errors.
 </Check>
+
+---
+
+## Import Your Key — Manual Step
+
+Now that Foundry is installed, you need to import your private key into its encrypted keystore. This is the one step your AI doesn't touch — your key stays on your machine and is never passed to any tool.
+
+Run this in your terminal:
+
+```bash
+cast wallet import battlechain --interactive
+```
+
+You'll be asked to paste your private key and set an encryption password. The key is stored encrypted at `~/.foundry/keystores/battlechain` — your raw private key is never written to disk.
+
+Verify it worked:
+
+```bash
+cast wallet list
+```
+
+You should see `battlechain` listed. From here on, your AI will prompt you for the password when it needs to sign a transaction — that's the only thing you'll need to provide.
 
 ---
 
