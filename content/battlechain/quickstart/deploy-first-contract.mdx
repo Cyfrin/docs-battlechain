@@ -265,7 +265,7 @@ Your agreement is now in `ATTACK_REQUESTED` state. The DAO will verify:
 - Bounty terms are reasonable
 - Scope is clearly defined
 
-Poll for approval:
+Once approved, the state moves to `UNDER_ATTACK` and whitehats can begin. Poll for approval:
 
 ```bash
 just check-state
@@ -277,7 +277,17 @@ just check-state
 | `3` | `UNDER_ATTACK` — approved, vault is open |
 
 <Note>
-Approval on testnet typically happens within a few hours. Reach out in [Discord](https://discord.gg/cyfrin) if you're waiting.
+**On testnet**, the DAO moderator is a `MockRegistryModerator` — a permissionless contract that lets you approve your own request immediately rather than waiting for a real governance action:
+
+```bash
+cast send 0x6C2DFbdF0714FC8CE065039911758b2821818745 \
+  "approveAttack(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com:3051 \
+  --legacy
+```
+
+This is testnet-only. On mainnet, approval is a real DAO action.
 </Note>
 
 Once you see `3`, your vault is live and attackable. Head to [Execute Your First Attack](/battlechain/quickstart/execute-first-attack) to see what happens next.

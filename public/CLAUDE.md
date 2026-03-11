@@ -25,6 +25,7 @@ Full documentation: https://docs.battlechain.com/llms-full.txt
 | SafeHarborRegistry (Proxy) | `0xCb2A561395118895e2572A04C2D8AB8eCA8d7E5D` |
 | AgreementFactory (Proxy) | `0x0EbBEeB3aBeF51801a53Fdd1fb263Ac0f2E3Ed36` |
 | BattleChainDeployer | `0x8f57054CBa2021bEE15631067dd7B7E0B43F17Dc` |
+| MockRegistryModerator | `0x6C2DFbdF0714FC8CE065039911758b2821818745` |
 
 ---
 
@@ -35,7 +36,11 @@ Full documentation: https://docs.battlechain.com/llms-full.txt
 3. **Extend commitment window** — minimum 30 days (`agreement.extendCommitmentWindow(block.timestamp + 30 days)`)
 4. **Adopt Safe Harbor** — `safeHarborRegistry.adoptSafeHarbor(agreementAddress)`
 5. **Request attack mode** — `attackRegistry.requestUnderAttack(agreementAddress)` → state becomes `ATTACK_REQUESTED`
-6. **DAO approves** → state becomes `UNDER_ATTACK` — whitehats can now attack
+6. **Approve (testnet)** — call `approveAttack(agreementAddress)` on the `MockRegistryModerator` (`0x6C2DFbdF0714FC8CE065039911758b2821818745`) — permissionless, instant approval. On mainnet this is a controlled DAO action.
+   ```bash
+   cast send 0x6C2DFbdF0714FC8CE065039911758b2821818745 "approveAttack(address)" <agreementAddress> --account battlechain --rpc-url https://testnet.battlechain.com:3051 --legacy
+   ```
+   → state becomes `UNDER_ATTACK`
 7. **Promote to production** — `attackRegistry.promote(agreementAddress)` → 3-day countdown, then `PRODUCTION`
 8. **Deploy to mainnet**
 
