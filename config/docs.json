@@ -46,6 +46,7 @@
               {
                 "group": "Quickstart",
                 "pages": [
+                  "battlechain/quickstart/ai-quickstart",
                   "battlechain/quickstart/deploy-first-contract",
                   "battlechain/quickstart/execute-first-attack",
                   "battlechain/quickstart/review-first-request",
