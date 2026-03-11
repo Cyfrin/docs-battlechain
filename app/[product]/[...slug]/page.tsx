@@ -20,6 +20,17 @@ import { Pre } from '@/components/mdx/Pre'
 import remarkGfm from 'remark-gfm'
 import rehypePrismPlus from 'rehype-prism-plus'
 
+function MdxLink({ href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) {
+  const isExternal = href?.startsWith('http://') || href?.startsWith('https://')
+  return (
+    <a
+      href={href}
+      {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+      {...props}
+    />
+  )
+}
+
 const components = {
   Card,
   CardGroup,
@@ -41,6 +52,7 @@ const components = {
   SnippetIntro,
   BattlechainHero,
   pre: Pre,
+  a: MdxLink,
 }
 
 export const dynamicParams = false;
