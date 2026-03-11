@@ -36,6 +36,16 @@ address myVault = deployer.deployCreate2(salt, bytecode);
 Deploy the **exact same bytecode** you'll use on mainnet. Only change constructor parameters like oracle addresses or chain-specific config. Testing different code defeats the purpose.
 </Tip>
 
+<Warning>
+**Required: `--legacy` flag**
+
+BattleChain Testnet does not support EIP-1559 transactions. All `forge script` calls must include `--legacy` or they will be rejected. Add it to every deployment and interaction script:
+
+```bash
+forge script ... --legacy
+```
+</Warning>
+
 See the [deploying contracts tutorial](/battlechain/tutorials/deploying-contracts) for details on deployment methods.
 
 ## Part 2: Create Your Safe Harbor Agreement
@@ -168,3 +178,31 @@ See [How to Promote to Production](/battlechain/how-to/promote-to-production) fo
 | 3 | Request attack mode | DAO reviews |
 | 4 | DAO approves | Whitehats can attack |
 | 5 | Promote to production | Battle-tested and ready for mainnet |
+
+---
+
+## Troubleshooting
+
+### Stuck or pending transactions
+
+Transactions can get stuck if submitted without `--legacy` or with insufficient gas. To replace a stuck transaction, send a no-op at the same nonce with a higher gas price:
+
+```bash
+cast send \
+  --account <your-keystore-account> \
+  --nonce <stuck-nonce> \
+  --gas-price <higher-price-in-wei> \
+  --legacy \
+  --value 0 \
+  0x0000000000000000000000000000000000000000
+```
+
+Find the stuck nonce via:
+
+```bash
+cast nonce --rpc-url https://testnet.battlechain.com:3051 <your-wallet-address>
+```
+
+### Transaction type not supported
+
+If you see `transaction type not supported` or similar errors, you're missing `--legacy`. BattleChain Testnet only accepts legacy (type 0) transactions — EIP-1559 is not supported.
