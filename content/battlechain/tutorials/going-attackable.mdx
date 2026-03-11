@@ -138,7 +138,13 @@ Your contracts are now in `ATTACK_REQUESTED` state. The DAO will review and chec
 - Are the bounty terms reasonable?
 - Is the scope clearly defined?
 
-See [How to Request Attack Mode](/battlechain/how-to/request-attack-mode) for details and troubleshooting.
+Once approved, state moves to `UNDER_ATTACK` and whitehats can begin testing.
+
+<Note>
+**On testnet**, approval is instant via the `MockRegistryModerator` — a permissionless contract you can call yourself rather than waiting for a real DAO action. See [How to Request Attack Mode](/battlechain/how-to/request-attack-mode#testnet-instant-approval) for the command.
+</Note>
+
+See [How to Request Attack Mode](/battlechain/how-to/request-attack-mode) for full details and troubleshooting.
 
 ## Part 4: During the Attack Period
 

@@ -68,6 +68,22 @@ IAttackRegistry.ContractState state = attackRegistry.getAgreementState(agreement
 | DAO Rejects | Immediate → `NOT_DEPLOYED` |
 | DAO Takes No Action | 14 days → `PRODUCTION` (auto-promote) |
 
+## Testnet: Instant Approval
+
+On testnet the registry moderator is a `MockRegistryModerator` — a permissionless contract that forwards any `approveAttack` call straight to the `AttackRegistry`. You can approve your own request immediately:
+
+```bash
+cast send 0x6C2DFbdF0714FC8CE065039911758b2821818745 \
+  "approveAttack(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com:3051 \
+  --legacy
+```
+
+<Warning>
+The `MockRegistryModerator` is testnet-only. On mainnet the DAO moderator is a controlled address — approval requires a real governance action.
+</Warning>
+
 ## Troubleshooting
 
 | Error | Solution |

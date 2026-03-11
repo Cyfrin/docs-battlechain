@@ -145,15 +145,18 @@ Search your `AGREEMENT_ADDRESS` on the [BattleChain explorer](https://explorer.t
 ## Prompt 4 — Open for Attack
 
 ```
-Run `just request-attack-mode` to submit the vault for DAO review.
-Then poll with `just check-state` every few minutes until you see state 3.
-State 2 means waiting for DAO approval. State 3 means approved and open for attack.
+Do the following in order:
+
+1. Run `just request-attack-mode` to submit the vault for DAO review
+2. On testnet, approve the request immediately using the MockRegistryModerator:
+   cast send 0x6C2DFbdF0714FC8CE065039911758b2821818745 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com:3051 --legacy
+3. Run `just check-state` and confirm the output is 3
 ```
 
-The DAO checks that your contract is a new deployment (not a mainnet copy) and that the terms are reasonable. On testnet this typically takes a few hours. Reach out in [Discord](https://discord.gg/cyfrin) if you're waiting.
+On testnet, the DAO moderator is a permissionless contract — your AI can approve the request itself immediately after submitting it. No waiting.
 
 <Note>
-While you wait, this is a good time to read [what the exploit actually does](/battlechain/quickstart/execute-first-attack#understand-the-exploit). You'll see the reentrancy vulnerability in the vault code — the same bug class that's drained hundreds of millions from real protocols.
+While this runs, it's worth reading [what the exploit actually does](/battlechain/quickstart/execute-first-attack#understand-the-exploit). You'll see the reentrancy vulnerability in the vault code — the same bug class that's drained hundreds of millions from real protocols.
 </Note>
 
 Once your AI reports `3`, your vault is live and open. Whitehats on BattleChain can now attempt to drain it. You're about to become one of them.
