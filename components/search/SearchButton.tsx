@@ -34,11 +34,11 @@ export function SearchButton() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+        className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-600 bg-gray-100 border border-gray-200 hover:bg-gray-200 rounded-lg transition-colors dark:text-gray-300 dark:bg-[#161B26] dark:border-[#333741] dark:hover:bg-[#1D2432]"
       >
         <Search className="w-4 h-4" />
         <span className="hidden sm:inline">Search</span>
-        <kbd className="hidden md:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs font-medium text-gray-500 dark:text-gray-500 bg-white dark:bg-gray-900 rounded border border-gray-300 dark:border-gray-700">
+        <kbd className="hidden md:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs font-medium text-gray-500 bg-white rounded border border-gray-300 dark:text-gray-400 dark:bg-[#0E1119] dark:border-[#333741]">
           <span className="text-xs">⌘</span>K
         </kbd>
       </button>

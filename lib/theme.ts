@@ -42,10 +42,10 @@ export const PRODUCT_THEMES: Record<string, ProductTheme> = {
   },
   profiles: {
     name: 'Profiles',
-    primary: '#155EEF',
-    light: '#2970FF',
-    dark: '#004EEB',
-    rgb: '21, 94, 239',
+    primary: '#004DFF',
+    light: '#004DFF',
+    dark: '#004DFF',
+    rgb: '0, 77, 255',
     className: 'product-profiles',
   },
 }

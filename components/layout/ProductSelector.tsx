@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { useTheme } from '../theme/ThemeProvider'
 
 interface Product {
   id: string
@@ -24,7 +25,7 @@ const PRODUCTS: Product[] = [
     name: 'Profiles',
     icon: '/images/product-logos/cyfrin.svg',
     href: '/profiles/overview',
-    color: '#155EEF'
+    color: '#004DFF'
   },
   {
     id: 'codehawks',
@@ -59,6 +60,7 @@ const PRODUCTS: Product[] = [
 export function ProductSelector({ isOpen, onClose, onSelectProduct }: ProductSelectorProps) {
   const router = useRouter()
   const modalRef = useRef<HTMLDivElement>(null)
+  const { theme } = useTheme()
 
   // Close on outside click
   useEffect(() => {
@@ -94,6 +96,16 @@ export function ProductSelector({ isOpen, onClose, onSelectProduct }: ProductSel
     onSelectProduct(product.id)
     router.push(product.href)
     onClose()
+  }
+
+  const getProductIconSrc = (product: Product) => {
+    if (product.id === 'battlechain') {
+      return theme === 'dark'
+        ? '/images/product-logos/battlechain-dark.svg'
+        : '/images/product-logos/battlechain.svg'
+    }
+
+    return product.icon
   }
 
   return (
@@ -134,7 +146,7 @@ export function ProductSelector({ isOpen, onClose, onSelectProduct }: ProductSel
               >
                 <div className="w-12 h-12 flex items-center justify-center">
                   <Image
-                    src={product.icon}
+                    src={getProductIconSrc(product)}
                     alt={product.name}
                     width={48}
                     height={48}
