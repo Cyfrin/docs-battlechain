@@ -21,15 +21,37 @@ Traditional security audits review code statically. BattleChain adds a dynamic l
 
 ## Part 1: Deploy Your Contracts
 
-Deploy through `BattleChainDeployer` so your contracts are automatically registered with the `AttackRegistry`.
+The recommended approach is to use `battlechain-lib`, which handles BattleChainDeployer routing and AttackRegistry registration automatically:
+
+```bash
+forge install cyfrin/battlechain-lib
+```
+
+Deploy using the `bcDeployCreate*` helpers — they route through `BattleChainDeployer` on BattleChain (auto-registering with `AttackRegistry`) and through CreateX on other chains:
 
 ```solidity
-BattleChainDeployer deployer = BattleChainDeployer(BATTLECHAIN_DEPLOYER_ADDRESS);
+import { BCScript } from "battlechain-lib/BCScript.sol";
+import { Contact } from "battlechain-lib/types/AgreementTypes.sol";
 
-bytes memory bytecode = type(MyVault).creationCode;
-bytes32 salt = keccak256("my-vault-v1");
+contract Deploy is BCScript {
+    function _protocolName() internal pure override returns (string memory) { return "My Protocol"; }
+    function _contacts() internal pure override returns (Contact[] memory) {
+        Contact[] memory c = new Contact[](1);
+        c[0] = Contact({ name: "Security Team", contact: "security@myprotocol.com" });
+        return c;
+    }
+    function _recoveryAddress() internal view override returns (address) { return msg.sender; }
 
-address myVault = deployer.deployCreate2(salt, bytecode);
+    function run() external {
+        vm.startBroadcast();
+
+        bytes32 salt = keccak256("my-vault-v1");
+        address myVault = bcDeployCreate2(salt, type(MyVault).creationCode);
+
+        // ... continue with agreement creation and attack mode
+        vm.stopBroadcast();
+    }
+}
 ```
 
 <Tip>
@@ -46,46 +68,32 @@ forge script ... --legacy
 ```
 </Warning>
 
-See the [deploying contracts tutorial](/battlechain/tutorials/deploying-contracts) for details on deployment methods.
+See the [deploying contracts tutorial](/battlechain/tutorials/deploying-contracts) for details on all deployment methods, including direct `BattleChainDeployer` usage.
 
 ## Part 2: Create Your Safe Harbor Agreement
 
-The agreement defines the rules of engagement for whitehats. Think carefully about these terms — they determine who attacks your contracts and how.
-
-### Contact Details
-
-Provide real, monitored contacts. Whitehats may need to reach you during an active exploit:
+The agreement defines the rules of engagement for whitehats. With `battlechain-lib`, you can create an agreement with sensible defaults in one call:
 
 ```solidity
-Contact[] memory contacts = new Contact[](1);
-contacts[0] = Contact({
-    name: "Security Team",
-    contact: "security@myprotocol.com"
-});
+// Inside your BCScript's run() function:
+address agreement = createAndAdoptAgreement(
+    defaultAgreementDetails(
+        _protocolName(), _contacts(), getDeployedContracts(), _recoveryAddress()
+    ),
+    msg.sender,
+    keccak256("agreement-v1")
+);
 ```
 
-### Define Scope
+`defaultAgreementDetails` auto-detects the chain and builds the correct scope:
+- **BattleChain**: Uses BattleChain CAIP-2 chain ID and `BATTLECHAIN_SAFE_HARBOR_URI`
+- **Other chains**: Uses the current chain's CAIP-2 ID and the generic `SAFE_HARBOR_V3_URI`
 
-List every contract whitehats can target. Use `ChildContractScope.All` if your contracts create child contracts:
+`createAndAdoptAgreement` handles three steps in one: creates the agreement, sets a 14-day commitment window, and adopts it.
 
-```solidity
-Account[] memory accounts = new Account[](1);
-accounts[0] = Account({
-    accountAddress: "0x1234...your-vault",
-    childContractScope: ChildContractScope.All
-});
+### Customizing Terms
 
-Chain[] memory chains = new Chain[](1);
-chains[0] = Chain({
-    caip2ChainId: "eip155:627",
-    assetRecoveryAddress: "0xYourRecoveryMultisig",
-    accounts: accounts
-});
-```
-
-### Set Bounty Terms
-
-Choose terms that attract skilled whitehats:
+For full control over bounty terms, build the agreement manually:
 
 ```solidity
 BountyTerms memory bountyTerms = BountyTerms({
@@ -96,6 +104,15 @@ BountyTerms memory bountyTerms = BountyTerms({
     diligenceRequirements: "",
     aggregateBountyCapUsd: 0
 });
+
+AgreementDetails memory details = defaultAgreementDetails(
+    _protocolName(), _contacts(), getDeployedContracts(), _recoveryAddress()
+);
+details.bountyTerms = bountyTerms;
+
+address agreement = createAgreement(details, msg.sender, keccak256("agreement-v1"));
+setCommitmentWindow(agreement, 30); // 30 days
+adoptAgreement(agreement);
 ```
 
 | Decision | Recommended | Why |
@@ -105,32 +122,16 @@ BountyTerms memory bountyTerms = BountyTerms({
 | Retainable | `true` | Simpler for whitehats — they keep bounty from recovered funds |
 | Identity | `Anonymous` | Maximizes participation |
 
-### Create and Configure
-
-```solidity
-AgreementDetails memory details = AgreementDetails({
-    protocolName: "My Protocol",
-    contactDetails: contacts,
-    chains: chains,
-    bountyTerms: bountyTerms,
-    agreementURI: "ipfs://QmYourAgreementDocument"
-});
-
-address agreement = agreementFactory.create(details, msg.sender, salt);
-
-// Commit to terms for at least 30 days
-IAgreement(agreement).extendCommitmentWindow(block.timestamp + 30 days);
-
-// Link your protocol to the agreement
-safeHarborRegistry.adoptSafeHarbor(agreement);
-```
-
 For the full configuration reference, see [How to Create a Safe Harbor Agreement](/battlechain/how-to/create-agreement).
 
 ## Part 3: Request Attack Mode
 
+Request attack mode using the `battlechain-lib` helper. This is the only BattleChain-specific step — it reverts on other chains:
+
 ```solidity
-attackRegistry.requestUnderAttack(agreement);
+if (_isBattleChain()) {
+    requestAttackMode(agreement);
+}
 ```
 
 Your contracts are now in `ATTACK_REQUESTED` state. The DAO will review and check:
@@ -179,9 +180,9 @@ See [How to Promote to Production](/battlechain/how-to/promote-to-production) fo
 
 | Step | Action | Result |
 |------|--------|--------|
-| 1 | Deploy via BattleChainDeployer | Contracts registered |
-| 2 | Create Safe Harbor agreement | Terms defined |
-| 3 | Request attack mode | DAO reviews |
+| 1 | Deploy via `bcDeployCreate*` | Contracts registered (auto via BattleChainDeployer) |
+| 2 | Create Safe Harbor agreement | Terms defined (auto-scoped per chain) |
+| 3 | Request attack mode | DAO reviews (BattleChain only) |
 | 4 | DAO approves | Whitehats can attack |
 | 5 | Promote to production | Battle-tested and ready for mainnet |
 

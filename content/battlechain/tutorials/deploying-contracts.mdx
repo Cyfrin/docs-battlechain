@@ -11,9 +11,68 @@ This tutorial teaches you how to deploy contracts to BattleChain and why the dep
 **Prerequisites**: Familiarity with Solidity and smart contract deployment.
 </Note>
 
+## Using battlechain-lib (Recommended)
+
+The easiest way to deploy is with `battlechain-lib`, which handles address resolution, CreateX routing, and AttackRegistry registration automatically:
+
+```bash
+forge install cyfrin/battlechain-lib
+```
+
+Add the remapping to `foundry.toml`:
+```toml
+remappings = [
+    "battlechain-lib/=lib/battlechain-lib/src/",
+]
+```
+
+### Deploy with helpers
+
+Inherit `BCDeploy` (deploy only) or `BCScript` (deploy + agreement + attack mode):
+
+```solidity
+import { BCDeploy } from "battlechain-lib/BCDeploy.sol";
+
+contract Deploy is BCDeploy {
+    function run() external {
+        vm.startBroadcast();
+
+        // Simple deployment
+        address token = bcDeployCreate(type(MyToken).creationCode);
+
+        // Deterministic address (same across chains)
+        bytes32 salt = keccak256("vault-v1");
+        address vault = bcDeployCreate2(
+            salt,
+            abi.encodePacked(type(MyVault).creationCode, abi.encode(token))
+        );
+
+        vm.stopBroadcast();
+    }
+}
+```
+
+On BattleChain, `bcDeployCreate*` calls go through `BattleChainDeployer`, which wraps CreateX and auto-registers your contracts with the `AttackRegistry`. On any other supported chain (190+ EVM chains), the same functions route directly through [CreateX](https://github.com/pcaversaccio/createx) (`0xba5Ed...`), giving you deterministic addresses without any code changes.
+
+<Tip>
+Use `bcDeployCreate2` when you need the same contract address across BattleChain and mainnet. The salt + bytecode determines the address, so it's identical on every chain where CreateX is deployed.
+</Tip>
+
+### Available deploy helpers
+
+| Helper | Address Determinism | Notes |
+|--------|-------------------|-------|
+| `bcDeployCreate(bytecode)` | Nonce-based | Simplest option |
+| `bcDeployCreate2(salt, bytecode)` | Salt + bytecode | Same address cross-chain |
+| `bcDeployCreate3(salt, bytecode)` | Salt only | Address independent of code |
+
+All deployed addresses are tracked automatically. Call `getDeployedContracts()` to retrieve them for use with Safe Harbor agreement scoping.
+
+---
+
 ## Why BattleChainDeployer?
 
-BattleChain tracks which contracts are eligible for attack mode through the `AttackRegistry`. When you deploy via `BattleChainDeployer`, your contracts are **automatically registered**, which means:
+BattleChain tracks which contracts are eligible for attack mode through the `AttackRegistry`. When you deploy via `BattleChainDeployer` (which `bcDeployCreate*` uses automatically on BattleChain), your contracts are **automatically registered**, which means:
 
 - You're recorded as the deployer on-chain
 - You can request attack mode without extra authorization steps
@@ -21,9 +80,9 @@ BattleChain tracks which contracts are eligible for attack mode through the `Att
 
 Without BattleChainDeployer, you can still enter attack mode, but the process requires more DAO scrutiny.
 
-## Deployment Methods
+## Direct BattleChainDeployer Usage
 
-`BattleChainDeployer` wraps [CreateX](https://github.com/pcaversaccio/createx), giving you access to all standard deployment patterns:
+If you prefer not to use `battlechain-lib`, you can call `BattleChainDeployer` directly. It wraps [CreateX](https://github.com/pcaversaccio/createx), giving you access to all standard deployment patterns:
 
 ### CREATE (Simple Deployment)
 
@@ -45,24 +104,6 @@ bytes memory bytecode = type(MyContract).creationCode;
 address deployed = deployer.deployCreate2(salt, bytecode);
 ```
 
-<Tip>
-Use CREATE2 when you need the same contract address across BattleChain and mainnet.
-</Tip>
-
-### CREATE2 with Initialization
-
-```solidity
-// Deploy and initialize in one transaction
-bytes memory bytecode = type(MyProxy).creationCode;
-bytes memory initData = abi.encodeCall(MyProxy.initialize, (owner, config));
-
-address deployed = deployer.deployCreate2AndInit(
-    salt,
-    bytecode,
-    initData
-);
-```
-
 ### CREATE3 (Address Independent of Bytecode)
 
 ```solidity
@@ -73,15 +114,7 @@ bytes memory bytecode = type(MyContract).creationCode;
 address deployed = deployer.deployCreate3(salt, bytecode);
 ```
 
-### Clone Deployment
-
-```solidity
-// Deploy a minimal proxy (EIP-1167 clone)
-address implementation = 0x1234...;
-address clone = deployer.deployCreate2Clone(salt, implementation);
-```
-
-## All Available Methods
+### All Available Methods
 
 | Method | Address Determinism | Notes |
 |--------|-------------------|-------|
@@ -96,7 +129,7 @@ address clone = deployer.deployCreate2Clone(salt, implementation);
 
 ## What Happens After Deployment
 
-Every deployment through BattleChainDeployer automatically calls `AttackRegistry.registerDeployment()`, which:
+Every deployment through BattleChainDeployer (or `bcDeployCreate*` on BattleChain) automatically calls `AttackRegistry.registerDeployment()`, which:
 
 1. Records the contract address
 2. Sets its state to `NEW_DEPLOYMENT`

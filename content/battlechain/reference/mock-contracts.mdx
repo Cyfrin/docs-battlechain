@@ -1,0 +1,339 @@
+---
+title: "Mock & Dependency Contracts"
+description: "Mock and infrastructure contracts deployed on the BattleChain testnet"
+---
+
+BattleChain testnet includes mock versions of common mainnet dependencies and real infrastructure contracts so you can deploy your exact production bytecode — only swapping constructor parameters like oracle addresses.
+
+## Mock Chainlink Price Feeds
+
+These `MockV3Aggregator` contracts implement the same interface as [Chainlink price feeds](https://docs.chain.link/data-feeds). Contracts that consume `latestRoundData()` or `getRoundData()` on mainnet can point at these addresses on testnet without code changes.
+
+All feeds use **8 decimals**, matching Chainlink's standard for USD pairs.
+
+### Deployed Addresses
+
+| Pair | Address |
+|------|---------|
+| ETH/USD | <code>0xAA72F0168eE17aA93098eC6ECf2EEe72B46aca19</code> |
+| BTC/USD | <code>0xd87f56De7Fe8d2913B3B8e45C5fd983185286b66</code> |
+| LINK/USD | <code>0xEa8789e4f6a1d101AfF3093543FC8133c27987FD</code> |
+| USDC/USD | <code>0x469be0Db9E0E884a2D9E64a186008C684423B79C</code> |
+
+### Interface
+
+<AccordionGroup>
+  <Accordion title="View functions">
+    ```solidity
+    function latestRoundData()
+        external
+        view
+        returns (
+            uint80 roundId,
+            int256 answer,
+            uint256 startedAt,
+            uint256 updatedAt,
+            uint80 answeredInRound
+        );
+
+    function getRoundData(uint80 _roundId)
+        external
+        view
+        returns (
+            uint80 roundId,
+            int256 answer,
+            uint256 startedAt,
+            uint256 updatedAt,
+            uint80 answeredInRound
+        );
+
+    function decimals() external view returns (uint8);
+    function latestAnswer() external view returns (int256);
+    function latestRound() external view returns (uint256);
+    function latestTimestamp() external view returns (uint256);
+    ```
+  </Accordion>
+
+  <Accordion title="State-changing functions">
+    Unlike real Chainlink feeds, anyone can update the answer on a mock aggregator. This is useful for testing oracle-dependent logic like liquidations or price-based access control.
+
+    ```solidity
+    function updateAnswer(int256 _answer) public;
+    function updateRoundData(
+        uint80 _roundId,
+        int256 _answer,
+        uint256 _timestamp,
+        uint256 _startedAt
+    ) public;
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Updating Prices
+
+To set ETH/USD to $2,000:
+
+```bash
+cast send 0xAA72F0168eE17aA93098eC6ECf2EEe72B46aca19 \
+  "updateAnswer(int256)" 200000000000 \
+  --rpc-url $BATTLECHAIN_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --legacy
+```
+
+The value `200000000000` is `2000 * 1e8` (8 decimals).
+
+---
+
+## Test Tokens
+
+Mintable ERC-20 tokens for protocols that need token dependencies (stablecoins, WBTC, LINK, etc.). Anyone can mint — no faucet required.
+
+### Deployed Addresses
+
+| Token | Symbol | Decimals | Address |
+|-------|--------|----------|---------|
+| Wrapped Ether | WETH | 18 | <code>0x4CAc28Fc96bb8fa0e6F94ef0E579384902142f42</code> |
+| USD Coin | USDC | 6 | <code>0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE</code> |
+| Tether USD | USDT | 6 | <code>0x0d414B0CCef51a25cd32c93b869A9fF2e883a27E</code> |
+| Dai Stablecoin | DAI | 18 | <code>0x393cBd865554a543D992218d190EA9dcE47d9bC2</code> |
+| Wrapped BTC | WBTC | 8 | <code>0xB90cb0F537F2E7D11b165a8C5C79B7a593aBE4f0</code> |
+| Chainlink Token | LINK | 18 | <code>0xDBCaD9c8f2757f1b7Fe7fC394bEB035018aEA9DC</code> |
+| My Token | MTK | 18 | <code>0xA55C81615ea60e870d7a4Dff8C662B4C39c56C80</code> |
+
+### Interface
+
+<AccordionGroup>
+  <Accordion title="MintableERC20V2 (USDC, USDT, DAI, WBTC, LINK)">
+    Standard ERC-20 with open minting. Calling `mint()` with no arguments sends 1,000,000 tokens (scaled to decimals) to the caller.
+
+    ```solidity
+    // Mint 1,000,000 tokens to caller
+    function mint() external;
+
+    // Mint arbitrary amount to any address
+    function mint(address to, uint256 amount) external;
+
+    function decimals() public view returns (uint8);
+    ```
+  </Accordion>
+
+  <Accordion title="WETH">
+    Standard WETH pattern — send ETH to get WETH, withdraw to unwrap.
+
+    ```solidity
+    // Wrap ETH into WETH (also works via receive())
+    function deposit() public payable;
+
+    // Unwrap WETH back to ETH
+    function withdraw(uint256 amount) external;
+    ```
+  </Accordion>
+
+  <Accordion title="MintableERC20 (MTK)">
+    Simple mintable token with a fixed mint amount of 0.01 tokens per call.
+
+    ```solidity
+    function mint() external;
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Minting Tokens
+
+To mint 1,000,000 USDC to yourself:
+
+```bash
+cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
+  "mint()" \
+  --rpc-url $BATTLECHAIN_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --legacy
+```
+
+To mint a specific amount to any address:
+
+```bash
+cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
+  "mint(address,uint256)" 0xYOUR_ADDRESS 5000000000 \
+  --rpc-url $BATTLECHAIN_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --legacy
+```
+
+The value `5000000000` is `5000 * 1e6` (USDC has 6 decimals).
+
+---
+
+## Mock Venus Protocol
+
+A mock [Venus](https://venus.io/) lending protocol deployment with a Comptroller and five vToken markets. Implements the same Compound-style interface (supply, borrow, redeem, repay) so contracts that integrate with Venus on mainnet work on testnet without code changes.
+
+All markets are listed with a **0.75 collateral factor**. The mock Comptroller always reports accounts as healthy with 1M liquidity — it does not enforce real collateral checks.
+
+### Deployed Addresses
+
+| Contract | Address |
+|----------|---------|
+| Comptroller | <code>0xc75734fFd650286269EE8bC049424Cb08F9175ee</code> |
+| vUSDC | <code>0x5982EC7f7B42F5490695EE14991aA35E6F6258bD</code> |
+| vWETH | <code>0xB6694A4678F4a548486376Ed8C4e51C83Ce35d8a</code> |
+| vWBTC | <code>0xcA867A99a2a7586209C662F4060f27c3E734f947</code> |
+| vDAI | <code>0xb1E00Ef2B0BBb2d3d4A899A4f31F0F6853359737</code> |
+| vBNB | <code>0x96360B56BC70B09eb6F3870B3f48AFeA32e60EeE</code> |
+
+The vToken markets use the [test tokens](#test-tokens) as their underlying assets. vBNB uses native ETH.
+
+### Interface
+
+<AccordionGroup>
+  <Accordion title="Comptroller">
+    ```solidity
+    function enterMarkets(address[] calldata vTokens)
+        external returns (uint256[] memory errors);
+    function exitMarket(address vToken)
+        external returns (uint256);
+    function getAccountLiquidity(address account)
+        external view returns (uint256 err, uint256 liquidity, uint256 shortfall);
+    function markets(address vToken)
+        external view returns (bool isListed, uint256 collateralFactorMantissa);
+    function getAllMarkets()
+        external view returns (address[] memory);
+    ```
+  </Accordion>
+
+  <Accordion title="VToken (vUSDC, vWETH, vWBTC, vDAI)">
+    Compound-style cToken for ERC-20 underlyings. All functions return `0` on success.
+
+    ```solidity
+    function mint(uint256 mintAmount) external returns (uint256);
+    function redeem(uint256 redeemTokens) external returns (uint256);
+    function redeemUnderlying(uint256 redeemAmount) external returns (uint256);
+    function borrow(uint256 borrowAmount) external returns (uint256);
+    function repayBorrow(uint256 repayAmount) external returns (uint256);
+    function balanceOfUnderlying(address owner) external view returns (uint256);
+    function exchangeRateCurrent() external view returns (uint256);
+    function underlying() external view returns (address);
+    ```
+  </Accordion>
+
+  <Accordion title="vBNB (native ETH)">
+    Native ETH variant — supply and repay with `msg.value` instead of ERC-20 transfers.
+
+    ```solidity
+    function mint() external payable;
+    function redeem(uint256 redeemTokens) external returns (uint256);
+    function redeemUnderlying(uint256 redeemAmount) external returns (uint256);
+    function borrow(uint256 borrowAmount) external returns (uint256);
+    function repayBorrow() external payable;
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Supplying and Borrowing
+
+To supply 1,000 USDC to vUSDC (approve first, then mint):
+
+```bash
+cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
+  "approve(address,uint256)" \
+  0x5982EC7f7B42F5490695EE14991aA35E6F6258bD 1000000000 \
+  --rpc-url $BATTLECHAIN_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --legacy
+
+cast send 0x5982EC7f7B42F5490695EE14991aA35E6F6258bD \
+  "mint(uint256)" 1000000000 \
+  --rpc-url $BATTLECHAIN_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --legacy
+```
+
+To supply native ETH to vBNB:
+
+```bash
+cast send 0x96360B56BC70B09eb6F3870B3f48AFeA32e60EeE \
+  "mint()" \
+  --value 1ether \
+  --rpc-url $BATTLECHAIN_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --legacy
+```
+
+---
+
+## Mock Uniswap V3
+
+A mock [Uniswap V3](https://docs.uniswap.org/contracts/v3/overview) deployment with the core factory, swap router, and position manager. Contracts that integrate with Uniswap V3 on mainnet can point at these addresses on testnet without code changes.
+
+### Deployed Addresses
+
+| Contract | Address |
+|----------|---------|
+| UniswapV3Factory | <code>0xd5DCFCab1B60C70F45D61597b351674b4b3C8CDc</code> |
+| SwapRouter | <code>0xCD1D61957236565679b27e14d7c7A5198b052edb</code> |
+| NonfungiblePositionManager | <code>0xE357f3D536b2c0a21c0256cAB027CE962D0483bF</code> |
+
+Use with the [test tokens](#test-tokens) above (WETH, USDC, DAI, etc.) to create pools and test swap logic.
+
+---
+
+## Mock Uniswap V4
+
+A mock [Uniswap V4](https://docs.uniswap.org/contracts/v4/overview) PoolManager deployment.
+
+### Deployed Addresses
+
+| Contract | Address |
+|----------|---------|
+| PoolManager | <code>0xB4CB4B877FcF85Db498B81EEa8F3A1136797F7</code> |
+
+---
+
+## Mock Euler V2
+
+A mock [Euler V2](https://docs.euler.finance/) deployment with the Ethereum Vault Connector (EVC) and two lending vaults.
+
+### Deployed Addresses
+
+| Contract | Address |
+|----------|---------|
+| EVC | <code>0xB5D56dECA76e65cC9332Af01971bC8ad018a1Fc1</code> |
+| eUSDC Vault | <code>0x9a6fb480a74e6BAEE31EAbe297384ceA1EBb4d81</code> |
+| eWETH Vault | <code>0x38aF9d1C638C43d4340a700A854721dD5cdCf974</code> |
+
+The vaults use the [test tokens](#test-tokens) as their underlying assets (USDC and WETH respectively).
+
+---
+
+## Mock Chainlink CCIP
+
+A mock [Chainlink CCIP](https://docs.chain.link/ccip) router for testing cross-chain messaging and token transfers.
+
+### Deployed Addresses
+
+| Contract | Address |
+|----------|---------|
+| MockCCIPRouter | <code>0xFA553888e385ECd9ab294e295C206b912a0F402E</code> |
+
+---
+
+## Safe (Gnosis Safe)
+
+The full [Safe](https://docs.safe.global/) smart account infrastructure is deployed on BattleChain testnet. These are real Safe contracts (not mocks) — protocols that use Safe multisigs for governance, treasury, or access control can use the same addresses and deployment patterns as on mainnet.
+
+### Deployed Addresses
+
+| Contract | Address |
+|----------|---------|
+| Safe | <code>0x52AbFB25E19C3625178D885D5C75EFB9a99203EB</code> |
+| SafeL2 | <code>0x71314F3E6B1D9386A1de784B644Cf5D0Dde3bB97</code> |
+| SafeProxyFactory | <code>0x80DbD037C59521F393fDfE15504c6b6b7969F1a1</code> |
+| CreateCall | <code>0x670D1c4c5cc72193b352562Ed75B9ae8224E98b3</code> |
+| MultiSend | <code>0x69BEaBc6824ba1461F53800d9C3F29FFeC7cf408</code> |
+| MultiSendCallOnly | <code>0xa6a3C9103C062429e459D263bF5EcCd31Effd56C</code> |
+| SignMessageLib | <code>0x930833004d88b8bF3208a216323aFfdf9D40C14C</code> |
+| SafeToL2Setup | <code>0xeCd943c75D2344Fb0AC29D781EFE602E7d87f82B</code> |
+| TokenCallbackHandler | <code>0x232898253fABB3a1EB585bdEE4bE2a36f6D6fd64</code> |
+| CompatibilityFallbackHandler | <code>0xc6B2C6982A5643b7702894D4A0901b9371dd1283</code> |
+| ExtensibleFallbackHandler | <code>0x745c41Ae7AC9C23f173B45f5B47E692dC57c2ae2</code> |

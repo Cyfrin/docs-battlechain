@@ -105,6 +105,7 @@
                 "group": "Reference",
                 "pages": [
                   "battlechain/reference/contracts",
+                  "battlechain/reference/mock-contracts",
                   "battlechain/reference/contract-states",
                   "battlechain/reference/bounty-terms",
                   "battlechain/reference/identity-requirements",

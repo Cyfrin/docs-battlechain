@@ -7,9 +7,45 @@ description: "Create and configure your Safe Harbor agreement with bounty terms 
 
 A Safe Harbor agreement defines the terms under which whitehats can attack your contracts. This guide covers all configuration options.
 
-## Create the Agreement
+## Quick Start with battlechain-lib
 
-Use `AgreementFactory` to create your agreement:
+The fastest way to create an agreement is with `battlechain-lib`, which handles chain detection, scope building, and URI selection automatically:
+
+```solidity
+import { BCSafeHarbor } from "battlechain-lib/BCSafeHarbor.sol";
+import { Contact, BountyTerms, IdentityRequirements } from "battlechain-lib/types/AgreementTypes.sol";
+
+contract CreateAgreement is BCSafeHarbor {
+    function run() external {
+        vm.startBroadcast();
+
+        Contact[] memory contacts = new Contact[](1);
+        contacts[0] = Contact({ name: "Security Team", contact: "security@myprotocol.com" });
+
+        address[] memory contracts_ = new address[](1);
+        contracts_[0] = vm.envAddress("VAULT_ADDRESS");
+
+        // Creates agreement with correct scope and URI for the current chain
+        address agreement = createAndAdoptAgreement(
+            defaultAgreementDetails("My Protocol", contacts, contracts_, msg.sender),
+            msg.sender,
+            keccak256("my-protocol-v1")
+        );
+
+        vm.stopBroadcast();
+    }
+}
+```
+
+`defaultAgreementDetails` auto-selects:
+- **BattleChain**: BattleChain CAIP-2 scope + `BATTLECHAIN_SAFE_HARBOR_URI`
+- **Other chains**: Current chain's CAIP-2 scope + `SAFE_HARBOR_V3_URI` (SEAL)
+
+`createAndAdoptAgreement` handles create + 14-day commitment window + adopt in one call.
+
+## Manual Creation with AgreementFactory
+
+For full control, use `AgreementFactory` directly:
 
 ```solidity
 AgreementDetails memory details = AgreementDetails({

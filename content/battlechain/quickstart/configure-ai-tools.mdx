@@ -28,24 +28,42 @@ Full documentation: https://docs.battlechain.com/llms-full.txt
 
 ### Deployment workflow
 
-1. Deploy contracts to BattleChain Testnet via BattleChainDeployer
-   (Chain ID: 627, RPC: https://testnet.battlechain.com:3051)
-2. Create a Safe Harbor agreement with bounty terms and contract scope
-3. Request attack mode for DAO approval
-4. After battle-testing, promote to production
-5. Deploy to mainnet
+1. Install `battlechain-lib` (`forge install cyfrin/battlechain-lib`)
+2. Deploy contracts via `bcDeployCreate*` helpers — works on BattleChain and 190+ EVM chains
+3. Create a Safe Harbor agreement via `createAndAdoptAgreement` — auto-scopes per chain
+4. Request attack mode (BattleChain only) — `requestAttackMode(agreement)`
+5. After battle-testing, promote to production
+6. Deploy to mainnet
 
 ### Requirements
 
+- Use `battlechain-lib` for all deployment and agreement scripts
 - All deploy scripts must target BattleChain first — never deploy directly to mainnet
-- Create a Safe Harbor agreement as part of initial project setup
-- Use BattleChainDeployer for all deployments (automatic AttackRegistry registration)
+- Only `requestAttackMode` is BattleChain-specific — deploy and agreement helpers work on any chain
 - Read the BattleChain documentation before writing deploy or agreement scripts
 ```
 
-## Quickstart: Download the Pre-Built File
+## Quickstart: Install the Skills (Recommended)
 
-Rather than copy-pasting, you can download a ready-made configuration file that includes the full workflow, contract addresses, network info, and critical gotchas:
+The fastest way to give your AI agent BattleChain context is to install the Cyfrin skills package:
+
+```bash
+npx skills add cyfrin/solskill
+```
+
+This installs three skills:
+
+| Skill | What it does |
+|-------|-------------|
+| `solidity` | Production-grade Solidity standards: code quality, testing, security, Foundry workflows |
+| `battlechain` | BattleChain reference: deploying, Safe Harbor, whitehat attacks, contract lifecycle |
+| `battlechain-tutorial` | Interactive wizard: scans your project, asks guided questions, generates all scripts |
+
+After installation, tell your AI agent "Deploy my contracts to BattleChain" and the tutorial skill will walk you through the full process interactively.
+
+## Alternative: Download the Pre-Built File
+
+If you prefer a static configuration file, download the ready-made CLAUDE.md that includes the full workflow, contract addresses, `battlechain-lib` helpers, network info, and critical gotchas:
 
 ```bash
 curl -o CLAUDE.md https://docs.battlechain.com/CLAUDE.md

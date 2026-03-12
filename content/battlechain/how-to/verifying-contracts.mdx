@@ -13,9 +13,34 @@ Verifying a contract publishes its source code on the block explorer so anyone c
 - **Trust** — verified source proves the deployed bytecode matches your published code
 - **Debugging** — the explorer's zkEVM debugger can map execution traces back to source lines for verified contracts
 
+## Quick Start with battlechain-lib
+
+If you use `battlechain-lib`, it ships a reusable justfile module with verification targets built in. Add this to your `justfile`:
+
+```just
+import "lib/battlechain-lib/battlechain.just"
+```
+
+Then verify contracts with:
+
+```bash
+# Verify a single contract
+just bc-verify 0xAbC...123 src/MyVault.sol:MyVault
+
+# Verify all contracts from a broadcast file (handles CreateX/BCDeploy factory creates)
+just bc-verify-broadcast script/Deploy.s.sol
+
+# Deploy + verify in one step
+just bc-deploy-verify script/Deploy.s.sol battlechain 0xYourAddress
+```
+
+The `bc-verify-broadcast` target automatically parses your broadcast JSON, matches deployed bytecode against your compiled artifacts, and verifies each contract — including contracts deployed through CreateX or BattleChainDeployer factories.
+
+---
+
 ## Verify with Forge
 
-If you're deploying via Foundry, you can verify without leaving the terminal using `forge verify-contract`:
+You can also verify manually using `forge verify-contract`:
 
 ```bash
 forge verify-contract <CONTRACT_ADDRESS> <PATH>:<CONTRACT_NAME> \
@@ -53,6 +78,24 @@ The URL in the response links directly to the contract's verified page on the ex
 <Note>
 If your contract has constructor arguments, add `--constructor-args $(cast abi-encode "constructor(type,...)" arg1 arg2)` to the command.
 </Note>
+
+## Verify During Deployment
+
+Add `--verify` to your `forge script` call to verify contracts as they're deployed:
+
+```bash
+forge script script/Deploy.s.sol \
+  --rpc-url https://testnet.battlechain.com:3051 \
+  --broadcast --skip-simulation -g 300 \
+  --verify \
+  --verifier-url https://block-explorer-api.testnet.battlechain.com/api \
+  --verifier custom \
+  --etherscan-api-key 1234
+```
+
+<Warning>
+Inline `--verify` works for directly deployed contracts but may not catch factory-deployed contracts (via CreateX or BattleChainDeployer). For those, run `just bc-verify-broadcast script/Deploy.s.sol` after deployment.
+</Warning>
 
 ---
 
