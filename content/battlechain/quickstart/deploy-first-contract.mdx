@@ -322,6 +322,7 @@ If a transaction gets stuck in a pending state, it usually means it was submitte
 ```bash
 cast send \
   --account battlechain \
+  --rpc-url https://testnet.battlechain.com:3051 \
   --nonce <stuck-nonce> \
   --gas-price <higher-price-in-wei> \
   --legacy \
