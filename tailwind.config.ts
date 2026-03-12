@@ -13,9 +13,9 @@ const config: Config = {
       colors: {
         // Cyfrin brand colors
         cyfrin: {
-          primary: '#155EEF',
-          light: '#2970FF',
-          dark: '#004EEB',
+          primary: '#004DFF',
+          light: '#004DFF',
+          dark: '#004DFF',
         },
         // Product colors
         codehawks: {
@@ -39,9 +39,9 @@ const config: Config = {
           dark: '#E8E8E8',
         },
         profiles: {
-          primary: '#155EEF',
-          light: '#2970FF',
-          dark: '#004EEB',
+          primary: '#004DFF',
+          light: '#004DFF',
+          dark: '#004DFF',
         },
         background: "var(--background)",
         foreground: "var(--foreground)",

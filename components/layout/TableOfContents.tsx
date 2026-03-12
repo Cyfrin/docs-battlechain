@@ -21,6 +21,7 @@ export function TableOfContents() {
 
     const headingElements = mainContent.querySelectorAll('h2, h3')
     const headingData: Heading[] = []
+    const seenIds = new Map<string, number>()
 
     headingElements.forEach((heading) => {
       // Skip headings marked to ignore (like card titles)
@@ -40,8 +41,18 @@ export function TableOfContents() {
       }
 
       if (heading.id && heading.textContent) {
+        const baseId = heading.id
+        const duplicateCount = seenIds.get(baseId) ?? 0
+        const uniqueId = duplicateCount === 0 ? baseId : `${baseId}-${duplicateCount + 1}`
+
+        seenIds.set(baseId, duplicateCount + 1)
+
+        if (heading.id !== uniqueId) {
+          heading.id = uniqueId
+        }
+
         headingData.push({
-          id: heading.id,
+          id: uniqueId,
           text: heading.textContent,
           level: parseInt(heading.tagName[1]),
         })
@@ -101,9 +112,9 @@ export function TableOfContents() {
           </h4>
           <nav>
             <ul className="space-y-2 text-sm">
-              {headings.map((heading) => (
+              {headings.map((heading, index) => (
                 <li
-                  key={heading.id}
+                  key={`${heading.id}-${index}`}
                   className={heading.level === 3 ? 'pl-4' : ''}
                 >
                   <a

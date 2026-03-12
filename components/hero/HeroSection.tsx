@@ -6,8 +6,6 @@ export function HeroSection() {
     <div className="hero-container">
       <div className="hero-background">
         <div className="hero-grid"></div>
-        <div className="hero-glow-1"></div>
-        <div className="hero-glow-2"></div>
         <div className="hero-particles">
           <div className="particle"></div>
           <div className="particle"></div>

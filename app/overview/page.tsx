@@ -11,7 +11,7 @@ import { Latex } from '@/components/mdx/Latex'
 import { Expandable } from '@/components/mdx/Expandable'
 import { ResponseField } from '@/components/mdx/ResponseField'
 import { SnippetIntro } from '@/components/mdx/SnippetIntro'
-import { BattlechainHero } from '@/components/hero/BattlechainHero'
+import { BattlechainHeroClient } from '@/components/hero/BattlechainHeroClient'
 import { Pre } from '@/components/mdx/Pre'
 import remarkGfm from 'remark-gfm'
 import rehypePrismPlus from 'rehype-prism-plus'
@@ -36,7 +36,7 @@ const components = {
   Expandable,
   ResponseField,
   SnippetIntro,
-  BattlechainHero,
+  BattlechainHero: BattlechainHeroClient,
   pre: Pre,
 }
 

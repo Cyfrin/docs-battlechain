@@ -73,7 +73,7 @@ export function NetworkInfo({ network = 'testnet' }: NetworkInfoProps) {
               <td className="py-2 pr-4 font-medium text-gray-500 dark:text-gray-400">Explorer</td>
               <td className="py-2">
                 {config.explorer !== 'TBD' ? (
-                  <a href={config.explorer} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline font-mono break-all">
+                  <a href={config.explorer} target="_blank" rel="noopener noreferrer" className="text-[#004DFF] hover:underline font-mono break-all">
                     {config.explorer}
                   </a>
                 ) : (
