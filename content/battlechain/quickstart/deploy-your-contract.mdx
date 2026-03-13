@@ -55,11 +55,17 @@ Once your BattleChain balance shows ETH, you're ready.
 
 <Tab title="AI Desktop">
 
+<Note>
+**Coming soon.** AI Desktop support (Claude Desktop, ChatGPT, etc.) is in progress. Use the **AI CLI** or **Manual** tab for now.
+</Note>
+
+{/* COMING SOON — AI Desktop tool section
 **[Claude Desktop](https://claude.ai/download)** (macOS or Linux). Claude Desktop can execute code directly — you paste prompts and it handles the rest. No terminal or IDE needed.
 
 Transactions will open in your browser wallet (MetaMask, Rabby, etc.) for you to approve — Claude never sees your private key.
 
 **Windows users:** Claude Desktop runs on Windows, but Foundry tooling works best under [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install). Install WSL first, then use the **AI CLI** tab with Claude Code inside WSL instead.
+*/}
 
 </Tab>
 
@@ -99,6 +105,11 @@ cargo install just
 
 <Tab title="AI Desktop">
 
+<Note>
+**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
+</Note>
+
+{/* COMING SOON — AI Desktop project setup
 Open Claude Desktop and select **Code** at the top of the window. Then click the folder name in the bottom-left to create or choose a new empty folder for your project.
 
 ![Claude Desktop — select Code mode and choose a project folder](/images/other/claude-code-arrows.png)
@@ -121,6 +132,7 @@ Once done, tell the user to PROCEED TO THE NEXT STEP
 Claude will install the tools, clone the repo, and configure your environment. Wait for it to finish before moving on.
 
 You'll need to allow those commands to run.
+*/}
 
 </Tab>
 
@@ -167,7 +179,13 @@ SENDER_ADDRESS=0x...your_wallet_address...
 
 <Tab title="AI Desktop">
 
+<Note>
+**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
+</Note>
+
+{/* COMING SOON — AI Desktop signing setup
 Just make sure your test wallet is connected to BattleChain Testnet in your browser extension before moving on.
+*/}
 
 </Tab>
 
@@ -217,6 +235,11 @@ You should see `battlechain` listed. From here on, you'll enter the keystore pas
 
 <Tab title="AI Desktop">
 
+<Note>
+**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
+</Note>
+
+{/* COMING SOON — AI Desktop deploy
 Paste into the same Claude Desktop conversation:
 
 ```
@@ -226,7 +249,8 @@ After deployment, add TOKEN_ADDRESS and VAULT_ADDRESS to my .env file.
 Then, give me the explorer link with the deployed vault, and give me the vault address.
 ```
 
-Your browser wallet will pop up for each transaction — approve them in MetaMask. You should then get an output of your newly deployed vault, and an explorer link. 
+Your browser wallet will pop up for each transaction — approve them in MetaMask. You should then get an output of your newly deployed vault, and an explorer link.
+*/}
 
 </Tab>
 
@@ -269,6 +293,10 @@ VAULT_ADDRESS=0x...
 
 <Tab title="AI Desktop">
 
+<Note>
+**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
+</Note>
+
 </Tab>
 
 <Tab title="AI CLI (foundry)">
@@ -301,10 +329,16 @@ Search your `VAULT_ADDRESS` on the [BattleChain explorer](https://explorer.testn
 
 <Tab title="AI Desktop">
 
+<Note>
+**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
+</Note>
+
+{/* COMING SOON — AI Desktop create agreement
 ```
 Run `just create-agreement-browser` to create a Safe Harbor agreement for the deployed vault.
 After it runs, add AGREEMENT_ADDRESS to .env and set RECOVERY_ADDRESS to my wallet address.
 ```
+*/}
 
 </Tab>
 
@@ -348,6 +382,11 @@ This creates an on-chain agreement that defines the rules of engagement: 10% bou
 
 <Tab title="AI Desktop">
 
+<Note>
+**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
+</Note>
+
+{/* COMING SOON — AI Desktop open for attack
 ```
 Do the following in order:
 
@@ -356,6 +395,7 @@ Do the following in order:
    cast send 0x6C2DFbdF0714FC8CE065039911758b2821818745 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com:3051 --legacy
 3. Run `just check-state` and confirm the output is 3
 ```
+*/}
 
 </Tab>
 
@@ -442,7 +482,13 @@ Add `--skip-simulation` to any failing `forge script` command. Forge's local gas
 
 <Tab title="AI Desktop">
 
+<Note>
+**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
+</Note>
+
+{/* COMING SOON — AI Desktop forge scripts troubleshooting
 Tell Claude: *"All forge script commands need the --skip-simulation flag."*
+*/}
 
 </Tab>
 
@@ -462,7 +508,13 @@ Add `--skip-simulation` to every `forge script` call.
 
 <Tab title="AI Desktop">
 
+<Note>
+**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
+</Note>
+
+{/* COMING SOON — AI Desktop stuck transaction troubleshooting
 Tell Claude: *"I have a stuck transaction at nonce [N]. Send a replacement with a higher gas price using cast send with --legacy and --value 0 to clear it."*
+*/}
 
 </Tab>
 
