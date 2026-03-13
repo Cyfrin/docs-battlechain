@@ -13,11 +13,14 @@ import { NetworkInfo } from '@/components/mdx/NetworkInfo'
 import { CodeGroup } from '@/components/mdx/CodeGroup'
 import { Latex } from '@/components/mdx/Latex'
 import { Expandable } from '@/components/mdx/Expandable'
+import { Tabs, Tab } from '@/components/mdx/Tabs'
 import { ResponseField } from '@/components/mdx/ResponseField'
 import { SnippetIntro } from '@/components/mdx/SnippetIntro'
 import { BattlechainHeroClient } from '@/components/hero/BattlechainHeroClient'
 import { Pre } from '@/components/mdx/Pre'
 import remarkGfm from 'remark-gfm'
+import rehypeSlug from 'rehype-slug'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypePrismPlus from 'rehype-prism-plus'
 
 function MdxLink({ href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) {
@@ -50,6 +53,8 @@ const components = {
   Expandable,
   ResponseField,
   SnippetIntro,
+  Tabs,
+  Tab,
   BattlechainHero: BattlechainHeroClient,
   pre: Pre,
   a: MdxLink,
@@ -150,7 +155,11 @@ export default async function Page({ params }: PageProps) {
         options={{
           mdxOptions: {
             remarkPlugins: [remarkGfm],
-            rehypePlugins: [[rehypePrismPlus, { defaultLanguage: 'plaintext', ignoreMissing: true }]],
+            rehypePlugins: [
+              rehypeSlug,
+              [rehypeAutolinkHeadings, { behavior: 'wrap' }],
+              [rehypePrismPlus, { defaultLanguage: 'plaintext', ignoreMissing: true }],
+            ],
           },
         }}
       />

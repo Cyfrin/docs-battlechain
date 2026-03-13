@@ -1,169 +1,274 @@
 ---
-title: "Attacking Contracts: Whitehat Tutorial"
-description: "A complete tutorial for whitehats on finding, attacking, and earning bounties on BattleChain"
+title: "Attack a Contract"
+description: "Find the vulnerability in a BattleChain vault, exploit it, collect your bounty, and walk away clean under Safe Harbor."
 ---
 
-This tutorial teaches you the full whitehat workflow on BattleChain — from finding targets to earning bounties — and explains the legal protections that make it possible.
+<div className="flex items-start gap-4 mb-10 p-5 rounded-xl border border-red-200 bg-red-50 dark:border-red-600/40 dark:bg-red-950/20">
+  <div className="text-4xl mt-1">&#x2694;&#xFE0F;</div>
+  <div>
+    <div className="text-xs font-bold uppercase tracking-widest text-red-700 dark:text-red-400 mb-1">You are the Whitehat</div>
+    <div className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1">There's a vulnerable vault on BattleChain. The DAO approved it. Safe Harbor is in place.</div>
+    <div className="text-sm text-gray-600 dark:text-gray-400">Your job is to find the bug, drain the vault, keep your bounty, and return the rest. Everything you're about to do is legal, structured, and profitable.</div>
+  </div>
+</div>
 
-<Note>
-**Audience**: Security researchers and whitehats.
+<Tabs labels="AI CLI (foundry), AI Desktop, Manual (foundry)">
 
-**Prerequisites**: Familiarity with smart contract security, Solidity, and common vulnerability patterns.
-</Note>
+## Prerequisites
 
-## Why BattleChain for Whitehats?
+You need a deployed, attackable vault to target. If you completed the [Quickstart](/battlechain/quickstart/deploy-your-contract), you already have one — your `.env` has everything you need.
 
-Traditional bug bounties ask you to *report* vulnerabilities. BattleChain lets you *exploit* them:
+If you're attacking someone else's vault, you need their `VAULT_ADDRESS` and `TOKEN_ADDRESS` (find these on the [BattleChain explorer](https://explorer.testnet.battlechain.com/) or by querying the `AttackRegistry`).
 
-- **Legal protection**: Safe Harbor agreements protect you from prosecution
-- **Immediate reward**: Keep your bounty from recovered funds (if retainable)
-- **No coordination required**: Attack first, no need for prior disclosure
-- **Real exploits**: Test against contracts with real liquidity, not toy examples
+<Tab title="AI Desktop">
 
-## Understanding Safe Harbor
+**[Claude Desktop](https://claude.ai/download)** (macOS or Linux). If you completed the quickstart with Claude Desktop, continue in the same conversation. If starting fresh, select **Code** at the top and choose the `battlechain-starter` folder.
 
-Before attacking, understand what protects you. When a protocol enters attack mode:
+![Claude Desktop — select Code mode and choose a project folder](/images/other/claude-code-arrows.png)
 
-1. They've adopted a **Safe Harbor agreement** committing to not pursue legal action
-2. Their contracts are in `UNDER_ATTACK` or `PROMOTION_REQUESTED` state
-3. You're protected as long as you:
-   - Attack in-scope contracts only
-   - Keep only your bounty entitlement
-   - Meet any identity requirements
+</Tab>
 
-Read the full [Safe Harbor explanation](/battlechain/explanation/safe-harbor) for details on what is and isn't protected.
+<Tab title="AI CLI (foundry)">
 
-## Step 1: Find Targets
+Your AI coding tool with terminal access (Claude Code, Cursor, Windsurf, etc.). If you completed the quickstart, continue in the same session.
 
-### Check a Specific Contract
+</Tab>
+
+<Tab title="Manual (foundry)">
+
+You need [Foundry](https://book.getfoundry.sh/getting-started/installation) and [just](https://just.systems) installed, and the starter repo cloned:
+
+```bash
+git clone https://github.com/Cyfrin/battlechain-starter
+cd battlechain-starter
+forge install
+```
+
+Your `.env` should have:
+
+```bash
+SENDER_ADDRESS=0x...your_wallet_address...
+TOKEN_ADDRESS=0x...
+VAULT_ADDRESS=0x...
+RECOVERY_ADDRESS=0x...
+```
+
+If you haven't imported your key yet:
+
+```bash
+cast wallet import battlechain --interactive
+```
+
+</Tab>
+
+---
+
+## Step 1 — Verify the Vault is Attackable
+
+Before doing anything, confirm the vault is in `UNDER_ATTACK` state.
+
+<Tab title="AI Desktop">
+
+```
+Run `just check-state` and tell me the result. I need it to be 3 (UNDER_ATTACK).
+```
+
+</Tab>
+
+<Tab title="AI CLI (foundry)">
+
+```
+Run `just check-state` and tell me the result. I need it to be 3 (UNDER_ATTACK).
+```
+
+</Tab>
+
+<Tab title="Manual (foundry)">
+
+```bash
+just check-state
+```
+
+You need to see `3`. If you see `2`, the DAO hasn't approved yet. Anything else and the vault isn't eligible.
+
+</Tab>
+
+---
+
+## Step 2 — Understand the Exploit
+
+Open `src/Attacker.sol`. The attack exploits two things working together: the CEI violation in `VulnerableVault` and the hook system in `MockToken`.
+
+**MockToken's hook system:** Any address can register a hook contract via `setTransferHook(address hook)`. When tokens are transferred *to* that address, the token calls `hook.onTokenTransfer()` after the transfer completes.
+
+**The vault's CEI violation:** `withdrawAll()` calls `TOKEN.transfer()` *before* zeroing `balances[msg.sender]`:
+
+```solidity
+function withdrawAll() external {
+    uint256 amount = balances[msg.sender];
+    require(amount > 0, "nothing to withdraw");
+
+    TOKEN.transfer(msg.sender, amount); // external call first
+    balances[msg.sender] = 0;           // balance zeroed too late
+}
+```
+
+Put them together and the reentrancy chain looks like this:
+
+```
+attack()
+  TOKEN.setTransferHook(address(this))    register as our own hook
+  vault.deposit(seedAmount)               establish a balance
+  vault.withdrawAll()
+    TOKEN.transfer(attacker, amount)
+      onTokenTransfer()                   hook fires, balance not yet zeroed
+        vault.withdrawAll()
+          TOKEN.transfer(attacker, amount)
+            onTokenTransfer()             still not zeroed
+              ...                         repeats until vault is empty
+```
+
+Once the vault is drained, the Safe Harbor settlement runs automatically:
+
+```solidity
+uint256 total = TOKEN.balanceOf(address(this));
+uint256 bounty = (total * BOUNTY_BPS) / 10_000; // 10%
+
+TOKEN.transfer(RECOVERY_ADDRESS, total - bounty); // return 90% to protocol
+TOKEN.transfer(OWNER, bounty);                    // keep 10%
+```
+
+You're not stealing. The protocol gets the majority of funds back minus the agreed bounty. Everyone knew the rules when the agreement was signed.
+
+---
+
+## Step 3 — Execute the Attack
+
+<Tab title="AI Desktop">
+
+```
+Run `just attack` to execute the reentrancy exploit against the vault.
+Use --skip-simulation for all forge script calls.
+```
+
+Enter your keystore password when prompted. Watch the output — Claude will show you the vault draining in real time.
+
+</Tab>
+
+<Tab title="AI CLI (foundry)">
+
+```
+Run `just attack` to execute the reentrancy exploit against the vault.
+Use --skip-simulation for all forge script calls.
+```
+
+Enter your keystore password when prompted.
+
+</Tab>
+
+<Tab title="Manual (foundry)">
+
+```bash
+just attack
+```
+
+Enter your keystore password when prompted. Watch the output:
+
+```
+Vault balance before: 1000 tokens
+Deploying attacker...
+
+--- Vault drained ---
+Vault before:          1000 tokens
+Vault after:              0 tokens
+Bounty kept:            100 tokens
+Returned to protocol:   900 tokens
+```
+
+</Tab>
+
+<Check>
+You've executed a legal reentrancy exploit on BattleChain. The vault is empty, the protocol has their funds back minus your bounty, and you're protected under Safe Harbor.
+</Check>
+
+---
+
+## Step 4 — Verify on the Explorer
+
+Search your `VAULT_ADDRESS` on the [BattleChain explorer](https://explorer.testnet.battlechain.com/). You should see:
+
+- The attack transaction
+- The vault balance dropping to zero
+- The bounty transfer to your wallet
+- The remaining funds sent to the recovery address
+
+### Check the Math
+
+The agreement set a 10% bounty (`BOUNTY_BPS = 1_000`). The vault had 1,000 seeded tokens plus your 100 seed tokens = 1,100 total.
+
+- **Bounty (yours):** 1,100 x 10% = 110 tokens
+- **Returned to protocol:** 1,100 - 110 = 990 tokens
+
+If the numbers don't look right, check that `RECOVERY_ADDRESS` in your `.env` matches the address in the agreement.
+
+---
+
+## What Just Happened
+
+You played the whitehat side of a BattleChain engagement:
+
+1. **Verified** the vault was in attack mode with a valid Safe Harbor agreement
+2. **Found** the reentrancy vulnerability (CEI violation + token hooks)
+3. **Exploited** it to drain the vault
+4. **Settled** automatically — kept your 10% bounty, returned 90% to the protocol
+
+The protocol now knows their vault has a reentrancy bug. If the same code were deployed on mainnet with real TVL, the loss would have been real. That's the whole point.
+
+---
+
+## Beyond This Tutorial
+
+### Handling Funds in Real Attacks
+
+The starter repo settles funds automatically. In real attacks, you're responsible for correct settlement:
+
+**If retainable = true** (you keep bounty from recovered funds):
+
+```solidity
+uint256 recovered = token.balanceOf(address(this));
+uint256 bounty = (recovered * bountyPercent) / 100;
+// Respect the cap if set
+token.transfer(recoveryAddress, recovered - bounty);
+// Keep your bounty
+```
+
+**If retainable = false** (protocol pays bounty separately):
+
+```solidity
+// Send everything to recovery
+token.transfer(recoveryAddress, token.balanceOf(address(this)));
+```
+
+Mishandling funds can void your Safe Harbor protection. See [Bounty Terms](/battlechain/reference/bounty-terms) for details.
+
+### Finding Real Targets
+
+The starter repo gives you a known vulnerability. In practice, you find targets by querying the `AttackRegistry`:
 
 ```solidity
 bool attackable = attackRegistry.isTopLevelContractUnderAttack(targetContract);
 ```
 
-### Monitor for New Targets
-
-Watch for `AgreementStateChanged` events:
+Or monitor for new targets via events:
 
 ```solidity
 event AgreementStateChanged(address indexed agreementAddress, ContractState newState);
-// newState = 3 (UNDER_ATTACK) → newly attackable
-// newState = 4 (PROMOTION_REQUESTED) → still attackable, 3-day countdown
+// newState = 3 (UNDER_ATTACK) -> newly attackable
 ```
 
-See [How to Find Attackable Contracts](/battlechain/how-to/find-attackable-contracts) for advanced querying techniques.
+See [How to Find Attackable Contracts](/battlechain/how-to/find-attackable-contracts) for advanced techniques.
 
-## Step 2: Evaluate the Target
-
-Before investing time in finding exploits, evaluate the opportunity:
-
-```solidity
-address agreementAddr = attackRegistry.getAgreementForContract(targetContract);
-IAgreement agreement = IAgreement(agreementAddr);
-
-// Get bounty terms
-BountyTerms memory terms = agreement.getBountyTerms();
-uint256 bountyPercent = terms.bountyPercentage;
-uint256 bountyCap = terms.bountyCapUsd;
-bool canRetain = terms.retainable;
-```
-
-### Checklist Before Attacking
-
-<AccordionGroup>
-  <Accordion title="Is the agreement valid?">
-    ```solidity
-    bool valid = safeHarborRegistry.isAgreementValid(agreementAddr);
-    ```
-    Only attack contracts with valid agreements from the official factory.
-  </Accordion>
-
-  <Accordion title="Is the contract in scope?">
-    ```solidity
-    bool inScope = agreement.isContractInScope(targetContract);
-    ```
-    Attacking out-of-scope contracts voids your Safe Harbor protection.
-  </Accordion>
-
-  <Accordion title="Are the bounty terms acceptable?">
-    Check the percentage, cap, retainability, and identity requirements. Make sure the economics work for your effort level.
-  </Accordion>
-
-  <Accordion title="Is the commitment window valid?">
-    ```solidity
-    uint256 cantChangeUntil = agreement.getCantChangeUntil();
-    ```
-    Ensure terms can't change unfavorably before you finish your attack.
-  </Accordion>
-</AccordionGroup>
-
-## Step 3: Execute Your Attack
-
-There are no restrictions on exploitation methods for in-scope contracts. Common approaches:
-
-- Reentrancy attacks
-- Flash loan exploits
-- Oracle manipulation
-- Access control bypasses
-- Logic errors in state transitions
-
-```solidity
-contract Attacker {
-    function attack(address target) external {
-        // Your exploit logic
-        IVulnerable(target).vulnerableFunction();
-    }
-}
-```
-
-## Step 4: Handle Funds Correctly
-
-This is critical. Mishandling funds can void your Safe Harbor protection.
-
-### If Retainable = true
-
-Calculate your bounty and send the rest to the recovery address:
-
-```solidity
-uint256 recovered = address(this).balance;
-uint256 bounty = (recovered * bountyPercent) / 100;
-
-// Respect the cap
-// Note: Convert bountyCapUsd to token amount using current prices
-
-// Send remainder to recovery
-payable(recoveryAddress).transfer(recovered - bounty);
-// Keep your bounty
-```
-
-### If Retainable = false
-
-Send **everything** to the recovery address. The protocol pays your bounty separately:
-
-```solidity
-payable(recoveryAddress).transfer(address(this).balance);
-```
-
-### Get the Recovery Address
-
-```solidity
-string memory recoveryStr = agreement.getAssetRecoveryAddress("eip155:627");
-```
-
-See [How to Claim Bounties](/battlechain/how-to/claim-bounties) for detailed calculation examples.
-
-## Step 5: Document Everything
-
-Keep records of:
-- Target contract and agreement addresses
-- The vulnerability exploited
-- All transaction hashes
-- Your bounty calculation (show your work)
-- Funds sent to recovery address
-
-This protects you if there's ever a dispute about your compliance with the agreement terms.
-
-## Important: Mainnet Implications
+### Mainnet Implications
 
 <Warning>
 If the vulnerability you found also exists on mainnet:
@@ -174,23 +279,23 @@ If the vulnerability you found also exists on mainnet:
 - Using a BattleChain exploit on mainnet is NOT protected by Safe Harbor
 </Warning>
 
-## Summary
-
-| Step | Action | Why |
-|------|--------|-----|
-| 1 | Find attackable contracts | Query AttackRegistry |
-| 2 | Verify agreement and terms | Ensure legal protection |
-| 3 | Execute exploit | No restrictions on method |
-| 4 | Handle funds correctly | Keep bounty, send rest to recovery |
-| 5 | Document everything | Protect yourself in disputes |
+---
 
 ## Next Steps
 
 <CardGroup cols={2}>
-  <Card title="Execute Your First Attack" icon="play" href="/battlechain/quickstart/execute-first-attack">
-    Quick-start guide with code examples
+  <Card title="Safe Harbor Protection" icon="shield" href="/battlechain/explanation/safe-harbor">
+    Understand the legal framework protecting whitehats
   </Card>
   <Card title="Bounty Terms Reference" icon="coins" href="/battlechain/reference/bounty-terms">
-    Understand all bounty configuration options
+    All bounty configuration options explained
+  </Card>
+  <Card title="Find Attackable Contracts" icon="crosshairs" href="/battlechain/how-to/find-attackable-contracts">
+    Advanced querying and monitoring techniques
+  </Card>
+  <Card title="Claim Bounties" icon="trophy" href="/battlechain/how-to/claim-bounties">
+    Detailed fund handling and calculation examples
   </Card>
 </CardGroup>
+
+</Tabs>

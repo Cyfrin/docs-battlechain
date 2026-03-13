@@ -59,12 +59,12 @@ Deploy the **exact same bytecode** you'll use on mainnet. Only change constructo
 </Tip>
 
 <Warning>
-**Required: `--legacy` flag**
+**Required: `--skip-simulation` flag**
 
-BattleChain Testnet does not support EIP-1559 transactions. All `forge script` calls must include `--legacy` or they will be rejected. Add it to every deployment and interaction script:
+Forge's local gas estimation doesn't work reliably on BattleChain. All `forge script` calls must include `--skip-simulation` or they may fail. Add it to every deployment and interaction script:
 
 ```bash
-forge script ... --legacy
+forge script ... --skip-simulation
 ```
 </Warning>
 

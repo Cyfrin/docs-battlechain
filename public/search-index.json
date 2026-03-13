@@ -100,15 +100,15 @@
   {
     "id": "/battlechain/how-to/create-agreement",
     "title": "How to Create a Safe Harbor Agreement",
-    "content": "Overview A Safe Harbor agreement defines the terms under which whitehats can attack your contracts. This guide covers all configuration options. Create the Agreement Use AgreementFactory to create your agreement: Configure Contact Details Provide emergency contacts for whitehats: Define Chain Scope Specify which contracts on which chains are covered: Child Contract Scope Options | Value | Meaning | |-------|---------| | None | Only the listed contract | | ExistingOnly | Contract + children created before agreement | | All | Contract + all children (past and future) | | FutureOnly | Contract + children created after agreement | Configure Bounty Terms Retainable vs Return-All - Retainable (true): Whitehat keeps bounty from recovered funds, sends rest to recovery - Return-All (false): Whitehat sends all funds to recovery, protocol pays bounty separately Identity Options | Level | Requirement | |-------|-------------| | Anonymous | No identity verification | | Pseudonymous | Consistent pse",
+    "content": "Overview A Safe Harbor agreement defines the terms under which whitehats can attack your contracts. This guide covers all configuration options. Quick Start with battlechain-lib The fastest way to create an agreement is with battlechain-lib, which handles chain detection, scope building, and URI selection automatically: defaultAgreementDetails auto-selects: - BattleChain: BattleChain CAIP-2 scope + BATTLECHAINSAFEHARBOR_URI - Other chains: Current chain's CAIP-2 scope + SAFEHARBORV3_URI (SEAL) createAndAdoptAgreement handles create + 14-day commitment window + adopt in one call. Manual Creation with AgreementFactory For full control, use AgreementFactory directly: Configure Contact Details Provide emergency contacts for whitehats: Define Chain Scope Specify which contracts on which chains are covered: Child Contract Scope Options | Value | Meaning | |-------|---------| | None | Only the listed contract | | ExistingOnly | Contract + children created before agreement | | All | Contract +",
     "url": "/battlechain/how-to/create-agreement",
     "category": "battlechain",
     "headings": [
       "Overview",
-      "Create the Agreement",
+      "Quick Start with battlechain-lib",
+      "Manual Creation with AgreementFactory",
       "Configure Contact Details",
-      "Define Chain Scope",
-      "Child Contract Scope Options"
+      "Define Chain Scope"
     ]
   },
   {
@@ -225,21 +225,35 @@
   {
     "id": "/battlechain/how-to/verifying-contracts",
     "title": "Verifying Contracts",
-    "content": "Overview Verifying a contract publishes its source code on the block explorer so anyone can read, audit, and interact with it. Verified contracts display a checkmark badge and expose a Contract tab with the full source, ABI, and constructor arguments. Why Verify - Transparency — whitehats and the community can review your code directly on the explorer - Trust — verified source proves the deployed bytecode matches your published code - Debugging — the explorer's zkEVM debugger can map execution traces back to source lines for verified contracts Verification Form Navigate to /contracts/verify or click Verify Contract from any unverified contract page. Required Fields Contract Address — the deployed contract address to verify. Compiler Type — choose one: | Type | Use When | |------|----------| | Solidity (single file) | Flattened single .sol file | | Solidity (multi-part) | Multiple .sol files (standard project layout) | | Vyper (JSON) | Vyper contracts with JSON input | Compiler Version ",
+    "content": "Overview Verifying a contract publishes its source code on the block explorer so anyone can read, audit, and interact with it. Verified contracts display a checkmark badge and expose a Contract tab with the full source, ABI, and constructor arguments. Why Verify - Transparency — whitehats and the community can review your code directly on the explorer - Trust — verified source proves the deployed bytecode matches your published code - Debugging — the explorer's zkEVM debugger can map execution traces back to source lines for verified contracts Quick Start with battlechain-lib If you use battlechain-lib, it ships a reusable justfile module with verification targets built in. Add this to your justfile: Then verify contracts with: The bc-verify-broadcast target automatically parses your broadcast JSON, matches deployed bytecode against your compiled artifacts, and verifies each contract — including contracts deployed through CreateX or BattleChainDeployer factories. --- Verify with Forge ",
     "url": "/battlechain/how-to/verifying-contracts",
     "category": "battlechain",
     "headings": [
       "Overview",
       "Why Verify",
-      "Verification Form",
-      "Required Fields",
-      "Source Code"
+      "Quick Start with battlechain-lib",
+      "Verify a single contract",
+      "Verify all contracts from a broadcast file (handles CreateX/BCDeploy factory creates)"
+    ]
+  },
+  {
+    "id": "/battlechain/quickstart/ai-quickstart",
+    "title": "BattleChain in 5 Prompts",
+    "content": "🤖 No coding required Your AI is the developer. You're the protocol owner. You'll deploy a real vulnerable contract to BattleChain, open it under a Safe Harbor agreement, then turn around and exploit it yourself — all by pasting prompts into Claude Code. What You'll Need Before you start, get two things in order: 1. An AI coding tool This guide is written for Claude Code, but the same prompts work with Cursor, Windsurf, or any agent that can run terminal commands. If you don't have one, install Claude Code — it takes about two minutes. 2. A wallet with BattleChain Testnet ETH You need an EVM wallet (MetaMask, Rabby, etc.) with a small amount of ETH on BattleChain Testnet. Here's how to get it: 1. Add BattleChain to your wallet | Field | Value | |-------|-------| | Network Name | BattleChain Testnet | | RPC URL | https://testnet.battlechain.com:3051 | | Chain ID | 627 | 2. Get free Sepolia ETH from the Google Cloud faucet — paste your address and request some. 0.05 ETH is plenty. 3. Bri",
+    "url": "/battlechain/quickstart/ai-quickstart",
+    "category": "battlechain",
+    "headings": [
+      "What You'll Need",
+      "How This Works",
+      "Prompt 1 — Setup",
+      "Import Your Key — Manual Step",
+      "Prompt 2 — Deploy"
     ]
   },
   {
     "id": "/battlechain/quickstart/configure-ai-tools",
     "title": "Configure Your AI Tools",
-    "content": "Why This Matters AI coding agents write your deploy scripts, scaffold your tests, and set up infrastructure. If they don't know about BattleChain, they'll deploy straight to mainnet — skipping the battle-testing step entirely. Adding a short instruction block to your project tells every AI tool to: - Deploy contracts to BattleChain first, not mainnet directly - Create a Safe Harbor agreement as part of project setup - Follow the full BattleChain workflow before promoting to production The Prompt Add the following to your AI tool's configuration file. It works with any tool that reads project-level instructions: Where to Add It Each AI tool reads instructions from a different file. Add the prompt above to whichever tools your team uses: Claude Code Add to CLAUDE.md in your project root. Claude Code loads this file automatically at the start of every session. ``bash Create or append to CLAUDE.md cat >> CLAUDE.md The docs URL https://docs.battlechain.com/llms-full.txt` is the key piece. A",
+    "content": "Why This Matters AI coding agents write your deploy scripts, scaffold your tests, and set up infrastructure. If they don't know about BattleChain, they'll deploy straight to mainnet — skipping the battle-testing step entirely. Adding a short instruction block to your project tells every AI tool to: - Deploy contracts to BattleChain first, not mainnet directly - Create a Safe Harbor agreement as part of project setup - Follow the full BattleChain workflow before promoting to production The Prompt Add the following to your AI tool's configuration file. It works with any tool that reads project-level instructions: Quickstart: Install the Skills (Recommended) The fastest way to give your AI agent BattleChain context is to install the Cyfrin skills package: This installs three skills: | Skill | What it does | |-------|-------------| | solidity | Production-grade Solidity standards: code quality, testing, security, Foundry workflows | | battlechain | BattleChain reference: deploying, Safe Ha",
     "url": "/battlechain/quickstart/configure-ai-tools",
     "category": "battlechain",
     "headings": [
@@ -262,6 +276,20 @@
       "Foundry",
       "Just",
       "A Wallet with BattleChain Testnet ETH"
+    ]
+  },
+  {
+    "id": "/battlechain/quickstart/deploy-your-contract",
+    "title": "Quickstart",
+    "content": "Deploy a vulnerable vault, create a Safe Harbor agreement, and open it for attack — the core BattleChain workflow. Pick your path and follow along. What You'll Need A Wallet with BattleChain Testnet ETH You need an EVM wallet (MetaMask, Rabby, etc.) with a small amount of ETH on BattleChain Testnet: 1. Add BattleChain to your wallet 2. Get free Sepolia ETH from the Google Cloud faucet — 0.05 ETH is plenty. 3. Bridge to BattleChain at portal.battlechain.com/bridge — select Sepolia to BattleChain Testnet and bridge your ETH. Once your BattleChain balance shows ETH, you're ready. Your Tool Claude Desktop (macOS or Linux). Claude Desktop can execute code directly — you paste prompts and it handles the rest. No terminal or IDE needed. Windows users: Claude Desktop runs on Windows, but Foundry tooling works best under WSL2. Install WSL first, then use the AI CLI tab with Claude Code inside WSL instead. An AI coding tool with terminal access. This guide uses Claude Code, but the same prompts ",
+    "url": "/battlechain/quickstart/deploy-your-contract",
+    "category": "battlechain",
+    "headings": [
+      "What You'll Need",
+      "A Wallet with BattleChain Testnet ETH",
+      "Your Tool",
+      "Step 1 — Project Setup",
+      "Step 2 — Import Your Private Key"
     ]
   },
   {
@@ -323,15 +351,15 @@
   {
     "id": "/battlechain/reference/contracts",
     "title": "Contract API Reference",
-    "content": "Deployed Addresses | Contract | Testnet | Mainnet | |----------|---------|---------| | AttackRegistry (Proxy) | 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 | TBD | | SafeHarborRegistry (Proxy) | 0xCb2A561395118895e2572A04C2D8AB8eCA8d7E5D | TBD | | AgreementFactory (Proxy) | 0x0EbBEeB3aBeF51801a53Fdd1fb263Ac0f2E3Ed36 | TBD | | BattleChainDeployer | 0x8f57054CBa2021bEE15631067dd7B7E0B43F17Dc | TBD | --- AttackRegistry Tracks attack/production status of contracts. State-Changing Functions View Functions Events --- Agreement Per-protocol Safe Harbor terms. Owner Functions View Functions --- AgreementFactory Creates Agreement contracts. --- BattleChainSafeHarborRegistry Maps protocols to agreements. --- BattleChainDeployer Deploys contracts with automatic registration. Supports all CreateX methods: - deployCreate(), deployCreateAndInit(), deployCreateClone() - deployCreate2(), deployCreate2AndInit(), deployCreate2Clone() - deployCreate3(), deployCreate3AndInit() All deployments automatically",
+    "content": "Deployed Addresses | Contract | Testnet | Mainnet | |----------|---------|---------| | AttackRegistry (Proxy) | 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 | TBD | | SafeHarborRegistry (Proxy) | 0xCb2A561395118895e2572A04C2D8AB8eCA8d7E5D | TBD | | AgreementFactory (Proxy) | 0x0EbBEeB3aBeF51801a53Fdd1fb263Ac0f2E3Ed36 | TBD | | BattleChainDeployer | 0x8f57054CBa2021bEE15631067dd7B7E0B43F17Dc | TBD | For mock Chainlink price feeds and test tokens, see Mock Contracts. Sepolia | Contract | Address | |----------|---------| | Bridgehub | 0xcea5c0ade89389dd5fc461f69ccbd812cfb7fbd8 | | ZK Chain (627) | 0x564ca3000EfF59D9a647A1B8c871f27236201D1D | | Chain Type Manager | 0x3F9A46ec287C93b74D4f144712bDb4EEdEEEEC74 | | Validator Timelock | 0x8C2a0b3C86CaA986f5dCd71f053c63Ac8324EA6f | --- AttackRegistry Tracks attack/production status of contracts. State-Changing Functions View Functions Events --- Agreement Per-protocol Safe Harbor terms. Owner Functions View Functions --- AgreementFactory Creates A",
     "url": "/battlechain/reference/contracts",
     "category": "battlechain",
     "headings": [
       "Deployed Addresses",
+      "Sepolia",
       "AttackRegistry",
       "State-Changing Functions",
-      "View Functions",
-      "Events"
+      "View Functions"
     ]
   },
   {
@@ -360,6 +388,20 @@
       "Anonymous (0)",
       "Pseudonymous (1)",
       "Named (2)"
+    ]
+  },
+  {
+    "id": "/battlechain/reference/mock-contracts",
+    "title": "Mock & Dependency Contracts",
+    "content": "BattleChain testnet includes mock versions of common mainnet dependencies and real infrastructure contracts so you can deploy your exact production bytecode — only swapping constructor parameters like oracle addresses. Mock Chainlink Price Feeds These MockV3Aggregator contracts implement the same interface as Chainlink price feeds. Contracts that consume latestRoundData() or getRoundData() on mainnet can point at these addresses on testnet without code changes. All feeds use 8 decimals, matching Chainlink's standard for USD pairs. Deployed Addresses | Pair | Address | |------|---------| | ETH/USD | 0xAA72F0168eE17aA93098eC6ECf2EEe72B46aca19 | | BTC/USD | 0xd87f56De7Fe8d2913B3B8e45C5fd983185286b66 | | LINK/USD | 0xEa8789e4f6a1d101AfF3093543FC8133c27987FD | | USDC/USD | 0x469be0Db9E0E884a2D9E64a186008C684423B79C | Interface Unlike real Chainlink feeds, anyone can update the answer on a mock aggregator. This is useful for testing oracle-dependent logic like liquidations or price-based acc",
+    "url": "/battlechain/reference/mock-contracts",
+    "category": "battlechain",
+    "headings": [
+      "Mock Chainlink Price Feeds",
+      "Deployed Addresses",
+      "Interface",
+      "Updating Prices",
+      "Test Tokens"
     ]
   },
   {
@@ -393,29 +435,29 @@
   {
     "id": "/battlechain/tutorials/deploying-contracts",
     "title": "Deploying Contracts to BattleChain",
-    "content": "This tutorial teaches you how to deploy contracts to BattleChain and why the deployment method matters for the attack mode workflow. Audience: Developers deploying contracts to BattleChain. Prerequisites: Familiarity with Solidity and smart contract deployment. Why BattleChainDeployer? BattleChain tracks which contracts are eligible for attack mode through the AttackRegistry. When you deploy via BattleChainDeployer, your contracts are automatically registered, which means: - You're recorded as the deployer on-chain - You can request attack mode without extra authorization steps - The DAO has on-chain proof of deployment origin Without BattleChainDeployer, you can still enter attack mode, but the process requires more DAO scrutiny. Deployment Methods BattleChainDeployer wraps CreateX, giving you access to all standard deployment patterns: CREATE (Simple Deployment) CREATE2 (Deterministic Address) Use CREATE2 when you need the same contract address across BattleChain and mainnet. CREATE2",
+    "content": "This tutorial teaches you how to deploy contracts to BattleChain and why the deployment method matters for the attack mode workflow. Audience: Developers deploying contracts to BattleChain. Prerequisites: Familiarity with Solidity and smart contract deployment. Using battlechain-lib (Recommended) The easiest way to deploy is with battlechain-lib, which handles address resolution, CreateX routing, and AttackRegistry registration automatically: Add the remapping to foundry.toml: Deploy with helpers Inherit BCDeploy (deploy only) or BCScript (deploy + agreement + attack mode): On BattleChain, bcDeployCreate* calls go through BattleChainDeployer, which wraps CreateX and auto-registers your contracts with the AttackRegistry. On any other supported chain (190+ EVM chains), the same functions route directly through CreateX (0xba5Ed...), giving you deterministic addresses without any code changes. Use bcDeployCreate2 when you need the same contract address across BattleChain and mainnet. The s",
     "url": "/battlechain/tutorials/deploying-contracts",
     "category": "battlechain",
     "headings": [
+      "Using battlechain-lib (Recommended)",
+      "Deploy with helpers",
+      "Available deploy helpers",
       "Why BattleChainDeployer?",
-      "Deployment Methods",
-      "CREATE (Simple Deployment)",
-      "CREATE2 (Deterministic Address)",
-      "CREATE2 with Initialization"
+      "Direct BattleChainDeployer Usage"
     ]
   },
   {
     "id": "/battlechain/tutorials/going-attackable",
     "title": "Going Attackable: End-to-End Protocol Tutorial",
-    "content": "This tutorial covers the full journey of taking your protocol from deployment to attack mode on BattleChain. You'll learn not just the mechanics, but why each step matters for your security. Audience: Protocol teams and developers preparing contracts for BattleChain. Prerequisites: An audited smart contract and test funds for liquidity. Why Go Attackable? Traditional security audits review code statically. BattleChain adds a dynamic layer: real attackers with real economic incentives trying to break your contracts. This means: - Exploits get found before mainnet — whitehats are motivated by bounties, not just reports - You control the risk — set your own bounty terms and liquidity levels - Legal protection works both ways — Safe Harbor protects whitehats, and you set the rules Part 1: Deploy Your Contracts Deploy through BattleChainDeployer so your contracts are automatically registered with the AttackRegistry. Deploy the exact same bytecode you'll use on mainnet. Only change construct",
+    "content": "This tutorial covers the full journey of taking your protocol from deployment to attack mode on BattleChain. You'll learn not just the mechanics, but why each step matters for your security. Audience: Protocol teams and developers preparing contracts for BattleChain. Prerequisites: An audited smart contract and test funds for liquidity. Why Go Attackable? Traditional security audits review code statically. BattleChain adds a dynamic layer: real attackers with real economic incentives trying to break your contracts. This means: - Exploits get found before mainnet — whitehats are motivated by bounties, not just reports - You control the risk — set your own bounty terms and liquidity levels - Legal protection works both ways — Safe Harbor protects whitehats, and you set the rules Part 1: Deploy Your Contracts The recommended approach is to use battlechain-lib, which handles BattleChainDeployer routing and AttackRegistry registration automatically: Deploy using the bcDeployCreate* helpers ",
     "url": "/battlechain/tutorials/going-attackable",
     "category": "battlechain",
     "headings": [
       "Why Go Attackable?",
       "Part 1: Deploy Your Contracts",
       "Part 2: Create Your Safe Harbor Agreement",
-      "Contact Details",
-      "Define Scope"
+      "Customizing Terms",
+      "Part 3: Request Attack Mode"
     ]
   },
   {

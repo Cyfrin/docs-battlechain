@@ -4,6 +4,7 @@ import { Steps, Step } from './Steps'
 import { Accordion, AccordionGroup } from './Accordion'
 import { Note, Tip, Warning, Danger, Info } from './Callouts'
 import { CodeGroup } from './CodeGroup'
+import { Tabs, Tab } from './Tabs'
 
 export const mdxComponents = {
   // Card components
@@ -27,6 +28,10 @@ export const mdxComponents = {
 
   // Code components
   CodeGroup,
+
+  // Tab components
+  Tabs,
+  Tab,
 }
 
 export default mdxComponents

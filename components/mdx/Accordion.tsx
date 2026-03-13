@@ -48,10 +48,10 @@ export function Accordion({ title, icon, children, defaultOpen = false }: Accord
   const IconComponent = icon ? iconMap[icon] : null
 
   return (
-    <div className="accordion-item glass rounded-lg overflow-hidden">
+    <div className="accordion-item glass rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="accordion-header w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition-colors"
+        className="accordion-header w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
       >
         <div className="flex items-center gap-3">
           {IconComponent && <IconComponent className="w-5 h-5 text-current opacity-70" strokeWidth={1.5} />}
@@ -59,21 +59,21 @@ export function Accordion({ title, icon, children, defaultOpen = false }: Accord
             {title}
           </span>
         </div>
-        <svg
-          className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${
-            isOpen ? 'rotate-180' : ''
-          }`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
+        <div className={`flex items-center justify-center w-7 h-7 rounded-md bg-gray-100 dark:bg-gray-800 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
+          <svg
+            className="w-4 h-4 text-gray-600 dark:text-gray-300"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2.5}
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </div>
       </button>
       {isOpen && (
         <div className="accordion-content p-4 pt-0 text-gray-700 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700">

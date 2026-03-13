@@ -46,10 +46,7 @@
               {
                 "group": "Quickstart",
                 "pages": [
-                  "battlechain/quickstart/ai-quickstart",
-                  "battlechain/quickstart/deploy-first-contract",
-                  "battlechain/quickstart/execute-first-attack",
-                  "battlechain/quickstart/review-first-request",
+                  "battlechain/quickstart/deploy-your-contract",
                   "battlechain/quickstart/configure-ai-tools"
                 ]
               },
@@ -96,7 +93,8 @@
                     "group": "For the DAO",
                     "pages": [
                       "battlechain/how-to/approve-reject-requests",
-                      "battlechain/how-to/instant-promotion"
+                      "battlechain/how-to/instant-promotion",
+                      "battlechain/quickstart/review-first-request"
                     ]
                   }
                 ]
