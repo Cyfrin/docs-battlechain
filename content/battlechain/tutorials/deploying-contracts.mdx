@@ -26,6 +26,18 @@ remappings = [
 ]
 ```
 
+<Warning>
+**Contract size limit: 24,576 bytes**
+
+BattleChain enforces the standard EVM contract size limit (EIP-170). If your compiled bytecode exceeds 24,576 bytes, deployment will fail. Enable the Solidity optimizer in `foundry.toml` to reduce bytecode size:
+
+```toml
+[profile.default]
+optimizer = true
+optimizer_runs = 200
+```
+</Warning>
+
 ### Deploy with helpers
 
 Inherit `BCDeploy` (deploy only) or `BCScript` (deploy + agreement + attack mode):
