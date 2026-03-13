@@ -341,3 +341,13 @@ cast nonce --rpc-url https://testnet.battlechain.com:3051 <your-wallet-address>
 ### Transaction rejected: EIP-1559 not supported
 
 If you see an error like `transaction type not supported` or `only legacy transactions allowed`, add `--legacy` to your `forge script` command. See the warning above in Step 1.
+
+### Contract too large to deploy
+
+BattleChain enforces the standard EVM contract size limit of 24,576 bytes (EIP-170). If deployment fails with a size-related error, enable the Solidity optimizer in `foundry.toml`:
+
+```toml
+[profile.default]
+optimizer = true
+optimizer_runs = 200
+```
