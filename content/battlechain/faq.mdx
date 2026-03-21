@@ -1,0 +1,77 @@
+---
+title: "FAQ & Troubleshooting"
+description: "Common issues and questions when working with BattleChain."
+---
+
+## Transactions
+
+### Stuck or pending transactions
+
+Transactions can get stuck if submitted without `--legacy` or with insufficient gas. Send a no-op replacement at the same nonce with a higher gas price:
+
+```bash
+cast send \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com:3051 \
+  --nonce <stuck-nonce> \
+  --gas-price <higher-price-in-wei> \
+  --legacy \
+  --value 0 \
+  0x0000000000000000000000000000000000000000
+```
+
+Find the stuck nonce:
+
+```bash
+cast nonce --rpc-url https://testnet.battlechain.com:3051 <your-wallet-address>
+```
+
+You can also reset your MetaMask account (Settings → Advanced → Reset Account) to clear pending transactions.
+
+### Transaction type not supported
+
+BattleChain Testnet only accepts legacy (type 0) transactions — EIP-1559 is not supported. Add `--legacy` to all `forge script` and `cast send` commands.
+
+## Deploying Contracts
+
+### Forge scripts failing
+
+Add `--skip-simulation` to any failing `forge script` command. Forge's local gas estimation doesn't work reliably on BattleChain. The [battlechain-starter](https://github.com/Cyfrin/battlechain-starter) justfile already includes this flag.
+
+### Out-of-gas failures
+
+If a `forge script` command fails with a vague error even with `--skip-simulation`, try adding `-g 300` to use 3x the estimated gas.
+
+### `transaction's gas limit exceeds block's gas limit`
+
+BattleChain has a 100M block gas limit. The `-g` flag in forge script multiplies the estimated gas — if the estimate is high (e.g., large contract deployments), the multiplied value can exceed the block limit. Lower `-g` from 300 to 200 or 150. If a single contract deployment still exceeds 100M gas, the contract is too large and needs to be split.
+
+### Contract too large
+
+If you see:
+
+```
+Failed to build transaction: AnyTxType(2) transaction can't be built due to missing keys: ["gas_limit"]
+```
+
+This usually means your contract exceeds the size limit. Try splitting it into smaller contracts or reducing the contract size.
+
+## Requesting Attack Mode
+
+| Error | Solution |
+|-------|----------|
+| `InvalidAgreement` | Agreement not from official factory |
+| `NotAgreementOwner` | Only the agreement owner can request |
+| `AgreementOwnerNotAuthorized` | Call `authorizeAgreementOwner()` for each contract |
+| `InsufficientCommitment` | Extend commitment window to 7+ days |
+| `EmptyContractArray` | Add contracts to agreement's BattleChain scope |
+
+## Network & Wallet
+
+### Cannot connect to RPC
+
+Ensure the RPC URL is entered exactly as `https://testnet.battlechain.com:3051`.
+
+### Wrong chain ID
+
+Remove the BattleChain network from your wallet and re-add it with Chain ID `627`. See [Add BattleChain to MetaMask](/battlechain/how-to/add-battlechain-to-metamask).
