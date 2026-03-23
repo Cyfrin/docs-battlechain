@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -720,6 +721,7 @@ h1 a, h2 a, h3 a, h4 a {
   text-decoration: none !important;
   color: inherit !important;
 }
+
 
 /* CodeHawks - Orange */
 body.product-codehawks h1 {

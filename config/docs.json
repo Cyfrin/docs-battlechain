@@ -1,6 +1,4 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
   "name": "Battlechain Docs",
   "colors": {
     "primary": "#FFFFFF",
