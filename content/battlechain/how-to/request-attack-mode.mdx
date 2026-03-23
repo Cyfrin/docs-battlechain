@@ -75,8 +75,9 @@ This validates:
 
 ## For Non-BattleChainDeployer Contracts
 
-If contracts weren't deployed via BattleChainDeployer:
+If your contracts weren't deployed via `BattleChainDeployer`, call `requestUnderAttackByNonAuthorized` instead. This must be called by the **agreement owner** — the same address that created the agreement via `AgreementFactory`.
 
+<CodeGroup labels="cast, Foundry script">
 ```bash
 cast send 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \
   "requestUnderAttackByNonAuthorized(address)" $AGREEMENT_ADDRESS \
@@ -84,6 +85,34 @@ cast send 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \
   --rpc-url https://testnet.battlechain.com:3051 \
   --legacy
 ```
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import {Script} from "forge-std/Script.sol";
+
+interface IAttackRegistry {
+    function requestUnderAttackByNonAuthorized(address) external;
+    function getAgreementState(address) external view returns (uint8);
+}
+
+contract RequestAttackModeNonAuthorized is Script {
+    IAttackRegistry constant REGISTRY =
+        IAttackRegistry(0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1);
+
+    function run() external {
+        address agreement = vm.envAddress("AGREEMENT_ADDRESS");
+
+        vm.startBroadcast();
+        REGISTRY.requestUnderAttackByNonAuthorized(agreement);
+        vm.stopBroadcast();
+
+        uint8 state = REGISTRY.getAgreementState(agreement);
+        require(state == 2, "Expected ATTACK_REQUESTED (2)");
+    }
+}
+```
+</CodeGroup>
 
 <Warning>
 This path requires extra DAO scrutiny since there's no on-chain proof of deployment.
