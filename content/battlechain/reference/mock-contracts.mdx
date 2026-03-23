@@ -167,7 +167,7 @@ The value `5000000000` is `5000 * 1e6` (USDC has 6 decimals).
 
 ## Mock Venus Protocol
 
-A mock [Venus](https://venus.io/) lending protocol deployment with a Comptroller and five vToken markets. Implements the same Compound-style interface (supply, borrow, redeem, repay) so contracts that integrate with Venus on mainnet work on testnet without code changes.
+A mock [Venus](https://venus.io/) lending protocol deployment with a Comptroller and six vToken markets. Implements the same Compound-style interface (supply, borrow, redeem, repay) so contracts that integrate with Venus on mainnet work on testnet without code changes.
 
 All markets are listed with a **0.75 collateral factor**. The mock Comptroller always reports accounts as healthy with 1M liquidity — it does not enforce real collateral checks.
 
@@ -175,12 +175,13 @@ All markets are listed with a **0.75 collateral factor**. The mock Comptroller a
 
 | Contract | Address |
 |----------|---------|
-| Comptroller | <code>0xc75734fFd650286269EE8bC049424Cb08F9175ee</code> |
-| vUSDC | <code>0x5982EC7f7B42F5490695EE14991aA35E6F6258bD</code> |
-| vWETH | <code>0xB6694A4678F4a548486376Ed8C4e51C83Ce35d8a</code> |
-| vWBTC | <code>0xcA867A99a2a7586209C662F4060f27c3E734f947</code> |
-| vDAI | <code>0xb1E00Ef2B0BBb2d3d4A899A4f31F0F6853359737</code> |
-| vBNB | <code>0x96360B56BC70B09eb6F3870B3f48AFeA32e60EeE</code> |
+| Comptroller | <code>0xAE582334FCf2f932ea1B4D0B484aC34A8184B2e8</code> |
+| vUSDC | <code>0x91442C344c069e9B62f068C6F7075E9B403840E0</code> |
+| vWETH | <code>0x2A7b8d39e8544517F0Ce0ff4ac895580c79ff692</code> |
+| vWBTC | <code>0x9F01733b6B26404495b38fe69f20D5A8252EFd14</code> |
+| vDAI | <code>0x7ea22541B90794ADa16E5b42A5FF2bf7489e587c</code> |
+| vBNB | <code>0x11e4B3Bbe7Fc26514b8D13383a3FB30E3Ced1F62</code> |
+| vUSDT | <code>0x2D9680c4cEfe5E36bFB0B78c48dd1d8A06090e8d</code> |
 
 The vToken markets use the [test tokens](#test-tokens) as their underlying assets. vBNB uses native ETH.
 
@@ -202,7 +203,7 @@ The vToken markets use the [test tokens](#test-tokens) as their underlying asset
     ```
   </Accordion>
 
-  <Accordion title="VToken (vUSDC, vWETH, vWBTC, vDAI)">
+  <Accordion title="VToken (vUSDC, vWETH, vWBTC, vDAI, vUSDT)">
     Compound-style cToken for ERC-20 underlyings. All functions return `0` on success.
 
     ```solidity
@@ -237,12 +238,12 @@ To supply 1,000 USDC to vUSDC (approve first, then mint):
 ```bash
 cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
   "approve(address,uint256)" \
-  0x5982EC7f7B42F5490695EE14991aA35E6F6258bD 1000000000 \
+  0x91442C344c069e9B62f068C6F7075E9B403840E0 1000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
   --private-key $PRIVATE_KEY \
   --legacy
 
-cast send 0x5982EC7f7B42F5490695EE14991aA35E6F6258bD \
+cast send 0x91442C344c069e9B62f068C6F7075E9B403840E0 \
   "mint(uint256)" 1000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
   --private-key $PRIVATE_KEY \
@@ -252,7 +253,7 @@ cast send 0x5982EC7f7B42F5490695EE14991aA35E6F6258bD \
 To supply native ETH to vBNB:
 
 ```bash
-cast send 0x96360B56BC70B09eb6F3870B3f48AFeA32e60EeE \
+cast send 0x11e4B3Bbe7Fc26514b8D13383a3FB30E3Ced1F62 \
   "mint()" \
   --value 1ether \
   --rpc-url $BATTLECHAIN_RPC_URL \
@@ -290,6 +291,64 @@ A mock [Uniswap V4](https://docs.uniswap.org/contracts/v4/overview) PoolManager 
 
 ---
 
+## Mock KyberSwap Router
+
+A mock [KyberSwap](https://kyberswap.com/) aggregator router with admin-configurable exchange rates. Implements the same `swap` and `swapSimpleMode` interface so contracts that integrate with KyberSwap on mainnet work on testnet without code changes.
+
+**Simplifications:**
+- No actual DEX aggregation or routing
+- Exchange rates are admin-set, not market-driven
+- No multi-hop routing (single pair swaps only)
+
+### Deployed Addresses
+
+| Contract | Address |
+|----------|---------|
+| MockKyberSwapRouter | <code>0x5A8Eec040E6CDD11cf78A154a5485677aEeb4d0b</code> |
+
+### Interface
+
+<AccordionGroup>
+  <Accordion title="Swap functions">
+    ```solidity
+    function swap(
+        SwapExecutionParams calldata execution
+    ) external payable returns (uint256 returnAmount, uint256 gasUsed);
+
+    function swapSimpleMode(
+        address caller,
+        SwapDescription calldata desc,
+        bytes calldata executorData,
+        bytes calldata clientData
+    ) external returns (uint256 returnAmount);
+    ```
+  </Accordion>
+
+  <Accordion title="Types">
+    ```solidity
+    struct SwapDescription {
+        address srcToken;
+        address dstToken;
+        address srcReceiver;
+        address dstReceiver;
+        uint256 amount;
+        uint256 minReturnAmount;
+        uint256 flags;
+    }
+
+    struct SwapExecutionParams {
+        address callTarget;
+        address approveTarget;
+        bytes targetData;
+        SwapDescription desc;
+        bytes clientData;
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+---
+
 ## Mock Euler V2
 
 A mock [Euler V2](https://docs.euler.finance/) deployment with the Ethereum Vault Connector (EVC) and two lending vaults.
@@ -303,6 +362,136 @@ A mock [Euler V2](https://docs.euler.finance/) deployment with the Ethereum Vaul
 | eWETH Vault | <code>0x38aF9d1C638C43d4340a700A854721dD5cdCf974</code> |
 
 The vaults use the [test tokens](#test-tokens) as their underlying assets (USDC and WETH respectively).
+
+---
+
+## Mock Morpho Blue
+
+A mock [Morpho Blue](https://docs.morpho.org/) lending protocol deployment. Implements the core supply, borrow, collateral, and liquidation interface so contracts that integrate with Morpho on mainnet work on testnet without code changes.
+
+**Simplifications:**
+- No interest accrual (rates always zero)
+- No oracle price validation (liquidation is admin-gated)
+- 1:1 share-to-asset ratio (no share price divergence)
+
+### Deployed Addresses
+
+| Contract | Address |
+|----------|---------|
+| MockMorpho | <code>0x102CdAF4B7097752f2Bb336c6cDf39f0aBBbb58c</code> |
+
+### Markets
+
+Three markets are pre-configured with an 80% liquidation LTV. Markets are identified by their `Id` (keccak256 of the market parameters).
+
+| Market | Id |
+|--------|----|
+| USDC/WETH | <code>0x9c975e07b7926e2fc62ff54950968875656e5a416cedeb289bd55e3f83c422a2</code> |
+| USDC/WBTC | <code>0x222fa6bbdaa780faeb791457ebe4cbae616e488a622fba3d5d191bd93151a5b8</code> |
+| WETH/WBTC | <code>0xf3d5303bd0352a06c05b2c8903aa4f076b87e0d0c9e375487c59205d41e0e647</code> |
+
+Market names are formatted as **loanToken/collateralToken** — e.g., USDC/WETH means borrow USDC against WETH collateral. All markets use the [test tokens](#test-tokens).
+
+### Interface
+
+<AccordionGroup>
+  <Accordion title="Core lending functions">
+    ```solidity
+    function supply(
+        MarketParams calldata marketParams,
+        uint256 assets,
+        uint256 shares,
+        address onBehalf,
+        bytes calldata data
+    ) external returns (uint256 assetsSupplied, uint256 sharesSupplied);
+
+    function withdraw(
+        MarketParams calldata marketParams,
+        uint256 assets,
+        uint256 shares,
+        address onBehalf,
+        address receiver
+    ) external returns (uint256 assetsWithdrawn, uint256 sharesWithdrawn);
+
+    function borrow(
+        MarketParams calldata marketParams,
+        uint256 assets,
+        uint256 shares,
+        address onBehalf,
+        address receiver
+    ) external returns (uint256 assetsBorrowed, uint256 sharesBorrowed);
+
+    function repay(
+        MarketParams calldata marketParams,
+        uint256 assets,
+        uint256 shares,
+        address onBehalf,
+        bytes calldata data
+    ) external returns (uint256 assetsRepaid, uint256 sharesRepaid);
+
+    function supplyCollateral(
+        MarketParams calldata marketParams,
+        uint256 assets,
+        address onBehalf,
+        bytes calldata data
+    ) external;
+
+    function withdrawCollateral(
+        MarketParams calldata marketParams,
+        uint256 assets,
+        address onBehalf,
+        address receiver
+    ) external;
+    ```
+  </Accordion>
+
+  <Accordion title="View functions">
+    ```solidity
+    function position(Id id, address user)
+        external view returns (
+            uint256 supplyShares,
+            uint128 borrowShares,
+            uint128 collateral
+        );
+
+    function market(Id id)
+        external view returns (
+            uint128 totalSupplyAssets,
+            uint128 totalSupplyShares,
+            uint128 totalBorrowAssets,
+            uint128 totalBorrowShares,
+            uint128 lastUpdate,
+            uint128 fee
+        );
+
+    function idToMarketParams(Id id)
+        external view returns (MarketParams memory);
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Supplying and Borrowing
+
+To supply 1,000 USDC to the USDC/WETH market (approve first, then supply):
+
+```bash
+cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
+  "approve(address,uint256)" \
+  0x102CdAF4B7097752f2Bb336c6cDf39f0aBBbb58c 1000000000 \
+  --rpc-url $BATTLECHAIN_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --legacy
+
+cast send 0x102CdAF4B7097752f2Bb336c6cDf39f0aBBbb58c \
+  "supply((address,address,address,address,uint256),uint256,uint256,address,bytes)" \
+  "(0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE,0x4CAc28Fc96bb8fa0e6F94ef0E579384902142f42,0x0000000000000000000000000000000000000001,0x0000000000000000000000000000000000000002,800000000000000000)" \
+  1000000000 0 $YOUR_ADDRESS 0x \
+  --rpc-url $BATTLECHAIN_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --legacy
+```
+
+The value `1000000000` is `1000 * 1e6` (USDC has 6 decimals).
 
 ---
 
