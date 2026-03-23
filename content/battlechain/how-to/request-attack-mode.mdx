@@ -15,11 +15,56 @@ Before requesting:
 2. Agreement created via `AgreementFactory`
 3. Agreement adopted via `adoptSafeHarbor()`
 4. Commitment window extends at least 7 days
+<Network title="Testnet">
 
 ## Request Attack Mode
 
+Call `requestUnderAttack` on the `AttackRegistry`:
+
+<CodeGroup labels="cast, Foundry script">
+```bash
+cast send 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \
+  "requestUnderAttack(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com:3051 \
+  --legacy
+```
 ```solidity
-attackRegistry.requestUnderAttack(agreementAddress);
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import {Script} from "forge-std/Script.sol";
+
+interface IAttackRegistry {
+    function requestUnderAttack(address) external;
+    function getAgreementState(address) external view returns (uint8);
+}
+
+contract RequestAttackMode is Script {
+    IAttackRegistry constant REGISTRY =
+        IAttackRegistry(0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1);
+
+    function run() external {
+        address agreement = vm.envAddress("AGREEMENT_ADDRESS");
+
+        vm.startBroadcast();
+        REGISTRY.requestUnderAttack(agreement);
+        vm.stopBroadcast();
+
+        uint8 state = REGISTRY.getAgreementState(agreement);
+        require(state == 2, "Expected ATTACK_REQUESTED (2)");
+    }
+}
+```
+</CodeGroup>
+
+Run the Foundry script with:
+
+```bash
+forge script script/RequestAttackMode.s.sol \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com:3051 \
+  --broadcast --legacy
 ```
 
 This validates:
@@ -32,8 +77,12 @@ This validates:
 
 If contracts weren't deployed via BattleChainDeployer:
 
-```solidity
-attackRegistry.requestUnderAttackByNonAuthorized(agreementAddress);
+```bash
+cast send 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \
+  "requestUnderAttackByNonAuthorized(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com:3051 \
+  --legacy
 ```
 
 <Warning>
@@ -44,21 +93,29 @@ This path requires extra DAO scrutiny since there's no on-chain proof of deploym
 
 To go directly to production without attack testing:
 
-```solidity
-attackRegistry.goToProduction(agreementAddress);
+```bash
+cast send 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \
+  "goToProduction(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com:3051 \
+  --legacy
 ```
 
 This immediately sets state to `PRODUCTION` with no Safe Harbor protection.
 
 ## Check Request Status
 
-```solidity
-IAttackRegistry.ContractState state = attackRegistry.getAgreementState(agreementAddress);
-
-// 2 = ATTACK_REQUESTED (waiting for DAO)
-// 3 = UNDER_ATTACK (approved!)
-// 0 = NOT_DEPLOYED (rejected or not requested)
+```bash
+cast call 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \
+  "getAgreementState(address)(uint8)" $AGREEMENT_ADDRESS \
+  --rpc-url https://testnet.battlechain.com:3051
 ```
+
+| Output | Meaning |
+|--------|---------|
+| `0` | `NOT_DEPLOYED` — rejected or not requested |
+| `2` | `ATTACK_REQUESTED` — waiting for DAO |
+| `3` | `UNDER_ATTACK` — approved |
 
 ## What Happens Next
 
@@ -68,7 +125,7 @@ IAttackRegistry.ContractState state = attackRegistry.getAgreementState(agreement
 | DAO Rejects | Immediate → `NOT_DEPLOYED` |
 | DAO Takes No Action | 14 days → `PRODUCTION` (auto-promote) |
 
-## Testnet: Instant Approval
+## Instant Approval (Testnet Only)
 
 On testnet the registry moderator is a `MockRegistryModerator` — a permissionless contract that forwards any `approveAttack` call straight to the `AttackRegistry`. You can approve your own request immediately:
 
@@ -80,9 +137,74 @@ cast send 0x6C2DFbdF0714FC8CE065039911758b2821818745 \
   --legacy
 ```
 
+</Network>
+<Network title="Mainnet">
+
 <Warning>
-The `MockRegistryModerator` is testnet-only. On mainnet the DAO moderator is a controlled address — approval requires a real governance action.
+Mainnet is not yet live. Contract addresses and RPC URL will be published here when mainnet launches.
 </Warning>
+
+## Request Attack Mode
+
+Call `requestUnderAttack` on the `AttackRegistry`:
+
+```bash
+cast send $ATTACK_REGISTRY \
+  "requestUnderAttack(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url $BATTLECHAIN_RPC_URL \
+  --legacy
+```
+
+## For Non-BattleChainDeployer Contracts
+
+```bash
+cast send $ATTACK_REGISTRY \
+  "requestUnderAttackByNonAuthorized(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url $BATTLECHAIN_RPC_URL \
+  --legacy
+```
+
+<Warning>
+This path requires extra DAO scrutiny since there's no on-chain proof of deployment.
+</Warning>
+
+## Skip Attack Mode Entirely
+
+```bash
+cast send $ATTACK_REGISTRY \
+  "goToProduction(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url $BATTLECHAIN_RPC_URL \
+  --legacy
+```
+
+This immediately sets state to `PRODUCTION` with no Safe Harbor protection.
+
+## Check Request Status
+
+```bash
+cast call $ATTACK_REGISTRY \
+  "getAgreementState(address)(uint8)" $AGREEMENT_ADDRESS \
+  --rpc-url $BATTLECHAIN_RPC_URL
+```
+
+| Output | Meaning |
+|--------|---------|
+| `0` | `NOT_DEPLOYED` — rejected or not requested |
+| `2` | `ATTACK_REQUESTED` — waiting for DAO |
+| `3` | `UNDER_ATTACK` — approved |
+
+## What Happens Next
+
+| Outcome | Timeline |
+|---------|----------|
+| DAO Approves | Immediate → `UNDER_ATTACK` |
+| DAO Rejects | Immediate → `NOT_DEPLOYED` |
+| DAO Takes No Action | 14 days → `PRODUCTION` (auto-promote) |
+
+</Network>
 
 ## Troubleshooting
 

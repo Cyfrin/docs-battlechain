@@ -707,9 +707,18 @@ body.product-battlechain .sidebar-link-active {
 
 .prose h1,
 .prose h2,
+.prose h3,
+.prose h4,
 .dark .prose h1,
-.dark .prose h2 {
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4 {
   font-weight: 700;
+}
+
+h1 a, h2 a, h3 a, h4 a {
+  text-decoration: none !important;
+  color: inherit !important;
 }
 
 /* CodeHawks - Orange */
