@@ -318,6 +318,71 @@ A mock [Chainlink CCIP](https://docs.chain.link/ccip) router for testing cross-c
 
 ---
 
+## Mock Teleporter Messenger
+
+A mock [Avalanche Teleporter](https://github.com/ava-labs/teleporter) messenger for testing cross-chain message encoding and dispatch. Implements the full `ITeleporterMessenger` interface so contracts that use Teleporter on Avalanche mainnet work on testnet without code changes.
+
+**Limitations:**
+- No actual cross-chain delivery (requires Avalanche Warp Messaging)
+- `receiveCrossChainMessage` is admin-only (no Warp precompile on BattleChain)
+- Fee collection accepts tokens but doesn't route to relayers
+
+### Deployed Addresses
+
+| Contract | Address |
+|----------|---------|
+| MockTeleporterMessenger | <code>0x43C6D810Cf80b8642741fe907302f69619ee1491</code> |
+
+### Interface
+
+<AccordionGroup>
+  <Accordion title="Sending messages">
+    ```solidity
+    function sendCrossChainMessage(
+        TeleporterMessageInput calldata messageInput
+    ) external returns (bytes32 messageID);
+
+    function retrySendCrossChainMessage(
+        TeleporterMessage calldata message
+    ) external;
+
+    function addFeeAmount(
+        bytes32 messageID,
+        address feeTokenAddress,
+        uint256 additionalFeeAmount
+    ) external;
+    ```
+  </Accordion>
+
+  <Accordion title="View functions">
+    ```solidity
+    function getMessageHash(bytes32 messageID)
+        external view returns (bytes32);
+    function messageReceived(bytes32 messageID)
+        external view returns (bool);
+    function getRelayerRewardAddress(bytes32 messageID)
+        external view returns (address);
+    function getFeeInfo(bytes32 messageID)
+        external view returns (address, uint256);
+    function getNextMessageID(bytes32 destinationBlockchainID)
+        external view returns (bytes32);
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Sending a Cross-Chain Message
+
+```bash
+cast send 0x43C6D810Cf80b8642741fe907302f69619ee1491 \
+  "sendCrossChainMessage((bytes32,address,address,(address,uint256),uint256,address[],bytes))" \
+  "(0x0000000000000000000000000000000000000000000000000000000000000001,0xYOUR_DESTINATION_ADDRESS,0xYOUR_DESTINATION_ADDRESS,(0x0000000000000000000000000000000000000000,0),200000,\[\],0x1234)" \
+  --rpc-url $BATTLECHAIN_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --legacy
+```
+
+---
+
 ## Safe (Gnosis Safe)
 
 The full [Safe](https://docs.safe.global/) smart account infrastructure is deployed on BattleChain testnet. These are real Safe contracts (not mocks) — protocols that use Safe multisigs for governance, treasury, or access control can use the same addresses and deployment patterns as on mainnet.
