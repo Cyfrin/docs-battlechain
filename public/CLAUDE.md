@@ -21,11 +21,11 @@ Full documentation: https://docs.battlechain.com/llms-full.txt
 
 | Contract | Address |
 |----------|---------|
-| AttackRegistry (Proxy) | `0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1` |
-| SafeHarborRegistry (Proxy) | `0xCb2A561395118895e2572A04C2D8AB8eCA8d7E5D` |
-| AgreementFactory (Proxy) | `0x0EbBEeB3aBeF51801a53Fdd1fb263Ac0f2E3Ed36` |
-| BattleChainDeployer | `0x8f57054CBa2021bEE15631067dd7B7E0B43F17Dc` |
-| MockRegistryModerator | `0x6C2DFbdF0714FC8CE065039911758b2821818745` |
+| AttackRegistry (Proxy) | `0xdD029a6374095EEb4c47a2364Ce1D0f47f007350` |
+| SafeHarborRegistry (Proxy) | `0x0A652e265336a0296816ac4D8400880E3e537c24` |
+| AgreementFactory (Proxy) | `0x2BEe2970f10FDc2aeA28662Bb6f6a501278eBd46` |
+| BattleChainDeployer | `0x74269804941119554460956f16Fe82Fbe4B90448` |
+| MockRegistryModerator | `0x1bC64E6F187a47D136106784f4E9182801535BD3` |
 
 ### Mock Dependencies (Testnet)
 
@@ -165,9 +165,9 @@ contract Deploy is BCScript {
 1. **Deploy** contracts via `bcDeployCreate` / `bcDeployCreate2` — on BattleChain this registers with `AttackRegistry` automatically
 2. **Create a Safe Harbor agreement** via `createAndAdoptAgreement` — defines scope, bounty terms, and recovery address
 3. **Request attack mode** (BattleChain only) — `requestAttackMode(agreement)` → state becomes `ATTACK_REQUESTED`
-4. **Approve (testnet)** — call `approveAttack(agreementAddress)` on the `MockRegistryModerator` (`0x6C2DFbdF0714FC8CE065039911758b2821818745`) — permissionless, instant approval. On mainnet this is a controlled DAO action.
+4. **Approve (testnet)** — call `approveAttack(agreementAddress)` on the `MockRegistryModerator` (`0x1bC64E6F187a47D136106784f4E9182801535BD3`) — permissionless, instant approval. On mainnet this is a controlled DAO action.
    ```bash
-   cast send 0x6C2DFbdF0714FC8CE065039911758b2821818745 "approveAttack(address)" <agreementAddress> --account battlechain --rpc-url https://testnet.battlechain.com:3051 --legacy
+   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" <agreementAddress> --account battlechain --rpc-url https://testnet.battlechain.com:3051 --legacy
    ```
    → state becomes `UNDER_ATTACK`
 5. **Promote to production** — `attackRegistry.promote(agreementAddress)` → 3-day countdown, then `PRODUCTION`

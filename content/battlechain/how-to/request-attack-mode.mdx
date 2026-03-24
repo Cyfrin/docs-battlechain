@@ -23,7 +23,7 @@ Call `requestUnderAttack` on the `AttackRegistry`:
 
 <CodeGroup labels="cast, Foundry script">
 ```bash
-cast send 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \
+cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
   "requestUnderAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com:3051 \
@@ -42,7 +42,7 @@ interface IAttackRegistry {
 
 contract RequestAttackMode is Script {
     IAttackRegistry constant REGISTRY =
-        IAttackRegistry(0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1);
+        IAttackRegistry(0xdD029a6374095EEb4c47a2364Ce1D0f47f007350);
 
     function run() external {
         address agreement = vm.envAddress("AGREEMENT_ADDRESS");
@@ -79,7 +79,7 @@ If your contracts weren't deployed via `BattleChainDeployer`, call `requestUnder
 
 <CodeGroup labels="cast, Foundry script">
 ```bash
-cast send 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \
+cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
   "requestUnderAttackByNonAuthorized(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com:3051 \
@@ -98,7 +98,7 @@ interface IAttackRegistry {
 
 contract RequestAttackModeNonAuthorized is Script {
     IAttackRegistry constant REGISTRY =
-        IAttackRegistry(0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1);
+        IAttackRegistry(0xdD029a6374095EEb4c47a2364Ce1D0f47f007350);
 
     function run() external {
         address agreement = vm.envAddress("AGREEMENT_ADDRESS");
@@ -123,7 +123,7 @@ This path requires extra DAO scrutiny since there's no on-chain proof of deploym
 To go directly to production without attack testing:
 
 ```bash
-cast send 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \
+cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
   "goToProduction(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com:3051 \
@@ -135,7 +135,7 @@ This immediately sets state to `PRODUCTION` with no Safe Harbor protection.
 ## Check Request Status
 
 ```bash
-cast call 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \
+cast call 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
   "getAgreementState(address)(uint8)" $AGREEMENT_ADDRESS \
   --rpc-url https://testnet.battlechain.com:3051
 ```
@@ -159,7 +159,7 @@ cast call 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \
 On testnet the registry moderator is a `MockRegistryModerator` — a permissionless contract that forwards any `approveAttack` call straight to the `AttackRegistry`. You can approve your own request immediately:
 
 ```bash
-cast send 0x6C2DFbdF0714FC8CE065039911758b2821818745 \
+cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com:3051 \

@@ -267,7 +267,7 @@ Do the following in order:
 
 1. Run `just request-attack-mode` to submit the vault for DAO review
 2. On testnet, approve the request immediately using the MockRegistryModerator:
-   cast send 0x6C2DFbdF0714FC8CE065039911758b2821818745 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com:3051 --legacy
+   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com:3051 --legacy
 3. Run `just check-state` and confirm the output is 3
 ```
 
@@ -276,7 +276,7 @@ Do the following in order:
 
 1. Run `just request-attack-mode` to submit the vault for DAO review
 2. On testnet, approve the request immediately using the MockRegistryModerator:
-   cast send 0x6C2DFbdF0714FC8CE065039911758b2821818745 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com:3051 --legacy
+   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com:3051 --legacy
 3. Run `just check-state` and confirm the output is 3
 ```
 
@@ -289,7 +289,7 @@ just request-attack-mode
 On testnet, the DAO moderator is a permissionless contract — approve your own request immediately:
 
 ```bash
-cast send 0x6C2DFbdF0714FC8CE065039911758b2821818745 \
+cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com:3051 \
@@ -1964,7 +1964,7 @@ IAttackRegistry.ContractState state = attackRegistry.getAgreementState(agreement
 On testnet the registry moderator is a `MockRegistryModerator` — a permissionless contract that forwards any `approveAttack` call straight to the `AttackRegistry`. You can approve your own request immediately:
 
 ```bash
-cast send 0x6C2DFbdF0714FC8CE065039911758b2821818745 \
+cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com:3051 \
@@ -2541,7 +2541,7 @@ Actions taken:
 Watch for `AgreementStateChanged` events where `newState = 2` (`ATTACK_REQUESTED`), or query directly:
 
 ```bash
-cast call 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \
+cast call 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
   "getAgreementState(address)(uint8)" \
   $AGREEMENT_ADDRESS \
   --rpc-url https://testnet.battlechain.com:3051
@@ -2617,7 +2617,7 @@ for (uint i = 0; i < contracts.length; i++) {
 ### Approve
 
 ```bash
-cast send 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \
+cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
   "approveAttack(address)" \
   $AGREEMENT_ADDRESS \
   --rpc-url https://testnet.battlechain.com:3051 \
@@ -2629,7 +2629,7 @@ This moves the agreement to `UNDER_ATTACK`, enables Safe Harbor protection, and 
 ### Reject
 
 ```bash
-cast send 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 \
+cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
   "rejectAttackRequest(address)" \
   $AGREEMENT_ADDRESS \
   --rpc-url https://testnet.battlechain.com:3051 \
@@ -2669,10 +2669,10 @@ This returns the agreement to `NOT_DEPLOYED`. The protocol can fix whatever was 
 
 | Contract | Testnet | Mainnet |
 |----------|---------|---------|
-| AttackRegistry (Proxy) | 0x9E62988ccA776ff6613Fa68D34c9AB5431Ce57e1 | TBD |
-| SafeHarborRegistry (Proxy) | 0xCb2A561395118895e2572A04C2D8AB8eCA8d7E5D | TBD |
-| AgreementFactory (Proxy) | 0x0EbBEeB3aBeF51801a53Fdd1fb263Ac0f2E3Ed36 | TBD |
-| BattleChainDeployer | 0x8f57054CBa2021bEE15631067dd7B7E0B43F17Dc | TBD |
+| AttackRegistry (Proxy) | 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 | TBD |
+| SafeHarborRegistry (Proxy) | 0x0A652e265336a0296816ac4D8400880E3e537c24 | TBD |
+| AgreementFactory (Proxy) | 0x2BEe2970f10FDc2aeA28662Bb6f6a501278eBd46 | TBD |
+| BattleChainDeployer | 0x74269804941119554460956f16Fe82Fbe4B90448 | TBD |
 
 For mock Chainlink price feeds and test tokens, see [Mock Contracts](/battlechain/reference/mock-contracts).
 
