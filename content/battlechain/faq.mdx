@@ -12,7 +12,7 @@ Transactions can get stuck if submitted without `--legacy` or with insufficient 
 ```bash
 cast send \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com:3051 \
+  --rpc-url https://testnet.battlechain.com \
   --nonce <stuck-nonce> \
   --gas-price <higher-price-in-wei> \
   --legacy \
@@ -23,7 +23,7 @@ cast send \
 Find the stuck nonce:
 
 ```bash
-cast nonce --rpc-url https://testnet.battlechain.com:3051 <your-wallet-address>
+cast nonce --rpc-url https://testnet.battlechain.com <your-wallet-address>
 ```
 
 You can also reset your MetaMask account (Settings → Advanced → Reset Account) to clear pending transactions.
@@ -70,7 +70,7 @@ This usually means your contract exceeds the size limit. Try splitting it into s
 
 ### Cannot connect to RPC
 
-Ensure the RPC URL is entered exactly as `https://testnet.battlechain.com:3051`.
+Ensure the RPC URL is entered exactly as `https://testnet.battlechain.com`.
 
 ### Wrong chain ID
 

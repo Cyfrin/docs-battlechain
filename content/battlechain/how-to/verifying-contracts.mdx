@@ -48,7 +48,7 @@ forge verify-contract <CONTRACT_ADDRESS> <PATH>:<CONTRACT_NAME> \
   --verifier-url https://block-explorer-api.testnet.battlechain.com/api \
   --verifier custom \
   --etherscan-api-key "1234" \
-  --rpc-url https://testnet.battlechain.com:3051
+  --rpc-url https://testnet.battlechain.com
 ```
 
 Replace `<CONTRACT_ADDRESS>` with your deployed address and `<PATH>:<CONTRACT_NAME>` with the source path and contract name (e.g., `src/MyVault.sol:MyVault`).
@@ -59,7 +59,7 @@ Replace `<CONTRACT_ADDRESS>` with your deployed address and `<PATH>:<CONTRACT_NA
 | `--verifier-url` | `https://block-explorer-api.testnet.battlechain.com/api` | BattleChain explorer API |
 | `--verifier` | `custom` | Required when using a non-Etherscan explorer |
 | `--etherscan-api-key` | `"1234"` | Not validated — any non-empty string works |
-| `--rpc-url` | `https://testnet.battlechain.com:3051` | BattleChain testnet RPC |
+| `--rpc-url` | `https://testnet.battlechain.com` | BattleChain testnet RPC |
 
 On success you'll see:
 
@@ -85,7 +85,7 @@ Add `--verify` to your `forge script` call to verify contracts as they're deploy
 
 ```bash
 forge script script/Deploy.s.sol \
-  --rpc-url https://testnet.battlechain.com:3051 \
+  --rpc-url https://testnet.battlechain.com \
   --broadcast --skip-simulation -g 300 \
   --verify \
   --verifier-url https://block-explorer-api.testnet.battlechain.com/api \

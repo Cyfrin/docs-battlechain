@@ -29,7 +29,7 @@ You need an EVM wallet (MetaMask, Rabby, etc.) with a small amount of ETH on Bat
 | Field | Value |
 |-------|-------|
 | Network Name | BattleChain Testnet |
-| RPC URL | `https://testnet.battlechain.com:3051` |
+| RPC URL | `https://testnet.battlechain.com` |
 | Chain ID | `627` |
 
 2. **Get free Sepolia ETH** from the [Google Cloud faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia) — paste your address and request some. 0.05 ETH is plenty.
@@ -147,7 +147,7 @@ Do the following in order:
 
 1. Run `just request-attack-mode` to submit the vault for DAO review
 2. On testnet, approve the request immediately using the MockRegistryModerator:
-   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com:3051 --legacy
+   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com --legacy
 3. Run `just check-state` and confirm the output is 3
 ```
 

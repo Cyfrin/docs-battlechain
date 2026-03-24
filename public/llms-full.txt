@@ -267,7 +267,7 @@ Do the following in order:
 
 1. Run `just request-attack-mode` to submit the vault for DAO review
 2. On testnet, approve the request immediately using the MockRegistryModerator:
-   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com:3051 --legacy
+   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com --legacy
 3. Run `just check-state` and confirm the output is 3
 ```
 
@@ -276,7 +276,7 @@ Do the following in order:
 
 1. Run `just request-attack-mode` to submit the vault for DAO review
 2. On testnet, approve the request immediately using the MockRegistryModerator:
-   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com:3051 --legacy
+   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com --legacy
 3. Run `just check-state` and confirm the output is 3
 ```
 
@@ -292,7 +292,7 @@ On testnet, the DAO moderator is a permissionless contract — approve your own 
 cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com:3051 \
+  --rpc-url https://testnet.battlechain.com \
   --legacy
 ```
 
@@ -351,7 +351,7 @@ Send a replacement transaction to clear the stuck nonce:
 ```bash
 cast send \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com:3051 \
+  --rpc-url https://testnet.battlechain.com \
   --nonce <stuck-nonce> \
   --gas-price <higher-price-in-wei> \
   --legacy \
@@ -359,7 +359,7 @@ cast send \
   0x0000000000000000000000000000000000000000
 ```
 
-Find your pending nonce: `cast nonce --rpc-url https://testnet.battlechain.com:3051 `
+Find your pending nonce: `cast nonce --rpc-url https://testnet.battlechain.com `
 
 ### Out-of-gas failures
 
@@ -717,7 +717,7 @@ cast send \
 Find the stuck nonce via:
 
 ```bash
-cast nonce --rpc-url https://testnet.battlechain.com:3051 <your-wallet-address>
+cast nonce --rpc-url https://testnet.battlechain.com <your-wallet-address>
 ```
 
 ### Transaction type not supported
@@ -1345,7 +1345,7 @@ If you prefer to add the network manually:
 2. Click **Add Network** → **Add a network manually**
 3. Enter the following details:
    - **Network Name**: BattleChain Testnet
-   - **RPC URL**: `https://testnet.battlechain.com:3051`
+   - **RPC URL**: `https://testnet.battlechain.com`
    - **Chain ID**: `627`
    - **Currency Symbol**: `ETH`
    - **Block Explorer URL**: `https://explorer.testnet.battlechain.com/`
@@ -1617,7 +1617,7 @@ forge verify-contract <CONTRACT_ADDRESS> <PATH>:<CONTRACT_NAME> \
   --verifier-url https://block-explorer-api.testnet.battlechain.com/api \
   --verifier custom \
   --etherscan-api-key "1234" \
-  --rpc-url https://testnet.battlechain.com:3051
+  --rpc-url https://testnet.battlechain.com
 ```
 
 Replace `<CONTRACT_ADDRESS>` with your deployed address and `:<CONTRACT_NAME>` with the source path and contract name (e.g., `src/MyVault.sol:MyVault`).
@@ -1628,7 +1628,7 @@ Replace `<CONTRACT_ADDRESS>` with your deployed address and `:<CONTRACT_NAME>` w
 | `--verifier-url` | `https://block-explorer-api.testnet.battlechain.com/api` | BattleChain explorer API |
 | `--verifier` | `custom` | Required when using a non-Etherscan explorer |
 | `--etherscan-api-key` | `"1234"` | Not validated — any non-empty string works |
-| `--rpc-url` | `https://testnet.battlechain.com:3051` | BattleChain testnet RPC |
+| `--rpc-url` | `https://testnet.battlechain.com` | BattleChain testnet RPC |
 
 On success you'll see:
 
@@ -1652,7 +1652,7 @@ Add `--verify` to your `forge script` call to verify contracts as they're deploy
 
 ```bash
 forge script script/Deploy.s.sol \
-  --rpc-url https://testnet.battlechain.com:3051 \
+  --rpc-url https://testnet.battlechain.com \
   --broadcast --skip-simulation -g 300 \
   --verify \
   --verifier-url https://block-explorer-api.testnet.battlechain.com/api \
@@ -1967,7 +1967,7 @@ On testnet the registry moderator is a `MockRegistryModerator` — a permissionl
 cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com:3051 \
+  --rpc-url https://testnet.battlechain.com \
   --legacy
 ```
 
@@ -2544,7 +2544,7 @@ Watch for `AgreementStateChanged` events where `newState = 2` (`ATTACK_REQUESTED
 cast call 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
   "getAgreementState(address)(uint8)" \
   $AGREEMENT_ADDRESS \
-  --rpc-url https://testnet.battlechain.com:3051
+  --rpc-url https://testnet.battlechain.com
 ```
 
 | Value | State |
@@ -2620,7 +2620,7 @@ for (uint i = 0; i < contracts.length; i++) {
 cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
   "approveAttack(address)" \
   $AGREEMENT_ADDRESS \
-  --rpc-url https://testnet.battlechain.com:3051 \
+  --rpc-url https://testnet.battlechain.com \
   --account battlechain
 ```
 
@@ -2632,7 +2632,7 @@ This moves the agreement to `UNDER_ATTACK`, enables Safe Harbor protection, and 
 cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
   "rejectAttackRequest(address)" \
   $AGREEMENT_ADDRESS \
-  --rpc-url https://testnet.battlechain.com:3051 \
+  --rpc-url https://testnet.battlechain.com \
   --account battlechain
 ```
 

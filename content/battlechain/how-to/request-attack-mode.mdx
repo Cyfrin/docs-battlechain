@@ -26,7 +26,7 @@ Call `requestUnderAttack` on the `AttackRegistry`:
 cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
   "requestUnderAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com:3051 \
+  --rpc-url https://testnet.battlechain.com \
   --legacy
 ```
 ```solidity
@@ -63,7 +63,7 @@ Run the Foundry script with:
 ```bash
 forge script script/RequestAttackMode.s.sol \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com:3051 \
+  --rpc-url https://testnet.battlechain.com \
   --broadcast --legacy
 ```
 
@@ -82,7 +82,7 @@ If your contracts weren't deployed via `BattleChainDeployer`, call `requestUnder
 cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
   "requestUnderAttackByNonAuthorized(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com:3051 \
+  --rpc-url https://testnet.battlechain.com \
   --legacy
 ```
 ```solidity
@@ -126,7 +126,7 @@ To go directly to production without attack testing:
 cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
   "goToProduction(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com:3051 \
+  --rpc-url https://testnet.battlechain.com \
   --legacy
 ```
 
@@ -137,7 +137,7 @@ This immediately sets state to `PRODUCTION` with no Safe Harbor protection.
 ```bash
 cast call 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
   "getAgreementState(address)(uint8)" $AGREEMENT_ADDRESS \
-  --rpc-url https://testnet.battlechain.com:3051
+  --rpc-url https://testnet.battlechain.com
 ```
 
 | Output | Meaning |
@@ -162,7 +162,7 @@ On testnet the registry moderator is a `MockRegistryModerator` — a permissionl
 cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com:3051 \
+  --rpc-url https://testnet.battlechain.com \
   --legacy
 ```
 

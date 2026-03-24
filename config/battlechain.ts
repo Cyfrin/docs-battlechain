@@ -2,7 +2,7 @@ export const battlechain = {
   testnet: {
     name: "BattleChain Testnet",
     chainId: 627,
-    rpcUrl: "https://testnet.battlechain.com:3051",
+    rpcUrl: "https://testnet.battlechain.com",
     explorer: "https://explorer.testnet.battlechain.com/",
     portal: "https://portal.battlechain.com/bridge",
     currencySymbol: "ETH",

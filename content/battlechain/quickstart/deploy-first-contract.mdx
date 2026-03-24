@@ -59,7 +59,7 @@ You'll need an EVM wallet with ETH on BattleChain to pay for gas. Three steps:
 | Field | Value |
 |-------|-------|
 | Network Name | BattleChain Testnet |
-| RPC URL | `https://testnet.battlechain.com:3051` |
+| RPC URL | `https://testnet.battlechain.com` |
 | Chain ID | `627` |
 
 <Note>
@@ -283,7 +283,7 @@ just check-state
 cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com:3051 \
+  --rpc-url https://testnet.battlechain.com \
   --legacy
 ```
 
@@ -322,7 +322,7 @@ If a transaction gets stuck in a pending state, it usually means it was submitte
 ```bash
 cast send \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com:3051 \
+  --rpc-url https://testnet.battlechain.com \
   --nonce <stuck-nonce> \
   --gas-price <higher-price-in-wei> \
   --legacy \
@@ -335,7 +335,7 @@ Replace `<stuck-nonce>` with the nonce of the stuck transaction (visible in your
 To find your current pending nonce:
 
 ```bash
-cast nonce --rpc-url https://testnet.battlechain.com:3051 <your-wallet-address>
+cast nonce --rpc-url https://testnet.battlechain.com <your-wallet-address>
 ```
 
 ### Transaction rejected: EIP-1559 not supported
