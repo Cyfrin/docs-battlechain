@@ -7,14 +7,18 @@ description: "Common issues and questions when working with BattleChain."
 
 ### Stuck or pending transactions
 
-Transactions can get stuck if submitted with insufficient gas. Send a no-op replacement at the same nonce with a higher gas price:
+Transactions can get stuck if the fee is too low for the current base fee. Send a no-op replacement at the same nonce with a higher fee:
 
 ```bash
+# Get current base fee
+cast gas-price --rpc-url https://testnet.battlechain.com
+
+# Send a replacement with a higher max fee (e.g. 2x the current base fee)
 cast send \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com \
   --nonce <stuck-nonce> \
-  --gas-price <higher-price-in-wei> \
+  --max-fee-per-gas <2x-current-base-fee> \
   --value 0 \
   0x0000000000000000000000000000000000000000
 ```

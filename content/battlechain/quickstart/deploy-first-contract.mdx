@@ -307,16 +307,20 @@ You've deployed your first contract to BattleChain and set up a Safe Harbor agre
 If a transaction gets stuck in a pending state, it usually means it was submitted with too low a gas price. To clear it, send a replacement transaction with the same nonce at a higher gas price:
 
 ```bash
+# Get current base fee
+cast gas-price --rpc-url https://testnet.battlechain.com
+
+# Send a replacement with a higher max fee (e.g. 2x the current base fee)
 cast send \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com \
   --nonce <stuck-nonce> \
-  --gas-price <higher-price-in-wei> \
+  --max-fee-per-gas <2x-current-base-fee> \
   --value 0 \
   0x0000000000000000000000000000000000000000
 ```
 
-Replace `<stuck-nonce>` with the nonce of the stuck transaction (visible in your wallet or on the block explorer) and `<higher-price-in-wei>` with a value meaningfully above the original. This replaces the stuck transaction with a no-op transfer that clears the nonce.
+Replace `<stuck-nonce>` with the nonce of the stuck transaction (visible in your wallet or on the block explorer). This replaces the stuck transaction with a no-op transfer that clears the nonce.
 
 To find your current pending nonce:
 

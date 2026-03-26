@@ -527,11 +527,15 @@ Tell your AI: *"I have a stuck transaction at nonce [N]. Send a replacement with
 Send a replacement transaction to clear the stuck nonce:
 
 ```bash
+# Get current base fee
+cast gas-price --rpc-url https://testnet.battlechain.com
+
+# Send a replacement with a higher max fee (e.g. 2x the current base fee)
 cast send \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com \
   --nonce <stuck-nonce> \
-  --gas-price <higher-price-in-wei> \
+  --max-fee-per-gas <2x-current-base-fee> \
   --value 0 \
   0x0000000000000000000000000000000000000000
 ```
