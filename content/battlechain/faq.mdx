@@ -7,7 +7,7 @@ description: "Common issues and questions when working with BattleChain."
 
 ### Stuck or pending transactions
 
-Transactions can get stuck if submitted without `--legacy` or with insufficient gas. Send a no-op replacement at the same nonce with a higher gas price:
+Transactions can get stuck if submitted with insufficient gas. Send a no-op replacement at the same nonce with a higher gas price:
 
 ```bash
 cast send \
@@ -15,7 +15,6 @@ cast send \
   --rpc-url https://testnet.battlechain.com \
   --nonce <stuck-nonce> \
   --gas-price <higher-price-in-wei> \
-  --legacy \
   --value 0 \
   0x0000000000000000000000000000000000000000
 ```
@@ -27,10 +26,6 @@ cast nonce --rpc-url https://testnet.battlechain.com <your-wallet-address>
 ```
 
 You can also reset your MetaMask account (Settings → Advanced → Reset Account) to clear pending transactions.
-
-### Transaction type not supported
-
-BattleChain Testnet only accepts legacy (type 0) transactions — EIP-1559 is not supported. Add `--legacy` to all `forge script` and `cast send` commands.
 
 ## Deploying Contracts
 

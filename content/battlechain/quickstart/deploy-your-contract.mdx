@@ -391,7 +391,7 @@ Do the following in order:
 
 1. Run `just request-attack-mode-browser` to submit the vault for DAO review
 2. On testnet, approve the request immediately using the MockRegistryModerator:
-   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com --legacy
+   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com
 3. Run `just check-state` and confirm the output is 3
 ```
 */}
@@ -405,7 +405,7 @@ Do the following in order:
 
 1. Run `just request-attack-mode` to submit the vault for DAO review
 2. On testnet, approve the request immediately using the MockRegistryModerator:
-   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com --legacy
+   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com
 3. Run `just check-state` and confirm the output is 3
 ```
 
@@ -425,8 +425,7 @@ On testnet, the DAO moderator is a permissionless contract — approve your own 
 cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com \
-  --legacy
+  --rpc-url https://testnet.battlechain.com
 ```
 
 Verify the state:
@@ -512,14 +511,14 @@ Add `--skip-simulation` to every `forge script` call.
 </Note>
 
 {/* COMING SOON — AI Desktop stuck transaction troubleshooting
-Tell Claude: *"I have a stuck transaction at nonce [N]. Send a replacement with a higher gas price using cast send with --legacy and --value 0 to clear it."*
+Tell Claude: *"I have a stuck transaction at nonce [N]. Send a replacement with a higher gas price using cast send with --value 0 to clear it."*
 */}
 
 </Tab>
 
 <Tab title="AI CLI (foundry)">
 
-Tell your AI: *"I have a stuck transaction at nonce [N]. Send a replacement with a higher gas price using cast send with --legacy and --value 0 to clear it."*
+Tell your AI: *"I have a stuck transaction at nonce [N]. Send a replacement with a higher gas price using cast send with --value 0 to clear it."*
 
 </Tab>
 
@@ -533,7 +532,6 @@ cast send \
   --rpc-url https://testnet.battlechain.com \
   --nonce <stuck-nonce> \
   --gas-price <higher-price-in-wei> \
-  --legacy \
   --value 0 \
   0x0000000000000000000000000000000000000000
 ```

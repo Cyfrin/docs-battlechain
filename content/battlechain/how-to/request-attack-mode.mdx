@@ -26,8 +26,7 @@ Call `requestUnderAttack` on the `AttackRegistry`:
 cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
   "requestUnderAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com \
-  --legacy
+  --rpc-url https://testnet.battlechain.com
 ```
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -64,7 +63,7 @@ Run the Foundry script with:
 forge script script/RequestAttackMode.s.sol \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com \
-  --broadcast --legacy
+  --broadcast
 ```
 
 This validates:
@@ -82,8 +81,7 @@ If your contracts weren't deployed via `BattleChainDeployer`, call `requestUnder
 cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
   "requestUnderAttackByNonAuthorized(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com \
-  --legacy
+  --rpc-url https://testnet.battlechain.com
 ```
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -126,8 +124,7 @@ To go directly to production without attack testing:
 cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
   "goToProduction(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com \
-  --legacy
+  --rpc-url https://testnet.battlechain.com
 ```
 
 This immediately sets state to `PRODUCTION` with no Safe Harbor protection.
@@ -162,8 +159,7 @@ On testnet the registry moderator is a `MockRegistryModerator` — a permissionl
 cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com \
-  --legacy
+  --rpc-url https://testnet.battlechain.com
 ```
 
 </Network>
@@ -181,8 +177,7 @@ Call `requestUnderAttack` on the `AttackRegistry`:
 cast send $ATTACK_REGISTRY \
   "requestUnderAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url $BATTLECHAIN_RPC_URL \
-  --legacy
+  --rpc-url $BATTLECHAIN_RPC_URL
 ```
 
 ## For Non-BattleChainDeployer Contracts
@@ -191,8 +186,7 @@ cast send $ATTACK_REGISTRY \
 cast send $ATTACK_REGISTRY \
   "requestUnderAttackByNonAuthorized(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url $BATTLECHAIN_RPC_URL \
-  --legacy
+  --rpc-url $BATTLECHAIN_RPC_URL
 ```
 
 <Warning>
@@ -205,8 +199,7 @@ This path requires extra DAO scrutiny since there's no on-chain proof of deploym
 cast send $ATTACK_REGISTRY \
   "goToProduction(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url $BATTLECHAIN_RPC_URL \
-  --legacy
+  --rpc-url $BATTLECHAIN_RPC_URL
 ```
 
 This immediately sets state to `PRODUCTION` with no Safe Harbor protection.

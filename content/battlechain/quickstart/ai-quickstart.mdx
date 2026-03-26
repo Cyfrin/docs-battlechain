@@ -104,7 +104,6 @@ You should see `battlechain` listed. From here on, your AI will prompt you for t
 
 ```
 Run `just setup` to deploy MockToken and VulnerableVault to BattleChain Testnet.
-Make sure all forge script calls use --legacy (BattleChain Testnet requires it).
 After deployment, add TOKEN_ADDRESS and VAULT_ADDRESS to my .env file.
 ```
 
@@ -128,7 +127,6 @@ Search your `VAULT_ADDRESS` on the [BattleChain explorer](https://explorer.testn
 
 ```
 Run `just create-agreement` to create a Safe Harbor agreement for the deployed vault.
-Use --legacy for all forge script calls.
 After it runs, add AGREEMENT_ADDRESS to .env and set RECOVERY_ADDRESS to my wallet address.
 ```
 
@@ -147,7 +145,7 @@ Do the following in order:
 
 1. Run `just request-attack-mode` to submit the vault for DAO review
 2. On testnet, approve the request immediately using the MockRegistryModerator:
-   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com --legacy
+   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com
 3. Run `just check-state` and confirm the output is 3
 ```
 
@@ -205,11 +203,11 @@ If you want to go deeper on either side, see:
 
 ### My AI is running commands but transactions keep failing
 
-Add `--legacy` to any failing `forge script` command. BattleChain Testnet doesn't support EIP-1559 — all transactions must use legacy format. Tell your AI: *"All forge script commands need the --legacy flag."*
+Check that you have enough ETH on BattleChain Testnet and that your keystore is set up correctly. If a transaction reverts, ask your AI to check the revert reason and retry.
 
 ### I have a stuck pending transaction
 
-Tell your AI: *"I have a stuck transaction at nonce [N]. Send a replacement with a higher gas price using cast send with --legacy and --value 0 to clear it."* You can find your pending nonce by looking at your wallet or searching your address on the [explorer](https://explorer.testnet.battlechain.com/).
+Tell your AI: *"I have a stuck transaction at nonce [N]. Send a replacement with a higher gas price using cast send with --value 0 to clear it."* You can find your pending nonce by looking at your wallet or searching your address on the [explorer](https://explorer.testnet.battlechain.com/).
 
 ### Claude Code is asking about things I don't understand
 

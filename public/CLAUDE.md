@@ -167,7 +167,7 @@ contract Deploy is BCScript {
 3. **Request attack mode** (BattleChain only) — `requestAttackMode(agreement)` → state becomes `ATTACK_REQUESTED`
 4. **Approve (testnet)** — call `approveAttack(agreementAddress)` on the `MockRegistryModerator` (`0x1bC64E6F187a47D136106784f4E9182801535BD3`) — permissionless, instant approval. On mainnet this is a controlled DAO action.
    ```bash
-   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" <agreementAddress> --account battlechain --rpc-url https://testnet.battlechain.com --legacy
+   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" <agreementAddress> --account battlechain --rpc-url https://testnet.battlechain.com
    ```
    → state becomes `UNDER_ATTACK`
 5. **Promote to production** — `attackRegistry.promote(agreementAddress)` → 3-day countdown, then `PRODUCTION`
@@ -189,13 +189,6 @@ contract Deploy is BCScript {
 ---
 
 ## Critical Requirements
-
-### Always use `--legacy`
-BattleChain Testnet does not support EIP-1559. Every `forge script` call must include `--legacy` or the transaction will fail.
-
-```bash
-forge script script/Deploy.s.sol --rpc-url https://testnet.battlechain.com --account battlechain --broadcast --legacy
-```
 
 ### Gas estimation
 Forge estimates gas locally and consistently underestimates for BattleChain. If a transaction fails without a clear reason, retry with `-g 300` (3x gas multiplier) or `--skip-simulation`.

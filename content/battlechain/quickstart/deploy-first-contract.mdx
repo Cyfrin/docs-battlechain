@@ -179,18 +179,6 @@ If any `just` command fails unexpectedly, retry with one of these workarounds:
 If the justfile doesn't expose these flags directly, add the flag to the underlying `forge script` call in the relevant `justfile` recipe.
 </Warning>
 
-<Warning>
-**Required: `--legacy` flag**
-
-BattleChain Testnet does not support EIP-1559 transactions. All `forge script` calls must include `--legacy`, otherwise your transaction will be rejected or silently fail.
-
-```bash
-forge script ... --legacy
-```
-
-If you're using the `justfile` recipes and hitting unexplained failures, check whether `--legacy` is present in each underlying `forge script` call and add it if missing.
-</Warning>
-
 `just setup` deploys `MockToken` and `VulnerableVault`, then seeds the vault with 1,000 tokens to simulate protocol liquidity:
 
 ```bash
@@ -283,8 +271,7 @@ just check-state
 cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com \
-  --legacy
+  --rpc-url https://testnet.battlechain.com
 ```
 
 This is testnet-only. On mainnet, approval is a real DAO action.
@@ -317,7 +304,7 @@ You've deployed your first contract to BattleChain and set up a Safe Harbor agre
 
 ### Stuck or pending transactions
 
-If a transaction gets stuck in a pending state, it usually means it was submitted with too low a gas price or without `--legacy`. To clear it, send a replacement transaction with the same nonce at a higher gas price:
+If a transaction gets stuck in a pending state, it usually means it was submitted with too low a gas price. To clear it, send a replacement transaction with the same nonce at a higher gas price:
 
 ```bash
 cast send \
@@ -325,7 +312,6 @@ cast send \
   --rpc-url https://testnet.battlechain.com \
   --nonce <stuck-nonce> \
   --gas-price <higher-price-in-wei> \
-  --legacy \
   --value 0 \
   0x0000000000000000000000000000000000000000
 ```
@@ -337,10 +323,6 @@ To find your current pending nonce:
 ```bash
 cast nonce --rpc-url https://testnet.battlechain.com <your-wallet-address>
 ```
-
-### Transaction rejected: EIP-1559 not supported
-
-If you see an error like `transaction type not supported` or `only legacy transactions allowed`, add `--legacy` to your `forge script` command. See the warning above in Step 1.
 
 ### Contract too large to deploy
 

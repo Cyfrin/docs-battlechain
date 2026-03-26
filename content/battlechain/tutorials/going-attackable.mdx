@@ -192,14 +192,13 @@ See [How to Promote to Production](/battlechain/how-to/promote-to-production) fo
 
 ### Stuck or pending transactions
 
-Transactions can get stuck if submitted without `--legacy` or with insufficient gas. To replace a stuck transaction, send a no-op at the same nonce with a higher gas price:
+Transactions can get stuck if submitted with insufficient gas. To replace a stuck transaction, send a no-op at the same nonce with a higher gas price:
 
 ```bash
 cast send \
   --account <your-keystore-account> \
   --nonce <stuck-nonce> \
   --gas-price <higher-price-in-wei> \
-  --legacy \
   --value 0 \
   0x0000000000000000000000000000000000000000
 ```
@@ -210,6 +209,3 @@ Find the stuck nonce via:
 cast nonce --rpc-url https://testnet.battlechain.com <your-wallet-address>
 ```
 
-### Transaction type not supported
-
-If you see `transaction type not supported` or similar errors, you're missing `--legacy`. BattleChain Testnet only accepts legacy (type 0) transactions — EIP-1559 is not supported.
