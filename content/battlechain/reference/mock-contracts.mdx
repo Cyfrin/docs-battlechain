@@ -13,10 +13,10 @@ All feeds use **8 decimals**, matching Chainlink's standard for USD pairs.
 
 ### Deployed Addresses
 
-| Pair | Address |
-|------|---------|
-| ETH/USD | <code>0xAA72F0168eE17aA93098eC6ECf2EEe72B46aca19</code> |
-| BTC/USD | <code>0xd87f56De7Fe8d2913B3B8e45C5fd983185286b66</code> |
+| Pair     | Address                                                 |
+| -------- | ------------------------------------------------------- |
+| ETH/USD  | <code>0xAA72F0168eE17aA93098eC6ECf2EEe72B46aca19</code> |
+| BTC/USD  | <code>0xd87f56De7Fe8d2913B3B8e45C5fd983185286b66</code> |
 | LINK/USD | <code>0xEa8789e4f6a1d101AfF3093543FC8133c27987FD</code> |
 | USDC/USD | <code>0x469be0Db9E0E884a2D9E64a186008C684423B79C</code> |
 
@@ -52,6 +52,7 @@ All feeds use **8 decimals**, matching Chainlink's standard for USD pairs.
     function latestRound() external view returns (uint256);
     function latestTimestamp() external view returns (uint256);
     ```
+
   </Accordion>
 
   <Accordion title="State-changing functions">
@@ -66,6 +67,7 @@ All feeds use **8 decimals**, matching Chainlink's standard for USD pairs.
         uint256 _startedAt
     ) public;
     ```
+
   </Accordion>
 </AccordionGroup>
 
@@ -90,15 +92,15 @@ Mintable ERC-20 tokens for protocols that need token dependencies (stablecoins, 
 
 ### Deployed Addresses
 
-| Token | Symbol | Decimals | Address |
-|-------|--------|----------|---------|
-| Wrapped Ether | WETH | 18 | <code>0x4CAc28Fc96bb8fa0e6F94ef0E579384902142f42</code> |
-| USD Coin | USDC | 6 | <code>0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE</code> |
-| Tether USD | USDT | 6 | <code>0x0d414B0CCef51a25cd32c93b869A9fF2e883a27E</code> |
-| Dai Stablecoin | DAI | 18 | <code>0x393cBd865554a543D992218d190EA9dcE47d9bC2</code> |
-| Wrapped BTC | WBTC | 8 | <code>0xB90cb0F537F2E7D11b165a8C5C79B7a593aBE4f0</code> |
-| Chainlink Token | LINK | 18 | <code>0xDBCaD9c8f2757f1b7Fe7fC394bEB035018aEA9DC</code> |
-| My Token | MTK | 18 | <code>0xA55C81615ea60e870d7a4Dff8C662B4C39c56C80</code> |
+| Token           | Symbol | Decimals | Address                                                 |
+| --------------- | ------ | -------- | ------------------------------------------------------- |
+| Wrapped Ether   | WETH   | 18       | <code>0x4CAc28Fc96bb8fa0e6F94ef0E579384902142f42</code> |
+| USD Coin        | USDC   | 6        | <code>0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE</code> |
+| Tether USD      | USDT   | 6        | <code>0x0d414B0CCef51a25cd32c93b869A9fF2e883a27E</code> |
+| Dai Stablecoin  | DAI    | 18       | <code>0x393cBd865554a543D992218d190EA9dcE47d9bC2</code> |
+| Wrapped BTC     | WBTC   | 8        | <code>0xB90cb0F537F2E7D11b165a8C5C79B7a593aBE4f0</code> |
+| Chainlink Token | LINK   | 18       | <code>0xDBCaD9c8f2757f1b7Fe7fC394bEB035018aEA9DC</code> |
+| My Token        | MTK    | 18       | <code>0xA55C81615ea60e870d7a4Dff8C662B4C39c56C80</code> |
 
 ### Interface
 
@@ -115,6 +117,7 @@ Mintable ERC-20 tokens for protocols that need token dependencies (stablecoins, 
 
     function decimals() public view returns (uint8);
     ```
+
   </Accordion>
 
   <Accordion title="WETH">
@@ -127,6 +130,7 @@ Mintable ERC-20 tokens for protocols that need token dependencies (stablecoins, 
     // Unwrap WETH back to ETH
     function withdraw(uint256 amount) external;
     ```
+
   </Accordion>
 
   <Accordion title="MintableERC20 (MTK)">
@@ -135,6 +139,7 @@ Mintable ERC-20 tokens for protocols that need token dependencies (stablecoins, 
     ```solidity
     function mint() external;
     ```
+
   </Accordion>
 </AccordionGroup>
 
@@ -170,15 +175,15 @@ All markets are listed with a **0.75 collateral factor**. The mock Comptroller a
 
 ### Deployed Addresses
 
-| Contract | Address |
-|----------|---------|
+| Contract    | Address                                                 |
+| ----------- | ------------------------------------------------------- |
 | Comptroller | <code>0xAE582334FCf2f932ea1B4D0B484aC34A8184B2e8</code> |
-| vUSDC | <code>0x91442C344c069e9B62f068C6F7075E9B403840E0</code> |
-| vWETH | <code>0x2A7b8d39e8544517F0Ce0ff4ac895580c79ff692</code> |
-| vWBTC | <code>0x9F01733b6B26404495b38fe69f20D5A8252EFd14</code> |
-| vDAI | <code>0x7ea22541B90794ADa16E5b42A5FF2bf7489e587c</code> |
-| vBNB | <code>0x11e4B3Bbe7Fc26514b8D13383a3FB30E3Ced1F62</code> |
-| vUSDT | <code>0x2D9680c4cEfe5E36bFB0B78c48dd1d8A06090e8d</code> |
+| vUSDC       | <code>0x91442C344c069e9B62f068C6F7075E9B403840E0</code> |
+| vWETH       | <code>0x2A7b8d39e8544517F0Ce0ff4ac895580c79ff692</code> |
+| vWBTC       | <code>0x9F01733b6B26404495b38fe69f20D5A8252EFd14</code> |
+| vDAI        | <code>0x7ea22541B90794ADa16E5b42A5FF2bf7489e587c</code> |
+| vBNB        | <code>0x11e4B3Bbe7Fc26514b8D13383a3FB30E3Ced1F62</code> |
+| vUSDT       | <code>0x2D9680c4cEfe5E36bFB0B78c48dd1d8A06090e8d</code> |
 
 The vToken markets use the [test tokens](#test-tokens) as their underlying assets. vBNB uses native ETH.
 
@@ -213,6 +218,7 @@ The vToken markets use the [test tokens](#test-tokens) as their underlying asset
     function exchangeRateCurrent() external view returns (uint256);
     function underlying() external view returns (address);
     ```
+
   </Accordion>
 
   <Accordion title="vBNB (native ETH)">
@@ -225,6 +231,7 @@ The vToken markets use the [test tokens](#test-tokens) as their underlying asset
     function borrow(uint256 borrowAmount) external returns (uint256);
     function repayBorrow() external payable;
     ```
+
   </Accordion>
 </AccordionGroup>
 
@@ -263,10 +270,10 @@ A mock [Uniswap V3](https://docs.uniswap.org/contracts/v3/overview) deployment w
 
 ### Deployed Addresses
 
-| Contract | Address |
-|----------|---------|
-| UniswapV3Factory | <code>0xd5DCFCab1B60C70F45D61597b351674b4b3C8CDc</code> |
-| SwapRouter | <code>0xCD1D61957236565679b27e14d7c7A5198b052edb</code> |
+| Contract                   | Address                                                 |
+| -------------------------- | ------------------------------------------------------- |
+| UniswapV3Factory           | <code>0xd5DCFCab1B60C70F45D61597b351674b4b3C8CDc</code> |
+| SwapRouter                 | <code>0xCD1D61957236565679b27e14d7c7A5198b052edb</code> |
 | NonfungiblePositionManager | <code>0xE357f3D536b2c0a21c0256cAB027CE962D0483bF</code> |
 
 Use with the [test tokens](#test-tokens) above (WETH, USDC, DAI, etc.) to create pools and test swap logic.
@@ -279,8 +286,8 @@ A mock [Uniswap V4](https://docs.uniswap.org/contracts/v4/overview) PoolManager 
 
 ### Deployed Addresses
 
-| Contract | Address |
-|----------|---------|
+| Contract    | Address                                               |
+| ----------- | ----------------------------------------------------- |
 | PoolManager | <code>0xB4CB4B877FcF85Db498B81EEa8F3A1136797F7</code> |
 
 ---
@@ -290,14 +297,15 @@ A mock [Uniswap V4](https://docs.uniswap.org/contracts/v4/overview) PoolManager 
 A mock [KyberSwap](https://kyberswap.com/) aggregator router with admin-configurable exchange rates. Implements the same `swap` and `swapSimpleMode` interface so contracts that integrate with KyberSwap on mainnet work on testnet without code changes.
 
 **Simplifications:**
+
 - No actual DEX aggregation or routing
 - Exchange rates are admin-set, not market-driven
 - No multi-hop routing (single pair swaps only)
 
 ### Deployed Addresses
 
-| Contract | Address |
-|----------|---------|
+| Contract            | Address                                                 |
+| ------------------- | ------------------------------------------------------- |
 | MockKyberSwapRouter | <code>0x5A8Eec040E6CDD11cf78A154a5485677aEeb4d0b</code> |
 
 ### Interface
@@ -316,6 +324,7 @@ A mock [KyberSwap](https://kyberswap.com/) aggregator router with admin-configur
         bytes calldata clientData
     ) external returns (uint256 returnAmount);
     ```
+
   </Accordion>
 
   <Accordion title="Types">
@@ -338,6 +347,7 @@ A mock [KyberSwap](https://kyberswap.com/) aggregator router with admin-configur
         bytes clientData;
     }
     ```
+
   </Accordion>
 </AccordionGroup>
 
@@ -349,9 +359,9 @@ A mock [Euler V2](https://docs.euler.finance/) deployment with the Ethereum Vaul
 
 ### Deployed Addresses
 
-| Contract | Address |
-|----------|---------|
-| EVC | <code>0xB5D56dECA76e65cC9332Af01971bC8ad018a1Fc1</code> |
+| Contract    | Address                                                 |
+| ----------- | ------------------------------------------------------- |
+| EVC         | <code>0xB5D56dECA76e65cC9332Af01971bC8ad018a1Fc1</code> |
 | eUSDC Vault | <code>0x9a6fb480a74e6BAEE31EAbe297384ceA1EBb4d81</code> |
 | eWETH Vault | <code>0x38aF9d1C638C43d4340a700A854721dD5cdCf974</code> |
 
@@ -364,22 +374,23 @@ The vaults use the [test tokens](#test-tokens) as their underlying assets (USDC 
 A mock [Morpho Blue](https://docs.morpho.org/) lending protocol deployment. Implements the core supply, borrow, collateral, and liquidation interface so contracts that integrate with Morpho on mainnet work on testnet without code changes.
 
 **Simplifications:**
+
 - No interest accrual (rates always zero)
 - No oracle price validation (liquidation is admin-gated)
 - 1:1 share-to-asset ratio (no share price divergence)
 
 ### Deployed Addresses
 
-| Contract | Address |
-|----------|---------|
+| Contract   | Address                                                 |
+| ---------- | ------------------------------------------------------- |
 | MockMorpho | <code>0x102CdAF4B7097752f2Bb336c6cDf39f0aBBbb58c</code> |
 
 ### Markets
 
 Three markets are pre-configured with an 80% liquidation LTV. Markets are identified by their `Id` (keccak256 of the market parameters).
 
-| Market | Id |
-|--------|----|
+| Market    | Id                                                                              |
+| --------- | ------------------------------------------------------------------------------- |
 | USDC/WETH | <code>0x9c975e07b7926e2fc62ff54950968875656e5a416cedeb289bd55e3f83c422a2</code> |
 | USDC/WBTC | <code>0x222fa6bbdaa780faeb791457ebe4cbae616e488a622fba3d5d191bd93151a5b8</code> |
 | WETH/WBTC | <code>0xf3d5303bd0352a06c05b2c8903aa4f076b87e0d0c9e375487c59205d41e0e647</code> |
@@ -437,6 +448,7 @@ Market names are formatted as **loanToken/collateralToken** — e.g., USDC/WETH 
         address receiver
     ) external;
     ```
+
   </Accordion>
 
   <Accordion title="View functions">
@@ -461,6 +473,7 @@ Market names are formatted as **loanToken/collateralToken** — e.g., USDC/WETH 
     function idToMarketParams(Id id)
         external view returns (MarketParams memory);
     ```
+
   </Accordion>
 </AccordionGroup>
 
@@ -493,26 +506,29 @@ A mock [Chainlink CCIP](https://docs.chain.link/ccip) router for testing cross-c
 
 ### Deployed Addresses
 
-| Contract | Address |
-|----------|---------|
+| Contract       | Address                                                 |
+| -------------- | ------------------------------------------------------- |
 | MockCCIPRouter | <code>0xFA553888e385ECd9ab294e295C206b912a0F402E</code> |
 
 ---
 
 ## Mock Teleporter Messenger
 
-A mock [Avalanche Teleporter](https://github.com/ava-labs/teleporter) messenger for testing cross-chain message encoding and dispatch. Implements the full `ITeleporterMessenger` interface so contracts that use Teleporter on Avalanche mainnet work on testnet without code changes.
+A mock [Avalanche Teleporter](https://github.com/ava-labs/teleporter) messenger for BattleChain cross-chain dispatch and explicit delivery flows. Implements the full `ITeleporterMessenger` interface so contracts that use Teleporter on Avalanche mainnet work on BattleChain without code changes.
+
+Sent messages are queued as pending and can be delivered to the destination contract via `deliverMessage()`, which calls `receiveTeleporterMessage` on the target. This lets you simulate the full send → deliver lifecycle without Avalanche Warp Messaging.
 
 **Limitations:**
-- No actual cross-chain delivery (requires Avalanche Warp Messaging)
+
+- No Avalanche Warp Messaging or canonical Teleporter verification — delivery must be triggered explicitly through the mock's `deliverMessage` helpers
 - `receiveCrossChainMessage` is admin-only (no Warp precompile on BattleChain)
-- Fee collection accepts tokens but doesn't route to relayers
+- Fee collection accepts tokens but does not route to relayers automatically
 
 ### Deployed Addresses
 
-| Contract | Address |
-|----------|---------|
-| MockTeleporterMessenger | <code>0x43C6D810Cf80b8642741fe907302f69619ee1491</code> |
+| Contract                | Address                                                 |
+| ----------------------- | ------------------------------------------------------- |
+| MockTeleporterMessenger | <code>0x6f3C17caA459F8012669f24D294AF72c2F8d9CBF</code> |
 
 ### Interface
 
@@ -533,10 +549,62 @@ A mock [Avalanche Teleporter](https://github.com/ava-labs/teleporter) messenger 
         uint256 additionalFeeAmount
     ) external;
     ```
+
+  </Accordion>
+
+  <Accordion title="Delivering messages">
+    ```solidity
+    // Deliver a pending message to its destination contract.
+    // Calls receiveTeleporterMessage on the destination.
+    function deliverMessage(
+        bytes32 messageID,
+        bytes32 sourceBlockchainID
+    ) external;
+
+    // Same as above, but assigns a relayer reward redeemer.
+    function deliverMessage(
+        bytes32 messageID,
+        bytes32 sourceBlockchainID,
+        address rewardRedeemer
+    ) external;
+
+    // Retry delivery of a message that previously failed execution.
+    // Only works on messages where the initial delivery reverted.
+    function retryMessageExecution(
+        bytes32 sourceBlockchainID,
+        TeleporterMessage calldata message
+    ) external;
+
+    // Admin-only. Simulates receiving a cross-chain message via
+    // Warp (not available on BattleChain).
+    function receiveCrossChainMessage(
+        uint32 messageIndex,
+        address relayerRewardAddress
+    ) external;
+    ```
+
+  </Accordion>
+
+  <Accordion title="Pending queue">
+    ```solidity
+    function pendingMessage(
+        bytes32 messageID
+    ) external view returns (PendingMessage memory);
+
+    function pendingQueue()
+        external view returns (bytes32[] memory);
+
+    function pendingQueueForChain(
+        bytes32 destinationChainID
+    ) external view returns (bytes32[] memory);
+    ```
+
   </Accordion>
 
   <Accordion title="View functions">
     ```solidity
+    function blockchainID() external view returns (bytes32);
+    function admin() external view returns (address);
     function getMessageHash(bytes32 messageID)
         external view returns (bytes32);
     function messageReceived(bytes32 messageID)
@@ -547,6 +615,10 @@ A mock [Avalanche Teleporter](https://github.com/ava-labs/teleporter) messenger 
         external view returns (address, uint256);
     function getNextMessageID(bytes32 destinationBlockchainID)
         external view returns (bytes32);
+    function getReceiptQueueSize(bytes32 sourceBlockchainID)
+        external view returns (uint256);
+    function getReceiptAtIndex(bytes32 sourceBlockchainID, uint256 index)
+        external view returns (TeleporterMessageReceipt memory);
     ```
   </Accordion>
 </AccordionGroup>
@@ -554,11 +626,37 @@ A mock [Avalanche Teleporter](https://github.com/ava-labs/teleporter) messenger 
 ### Sending a Cross-Chain Message
 
 ```bash
-cast send 0x43C6D810Cf80b8642741fe907302f69619ee1491 \
+# 1. Send a message (queues it as pending)
+cast send 0x6f3C17caA459F8012669f24D294AF72c2F8d9CBF \
   "sendCrossChainMessage((bytes32,address,address,(address,uint256),uint256,address[],bytes))" \
   "(0x0000000000000000000000000000000000000000000000000000000000000001,0xYOUR_DESTINATION_ADDRESS,0xYOUR_DESTINATION_ADDRESS,(0x0000000000000000000000000000000000000000,0),200000,\[\],0x1234)" \
   --rpc-url $BATTLECHAIN_RPC_URL \
   --private-key $PRIVATE_KEY
+```
+
+### Delivering a Message
+
+Once a message has been sent, deliver it to the destination contract. This calls `receiveTeleporterMessage` on the destination address.
+
+The `sourceBlockchainID` parameter must match what the receiving contract expects as the source chain — this is protocol-specific and may be a `keccak256` hash rather than the raw chain ID.
+
+```bash
+# 2. Deliver the pending message (use the messageID returned from step 1)
+cast send 0x6f3C17caA459F8012669f24D294AF72c2F8d9CBF \
+  "deliverMessage(bytes32,bytes32)" \
+  <MESSAGE_ID> \
+  <SOURCE_BLOCKCHAIN_ID> \
+  --rpc-url $BATTLECHAIN_RPC_URL \
+  --private-key $PRIVATE_KEY
+```
+
+You can inspect the pending queue at any time:
+
+```bash
+# View all pending message IDs
+cast call 0x6f3C17caA459F8012669f24D294AF72c2F8d9CBF \
+  "pendingQueue()(bytes32[])" \
+  --rpc-url $BATTLECHAIN_RPC_URL
 ```
 
 ---
@@ -569,16 +667,16 @@ The full [Safe](https://docs.safe.global/) smart account infrastructure is deplo
 
 ### Deployed Addresses
 
-| Contract | Address |
-|----------|---------|
-| Safe | <code>0x52AbFB25E19C3625178D885D5C75EFB9a99203EB</code> |
-| SafeL2 | <code>0x71314F3E6B1D9386A1de784B644Cf5D0Dde3bB97</code> |
-| SafeProxyFactory | <code>0x80DbD037C59521F393fDfE15504c6b6b7969F1a1</code> |
-| CreateCall | <code>0x670D1c4c5cc72193b352562Ed75B9ae8224E98b3</code> |
-| MultiSend | <code>0x69BEaBc6824ba1461F53800d9C3F29FFeC7cf408</code> |
-| MultiSendCallOnly | <code>0xa6a3C9103C062429e459D263bF5EcCd31Effd56C</code> |
-| SignMessageLib | <code>0x930833004d88b8bF3208a216323aFfdf9D40C14C</code> |
-| SafeToL2Setup | <code>0xeCd943c75D2344Fb0AC29D781EFE602E7d87f82B</code> |
-| TokenCallbackHandler | <code>0x232898253fABB3a1EB585bdEE4bE2a36f6D6fd64</code> |
+| Contract                     | Address                                                 |
+| ---------------------------- | ------------------------------------------------------- |
+| Safe                         | <code>0x52AbFB25E19C3625178D885D5C75EFB9a99203EB</code> |
+| SafeL2                       | <code>0x71314F3E6B1D9386A1de784B644Cf5D0Dde3bB97</code> |
+| SafeProxyFactory             | <code>0x80DbD037C59521F393fDfE15504c6b6b7969F1a1</code> |
+| CreateCall                   | <code>0x670D1c4c5cc72193b352562Ed75B9ae8224E98b3</code> |
+| MultiSend                    | <code>0x69BEaBc6824ba1461F53800d9C3F29FFeC7cf408</code> |
+| MultiSendCallOnly            | <code>0xa6a3C9103C062429e459D263bF5EcCd31Effd56C</code> |
+| SignMessageLib               | <code>0x930833004d88b8bF3208a216323aFfdf9D40C14C</code> |
+| SafeToL2Setup                | <code>0xeCd943c75D2344Fb0AC29D781EFE602E7d87f82B</code> |
+| TokenCallbackHandler         | <code>0x232898253fABB3a1EB585bdEE4bE2a36f6D6fd64</code> |
 | CompatibilityFallbackHandler | <code>0xc6B2C6982A5643b7702894D4A0901b9371dd1283</code> |
-| ExtensibleFallbackHandler | <code>0x745c41Ae7AC9C23f173B45f5B47E692dC57c2ae2</code> |
+| ExtensibleFallbackHandler    | <code>0x745c41Ae7AC9C23f173B45f5B47E692dC57c2ae2</code> |
