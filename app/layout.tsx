@@ -22,7 +22,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "BattleChain Docs",
-  description: "Complete platform for Web3 security researchers, developers, and learners",
+  description: "BattleChain is a pre-mainnet L2 where protocols deploy contracts under Safe Harbor and whitehats legally attack them for bounties.",
   icons: {
     icon: "/favicon.svg",
   },
@@ -36,6 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="llms-txt" type="text/plain" href="/llms.txt" />
         <script
           dangerouslySetInnerHTML={{
             __html: `

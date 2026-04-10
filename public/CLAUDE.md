@@ -160,6 +160,14 @@ contract Deploy is BCScript {
 
 ---
 
+## Contract ABIs
+
+Typed viem-compatible ABIs for all BattleChain contracts: https://github.com/Cyfrin/battlechain-lib/blob/main/ts/abi.ts
+
+Exports: `attackRegistryAbi`, `registryAbi`, `agreementFactoryAbi`, `agreementAbi`, `deployerAbi`
+
+---
+
 ## Workflow
 
 1. **Deploy** contracts via `bcDeployCreate` / `bcDeployCreate2` — on BattleChain this registers with `AttackRegistry` automatically

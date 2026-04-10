@@ -44,6 +44,7 @@
               {
                 "group": "Quickstart",
                 "pages": [
+                  "battlechain/quickstart/ai-quickstart",
                   "battlechain/quickstart/deploy-your-contract",
                   "battlechain/quickstart/configure-ai-tools"
                 ]

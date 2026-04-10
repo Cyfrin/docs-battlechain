@@ -64,8 +64,10 @@ export function PageActionsDropdown({
   }
 
   const pageUrl = getPageUrl(pathname)
-  const claudeUrl = `https://claude.ai/new?q=Read ${pageUrl}`
-  const chatGptUrl = `https://chatgpt.com/?q=Read ${pageUrl}`
+  const prompt = `I'm reading the BattleChain documentation page "${title || 'BattleChain Docs'}". Read this page and help me understand it: ${pageUrl}\n\nFor full documentation context: https://docs.battlechain.com/llms-full.txt`
+  const encodedPrompt = encodeURIComponent(prompt)
+  const claudeUrl = `https://claude.ai/new?q=${encodedPrompt}`
+  const chatGptUrl = `https://chatgpt.com/?q=${encodedPrompt}`
 
   return (
     <div className="not-prose relative" ref={dropdownRef}>

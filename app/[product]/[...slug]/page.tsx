@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { getMDXContent, getAllMDXFiles } from '@/lib/mdx'
 import { getAdjacentPages, getPageTitle } from '@/lib/navigation'
+import { stripMdxToMarkdown } from '@/lib/strip-mdx'
 import { PageNav } from '@/components/layout/PageNav'
 import { PageActions } from '@/components/layout/PageActions'
 import { Card } from '@/components/mdx/Card'
@@ -108,6 +109,7 @@ export default async function Page({ params }: PageProps) {
   }
 
   const { content, frontmatter } = mdxContent
+  const cleanMarkdown = stripMdxToMarkdown(content)
   const auto = getAdjacentPages(fullPath)
   const editUrl = `https://github.com/Cyfrin/docs-battlechain/edit/main/content/${fullPath}.mdx`
 
@@ -126,7 +128,7 @@ export default async function Page({ params }: PageProps) {
   return (
     <>
     <PageActions
-      markdownContent={content}
+      markdownContent={cleanMarkdown}
       title={frontmatter.title}
       description={frontmatter.description}
       editUrl={editUrl}
@@ -174,9 +176,27 @@ export async function generateMetadata({ params }: PageProps) {
   }
 
   const { frontmatter } = mdxContent
+  const title = frontmatter.title || 'BattleChain Docs'
+  const description = frontmatter.description || 'BattleChain Documentation'
+  const pageUrl = `https://docs.battlechain.com/${product}/${path}`
 
   return {
-    title: frontmatter.title || 'BattleChain Docs',
-    description: frontmatter.description || 'BattleChain Documentation',
+    title,
+    description,
+    alternates: {
+      canonical: pageUrl,
+    },
+    openGraph: {
+      title,
+      description,
+      url: pageUrl,
+      siteName: 'BattleChain Docs',
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+    },
   }
 }
