@@ -98,6 +98,19 @@ export function stripMdxToMarkdown(raw: string): string {
       `**${title}**\n${body.trim()}`,
   )
 
+  // Convert the problem-panel comparison grid to clean markdown
+  text = text.replace(
+    /<div\s+className="mt-6 grid[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/,
+    [
+      '',
+      '**Web3 Today:** Dev → Testnet → Mainnet',
+      'Testnet uses fake money. Bugs are discovered *after* millions are at risk.',
+      '',
+      '**With BattleChain:** Dev → Testnet → BattleChain → Mainnet',
+      'Real funds, controlled risk. Bugs are found *before* they matter.',
+    ].join('\n'),
+  )
+
   // Remove self-closing JSX tags (<Component /> and <br/>)
   text = text.replace(/<[A-Za-z][A-Za-z0-9.]*\b[^>]*\/>/g, '')
 

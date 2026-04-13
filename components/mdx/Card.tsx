@@ -50,6 +50,8 @@ import {
   Wrench,
   Users,
   RefreshCw,
+  WandSparkles,
+  Bot,
   LucideIcon
 } from 'lucide-react'
 
@@ -120,27 +122,34 @@ export function Card({ title, icon, href, color, compact, children }: CardProps)
     'users': Users,
     'arrows-spin': RefreshCw,
     'arrows-rotate': RefreshCw,
+    'wand-magic-sparkles': WandSparkles,
+    'robot': Bot,
   }
 
   const isImageIcon = icon?.startsWith('/')
   const IconComponent = icon && !isImageIcon ? iconMap[icon] : null
 
+  const iconSize = compact ? 'w-4 h-4' : 'w-5 h-5'
+
+  const iconElement = isImageIcon ? (
+    <img src={icon} alt="" className={iconSize} />
+  ) : IconComponent ? (
+    <IconComponent className={`${iconSize} text-current opacity-70`} strokeWidth={1.5} />
+  ) : null
+
   const cardContent = (
     <>
-      {isImageIcon && (
-        <div className={compact ? 'mb-2' : 'mb-3'}>
-          <img src={icon} alt="" className={`${compact ? 'w-5 h-5' : 'w-8 h-8'}`} />
-        </div>
-      )}
-      {IconComponent && (
-        <div className={compact ? 'mb-2' : 'mb-3'}>
-          <IconComponent className={`${compact ? 'w-5 h-5' : 'w-8 h-8'} text-current opacity-80`} strokeWidth={1.5} />
-        </div>
-      )}
-      <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100" data-toc-ignore>
-        {title}
-      </h3>
-      <div className="text-sm leading-relaxed text-gray-500 dark:text-gray-300">
+      <div className="flex items-center gap-2 mb-2">
+        {iconElement && (
+          <span className="shrink-0 text-gray-500 dark:text-gray-400">
+            {iconElement}
+          </span>
+        )}
+        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+          {title}
+        </p>
+      </div>
+      <div className={`text-sm leading-relaxed text-gray-500 dark:text-gray-300${iconElement ? ' pl-7' : ''}`}>
         {children}
       </div>
     </>
@@ -164,7 +173,7 @@ export function Card({ title, icon, href, color, compact, children }: CardProps)
   // Detect Battlechain (white) cards
   const isBattlechain = color?.toUpperCase() === '#FFFFFF' || color?.toUpperCase() === '#FFF'
 
-  const cardClasses = `card ${compact ? 'p-3' : 'p-6'} block no-underline group`
+  const cardClasses = `card ${compact ? 'p-3' : 'p-4'} block no-underline group`
 
   // If no href, render as a div
   if (!href) {

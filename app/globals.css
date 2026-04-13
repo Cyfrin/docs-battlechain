@@ -140,18 +140,8 @@ body {
   border: 1px solid var(--card-hover-border-color);
 }
 
-.problem-panel .card h3 {
+.problem-panel .card p {
   color: #7a271a;
-}
-
-.problem-panel .card > div:first-child {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.625rem;
-  border-radius: 0;
-  background: #fef3f2;
-  border: 1px solid #f3d1cb;
 }
 
 .problem-panel .card svg,
@@ -180,13 +170,8 @@ body {
   border: 1px solid var(--card-hover-border-color);
 }
 
-.dark .problem-panel .card h3 {
+.dark .problem-panel .card p {
   color: #fecaca;
-}
-
-.dark .problem-panel .card > div:first-child {
-  background: #3a1f24;
-  border: 1px solid #6e3942;
 }
 
 .dark .problem-panel .card svg,

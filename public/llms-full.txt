@@ -23,15 +23,11 @@ Projects go from $0 to $5M TVL overnight after an audit. Bug bounties don't attr
 
 The industry loses billions to preventable exploits.
 
-  **Web2 Development**
-Dev → Staging → Production
-    Staging uses real-like data. Issues are found before users are affected.
-  **Web3 Today**
-Dev → Testnet → Mainnet
-    Testnet uses fake money. Issues are found after millions are at risk.
-  **With BattleChain**
-Dev → Testnet → BattleChain → Mainnet
-    Real funds, controlled risk. Issues found before they matter.
+**Web3 Today:** Dev → Testnet → Mainnet
+Testnet uses fake money. Bugs are discovered *after* millions are at risk.
+
+**With BattleChain:** Dev → Testnet → BattleChain → Mainnet
+Real funds, controlled risk. Bugs are found *before* they matter.
 
 ## How It Works
 
