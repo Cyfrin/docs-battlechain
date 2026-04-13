@@ -1,0 +1,135 @@
+---
+title: "Run the Demo with Claude Desktop"
+description: "Install the BattleChain MCP server and run the full security demo — deploy a vulnerable vault, create a safe harbor agreement, then exploit it — entirely guided by Claude Desktop."
+---
+
+<div className="flex items-start gap-4 mb-10 p-5 rounded-xl border border-blue-500/40 bg-blue-950/20">
+  <div>
+    <div className="text-xs font-bold uppercase tracking-widest text-blue-400 mb-1">No coding required</div>
+    <div className="text-base font-semibold text-gray-100 mb-1">One command installs everything. Claude does the rest.</div>
+    <div className="text-sm text-gray-400">The BattleChain MCP server wires directly into Claude Desktop. Once installed, Claude walks you through each step of the security demo — deploying contracts, creating a safe harbor agreement, and executing the reentrancy exploit — with MetaMask handling all transaction signing.</div>
+  </div>
+</div>
+
+## Prerequisites
+
+Before running the install command, make sure you have the following in place.
+
+**Claude Desktop**
+
+Download and install [Claude Desktop](https://claude.ai/download) if you haven't already. Sign in with your Anthropic account. This is the desktop application — not the Claude.ai web app or the Claude Code CLI.
+
+**MetaMask**
+
+Install the [MetaMask browser extension](https://metamask.io/download/) in Chrome, Firefox, or Brave. The signing pages opened by Claude will connect to MetaMask directly — no private keys ever leave your browser.
+
+**BattleChain Testnet ETH**
+
+Your MetaMask wallet needs a small amount of ETH on BattleChain Testnet to pay for gas. To get it:
+
+1. Add BattleChain Testnet to MetaMask — see [Add BattleChain to MetaMask](/battlechain/how-to/add-battlechain-to-metamask)
+2. Get free Sepolia ETH from the [Google Cloud faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia)
+3. Bridge it to BattleChain at [portal.battlechain.com/bridge](https://portal.battlechain.com/bridge) — select Sepolia → BattleChain Testnet
+
+0.05 ETH is more than enough.
+
+**Python / WSL**
+
+<Tabs>
+  <Tab title="macOS / Linux">
+    Python 3.10 or higher must be installed. Check with:
+
+    ```bash
+    python3 --version
+    ```
+
+    If it's missing or below 3.10, install it via your package manager (`brew install python` on macOS, `sudo apt install python3` on Ubuntu).
+  </Tab>
+  <Tab title="Windows">
+    The installer runs inside WSL (Windows Subsystem for Linux). If you don't have WSL set up yet, open PowerShell as Administrator and run:
+
+    ```powershell
+    wsl --install
+    ```
+
+    Restart your machine when prompted, then open the WSL terminal once to let it finish setup before running the BattleChain installer.
+  </Tab>
+</Tabs>
+
+---
+
+## Install
+
+Run the installer for your platform. It installs the BattleChain MCP server and updates Claude Desktop's config automatically — no manual config file editing required.
+
+<Tabs>
+  <Tab title="macOS / Linux">
+    ```bash
+    curl -fsSL https://raw.githubusercontent.com/Cyfrin/battlechain-mcp/main/install.sh | bash
+    ```
+  </Tab>
+  <Tab title="Windows (PowerShell)">
+    Run this in **PowerShell** — not inside a WSL terminal:
+
+    ```powershell
+    irm https://raw.githubusercontent.com/Cyfrin/battlechain-mcp/main/install.ps1 | iex
+    ```
+  </Tab>
+</Tabs>
+
+<Check>
+When it completes, the installer will confirm that Claude Desktop's configuration was updated.
+</Check>
+
+---
+
+## Restart Claude Desktop
+
+Fully quit Claude Desktop and reopen it. New MCP servers are not loaded until the application restarts — the BattleChain tools won't be available until you do this.
+
+---
+
+## Start the Demo
+
+Open a new conversation in Claude Desktop and send this message:
+
+```
+Run the BattleChain security demo.
+```
+
+Claude will take it from there, narrating each step and opening signing pages in your browser when transactions are ready to approve.
+
+---
+
+## What to Expect
+
+The demo runs through four steps:
+
+| Step | What happens |
+|------|-------------|
+| 1 — Deploy | Claude deploys a `BCToken` and a deliberately vulnerable `VulnerableVault` to BattleChain Testnet, seeding the vault with 1,000 tokens |
+| 2 — Safe Harbor | An on-chain safe harbor agreement is created — the legal framework that makes the exploit authorized |
+| 3 — Attack Mode | The protocol requests attack mode and the testnet DAO approves it, transitioning the agreement to `UNDER_ATTACK` |
+| 4 — Exploit | An Attacker contract drains the vault via reentrancy and splits the recovered funds: 90% returned to the protocol, 10% kept as the whitehat bounty |
+
+Each step opens a signing page in your browser. MetaMask will ask you to approve one or more transactions — click through and return to Claude Desktop to continue.
+
+<Note>
+Because you are both the protocol owner and the whitehat in this demo, the 90% recovery and 10% bounty both arrive in the same wallet. You end up with the full 1,100 tokens (1,000 from the vault plus the 100-token attack seed).
+</Note>
+
+---
+
+## Troubleshooting
+
+**Claude says it doesn't have BattleChain tools**
+
+The MCP server isn't loaded. Make sure you fully quit and reopened Claude Desktop after running the installer. You can verify the tools are available by looking for "battlechain" in Claude Desktop's connected tools list.
+
+**The signing page opens but MetaMask doesn't appear**
+
+Make sure MetaMask is installed in the same browser that opened. If the page is opening in a browser without MetaMask, set your default browser to one where it's installed and try again.
+
+**Transactions are failing or reverting**
+
+Check that your MetaMask is connected to the BattleChain Testnet network (chain ID 627) and that you have testnet ETH. If a previous run left the demo in a partial state, ask Claude to run `prepare_environment` again — it resets the demo and lets you start fresh.
