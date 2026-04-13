@@ -151,26 +151,6 @@ You should see `battlechain` listed. From here on, you'll enter the keystore pas
 
 ## Step 3 — Deploy
 
-<Tab title="AI CLI (foundry)">
-
-Tell your AI:
-
-```
-I'm going to run `just setup` to deploy MockToken and VulnerableVault to BattleChain Testnet. After I paste the output, add TOKEN_ADDRESS and VAULT_ADDRESS to my .env file.
-```
-
-Then run this yourself in your terminal (you'll be prompted for your keystore password):
-
-```bash
-just setup
-```
-
-Paste the output back to your AI so it can update your `.env`.
-
-</Tab>
-
-<Tab title="Manual (foundry)">
-
 ```bash
 just setup
 ```
@@ -190,8 +170,6 @@ TOKEN_ADDRESS=0x...
 VAULT_ADDRESS=0x...
 ```
 
-</Tab>
-
 <Warning>
 **Forge scripts require `--skip-simulation` on BattleChain.** Forge's local gas estimation doesn't work reliably on BattleChain — add `--skip-simulation` to all `forge script` calls. The starter kit's `justfile` already includes this.
 </Warning>
@@ -203,26 +181,6 @@ Search your `VAULT_ADDRESS` on the [BattleChain explorer](https://explorer.testn
 ---
 
 ## Step 4 — Create a Safe Harbor Agreement
-
-<Tab title="AI CLI (foundry)">
-
-Tell your AI:
-
-```
-I'm going to run `just create-agreement` to create a Safe Harbor agreement. After I paste the output, add AGREEMENT_ADDRESS to .env and set RECOVERY_ADDRESS to my wallet address.
-```
-
-Then run this yourself:
-
-```bash
-just create-agreement
-```
-
-Paste the output back to your AI so it can update your `.env`.
-
-</Tab>
-
-<Tab title="Manual (foundry)">
 
 ```bash
 just create-agreement
@@ -242,8 +200,6 @@ Copy `AGREEMENT_ADDRESS` into your `.env` and set `RECOVERY_ADDRESS` to your wal
 AGREEMENT_ADDRESS=0x...
 RECOVERY_ADDRESS=0x...your_wallet_address...
 ```
-
-</Tab>
 
 This creates an on-chain agreement that defines the rules of engagement: 10% bounty, 30-day commitment window, your wallet as the recovery address for returned funds.
 
