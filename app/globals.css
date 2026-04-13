@@ -67,8 +67,15 @@ body {
 }
 
 /* ========================================
-   GLASSMORPHISM CARD EFFECTS
+   CARD STYLES
    ======================================== */
+
+.card p,
+.card ul,
+.card ol {
+  margin-top: 0;
+  margin-bottom: 0;
+}
 
 .card {
   --card-border-color: #D0D5DD;
@@ -127,65 +134,7 @@ body {
   box-shadow: inset 0 -4px 0 0 var(--card-hover-border-color);
 }
 
-/* Problem panel cards need stronger separation from the tinted parent container */
-.problem-panel .card {
-  --card-border-color: #f2c9c2;
-  --card-hover-border-color: #e7b2a8;
-  background: #fffafb;
-  border: 1px solid var(--card-border-color);
-}
 
-.problem-panel .card:hover {
-  background: #fffafb;
-  border: 1px solid var(--card-hover-border-color);
-}
-
-.problem-panel .card p {
-  color: #7a271a;
-}
-
-.problem-panel .card svg,
-.problem-panel .card img {
-  color: #b42318;
-  opacity: 1;
-}
-
-.problem-panel .card strong {
-  color: #111827;
-}
-
-.problem-panel .card > div {
-  color: #4b5563;
-}
-
-.dark .problem-panel .card {
-  --card-border-color: #5c3137;
-  --card-hover-border-color: #7a4148;
-  background: #21171b;
-  border: 1px solid var(--card-border-color);
-}
-
-.dark .problem-panel .card:hover {
-  background: #21171b;
-  border: 1px solid var(--card-hover-border-color);
-}
-
-.dark .problem-panel .card p {
-  color: #fecaca;
-}
-
-.dark .problem-panel .card svg,
-.dark .problem-panel .card img {
-  color: #fda29b;
-}
-
-.dark .problem-panel .card strong {
-  color: #f9fafb;
-}
-
-.dark .problem-panel .card > div {
-  color: #d1d5db;
-}
 
 /* Glass utility class */
 .glass {

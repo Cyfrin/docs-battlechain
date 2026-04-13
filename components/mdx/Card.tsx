@@ -52,6 +52,13 @@ import {
   RefreshCw,
   WandSparkles,
   Bot,
+  Sword,
+  Wand,
+  ArrowRight,
+  Coins,
+  Crosshair,
+  Play,
+  MessageCircle,
   LucideIcon
 } from 'lucide-react'
 
@@ -124,6 +131,13 @@ export function Card({ title, icon, href, color, compact, children }: CardProps)
     'arrows-rotate': RefreshCw,
     'wand-magic-sparkles': WandSparkles,
     'robot': Bot,
+    'sword': Sword,
+    'wand': Wand,
+    'arrow-right': ArrowRight,
+    'coins': Coins,
+    'crosshairs': Crosshair,
+    'play': Play,
+    'discord': MessageCircle,
   }
 
   const isImageIcon = icon?.startsWith('/')
@@ -134,14 +148,14 @@ export function Card({ title, icon, href, color, compact, children }: CardProps)
   const iconElement = isImageIcon ? (
     <img src={icon} alt="" className={iconSize} />
   ) : IconComponent ? (
-    <IconComponent className={`${iconSize} text-current opacity-70`} strokeWidth={1.5} />
+    <IconComponent className={`${iconSize} text-current`} strokeWidth={1.5} />
   ) : null
 
   const cardContent = (
     <>
       <div className="flex items-center gap-2 mb-2">
         {iconElement && (
-          <span className="shrink-0 text-gray-500 dark:text-gray-400">
+          <span className="shrink-0 text-gray-700 dark:text-gray-300">
             {iconElement}
           </span>
         )}
@@ -149,7 +163,7 @@ export function Card({ title, icon, href, color, compact, children }: CardProps)
           {title}
         </p>
       </div>
-      <div className={`text-sm leading-relaxed text-gray-500 dark:text-gray-300${iconElement ? ' pl-7' : ''}`}>
+      <div className="text-sm leading-relaxed text-gray-500 dark:text-gray-300">
         {children}
       </div>
     </>
