@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
-import { getMDXContent, getAllMDXFiles } from '@/lib/mdx'
+import { getMDXContent, getAllMDXFiles, getPageTitleFromFrontmatter } from '@/lib/mdx'
 import { getAdjacentPages, getPageTitle } from '@/lib/navigation'
 import { stripMdxToMarkdown } from '@/lib/strip-mdx'
 import { PageNav } from '@/components/layout/PageNav'
@@ -113,17 +113,19 @@ export default async function Page({ params }: PageProps) {
   const auto = getAdjacentPages(fullPath)
   const editUrl = `https://github.com/Cyfrin/docs-battlechain/edit/main/content/${fullPath}.mdx`
 
+  const resolveTitle = (p: string) => getPageTitleFromFrontmatter(p) ?? getPageTitle(p)
+
   const prev = frontmatter.prev === false
     ? null
     : typeof frontmatter.prev === 'string'
-      ? { path: frontmatter.prev, title: getPageTitle(frontmatter.prev) }
-      : auto.prev
+      ? { path: frontmatter.prev, title: resolveTitle(frontmatter.prev) }
+      : auto.prev ? { ...auto.prev, title: resolveTitle(auto.prev.path) } : null
 
   const next = frontmatter.next === false
     ? null
     : typeof frontmatter.next === 'string'
-      ? { path: frontmatter.next, title: getPageTitle(frontmatter.next) }
-      : auto.next
+      ? { path: frontmatter.next, title: resolveTitle(frontmatter.next) }
+      : auto.next ? { ...auto.next, title: resolveTitle(auto.next.path) } : null
 
   return (
     <>
