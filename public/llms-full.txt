@@ -6,7 +6,7 @@
 
 ## Overview
 
-### Battlechain
+### BattleChain
 Source: https://docs.battlechain.com/overview
 
 *PvP Security Blockchain - Trial by Fire*
@@ -33,16 +33,18 @@ Real funds, controlled risk. Bugs are found *before* they matter.
 
 BattleChain is a **pre-mainnet, post-testnet environment** with real funds. Protocols deploy audited contracts, whitehats legally attack them for bounties, and battle-tested contracts promote to mainnet with confidence.
 
-```
-Audit → Deploy to BattleChain → Stress Test (Attack Mode) → Promote to Production → Deploy to Mainnet
-```
+1. **Audit** — Get your contracts reviewed
+2. **Deploy** — Deploy contracts to BattleChain
+3. **Stress Test** — Whitehats attack under Safe Harbor
+4. **Promote** — DAO approves battle-tested contracts
+5. **Mainnet** — Ship with confidence
 
 Every contract on BattleChain exists in one of two modes:
 
   **Attack Mode**
 Open season for ethical hacking. Whitehats can legally exploit vulnerabilities, earn bounties, and operate under Safe Harbor protection. Protocols learn about weaknesses before they matter.
   **Production Mode**
-Protected like mainnet. No Safe Harbor coverage for attacks — same security expectations apply. Contracts reach this state once battle-tested and DAO-promoted.
+Protected like mainnet. No Safe Harbor coverage for attacks — same security expectations apply. Contracts typically reach this state once battle-tested and DAO-promoted.
 
 ### Why an L2?
 
@@ -2608,7 +2610,7 @@ Source: https://docs.battlechain.com/battlechain/how-to/find-attackable-contract
 
 The `AttackRegistry` tracks which contracts are in attack mode. This guide shows how to find and verify targets.
 
-You can view agreement statuses and contracts currently under scope on the [Battlechain explorer](https://explorer.testnet.battlechain.com/agreements).
+You can view agreement statuses and contracts currently under scope on the [BattleChain explorer](https://explorer.testnet.battlechain.com/agreements).
 
 ## Check a Specific Contract
 

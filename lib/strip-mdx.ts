@@ -98,6 +98,12 @@ export function stripMdxToMarkdown(raw: string): string {
       `**${title}**\n${body.trim()}`,
   )
 
+  // Convert the workflow stepper to clean markdown
+  text = text.replace(
+    /<div\s+className="workflow-stepper[\s\S]*?\n<\/div>\n\n/,
+    '1. **Audit** — Get your contracts reviewed\n2. **Deploy** — Deploy contracts to BattleChain\n3. **Stress Test** — Whitehats attack under Safe Harbor\n4. **Promote** — DAO approves battle-tested contracts\n5. **Mainnet** — Ship with confidence\n\n',
+  )
+
   // Remove decorative hero banners (the content is in the page description)
   text = text.replace(
     /<div\s+className="flex items-start gap-4 mb-10 p-5 rounded-xl[\s\S]*?<\/div>\s*<\/div>/g,

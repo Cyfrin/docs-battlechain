@@ -189,11 +189,11 @@ export function Card({ title, icon, href, color, compact, children }: CardProps)
 
   const cardClasses = `card ${compact ? 'p-3' : 'p-4'} block no-underline group`
 
-  // If no href, render as a div
+  // If no href, render as a div (no hover effects)
   if (!href) {
     return (
       <div
-        className={cardClasses}
+        className={`${cardClasses} card-static`}
         style={cardStyle}
         data-battlechain={isBattlechain ? 'true' : undefined}
       >

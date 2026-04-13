@@ -67,6 +67,39 @@ body {
 }
 
 /* ========================================
+   WORKFLOW STEPPER
+   ======================================== */
+
+/* Mobile: vertical line connecting circles */
+.workflow-step:not(:last-child) {
+  position: relative;
+}
+.workflow-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 18px;
+  top: calc(50% + 18px);
+  bottom: calc(-50% + 18px);
+  width: 2px;
+  background: #D0D5DD;
+}
+.dark .workflow-step:not(:last-child)::after {
+  background: #333741;
+}
+
+/* Desktop: horizontal line connecting circles */
+@media (min-width: 768px) {
+  .workflow-step:not(:last-child)::after {
+    left: calc(50% + 20px);
+    right: calc(-50% + 20px);
+    top: 18px;
+    bottom: auto;
+    width: auto;
+    height: 2px;
+  }
+}
+
+/* ========================================
    CARD STYLES
    ======================================== */
 
@@ -92,6 +125,15 @@ body {
   border: 1px solid var(--card-hover-border-color);
   box-shadow: inset 0 -4px 0 0 var(--card-hover-border-color);
   transform: translateY(-2px);
+}
+
+.card.card-static,
+.card.card-static:hover,
+.dark .card.card-static,
+.dark .card.card-static:hover {
+  cursor: default;
+  transform: none;
+  box-shadow: none;
 }
 
 .dark .card {

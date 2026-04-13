@@ -4,7 +4,7 @@
 
 ## Overview
 
-- [Battlechain](https://docs.battlechain.com/overview): PvP Security Blockchain - Trial by Fire
+- [BattleChain](https://docs.battlechain.com/overview): PvP Security Blockchain - Trial by Fire
 
 ## Quickstart
 
