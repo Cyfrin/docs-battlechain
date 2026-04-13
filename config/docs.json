@@ -1,5 +1,5 @@
 {
-  "name": "Battlechain Docs",
+  "name": "BattleChain Docs",
   "colors": {
     "primary": "#FFFFFF",
     "light": "#FFFFFF",
@@ -34,7 +34,7 @@
         "tab": "Documentation",
         "dropdowns": [
           {
-            "dropdown": "Battlechain",
+            "dropdown": "BattleChain",
             "icon": "/images/product-logos/battlechain.svg",
             "pages": [
               "overview",
@@ -44,9 +44,8 @@
               {
                 "group": "Quickstart",
                 "pages": [
-                  "battlechain/quickstart/ai-quickstart",
                   "battlechain/quickstart/deploy-your-contract",
-                  "battlechain/quickstart/configure-ai-tools"
+                  "battlechain/quickstart/execute-first-attack"
                 ]
               },
               {
@@ -62,6 +61,7 @@
               {
                 "group": "How-to Guides",
                 "pages": [
+                  "battlechain/how-to/configure-ai-tools",
                   "battlechain/how-to/use-ai-with-docs",
                   "battlechain/how-to/add-battlechain-to-metamask",
                   {
@@ -124,7 +124,7 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Battlechain",
+          "anchor": "BattleChain",
           "href": "https://battlechain.cyfrin.io",
           "icon": "gamepad"
         },

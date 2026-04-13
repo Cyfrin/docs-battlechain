@@ -58,7 +58,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white dark:border-[#333741] dark:bg-[#0E1119]">
-      <div className="container flex h-14 md:h-16 items-center justify-between px-4 mx-auto gap-4">
+      <div className="flex h-14 md:h-16 items-center justify-between px-4 gap-4">
         {/* Hamburger + Logo */}
         <div className="flex items-center gap-2">
           {/* Hamburger - mobile only */}
@@ -88,13 +88,13 @@ export function Header() {
           </Link>
         </div>
 
-        {/* Search */}
-        <div className="flex-1 flex justify-center max-w-xs sm:max-w-md md:max-w-2xl">
-          <SearchButton />
-        </div>
+        {/* Search + Navigation Links */}
+        <div className="flex items-center gap-2 md:gap-4">
+          <div>
+            <SearchButton />
+          </div>
 
-        {/* Navigation Links */}
-        <nav className="flex items-center space-x-2 md:space-x-6">
+          <nav className="flex items-center space-x-2 md:space-x-6">
           {navbar?.links?.map((link, index) => (
             <a
               key={index}
@@ -129,6 +129,7 @@ export function Header() {
             )}
           </button>
         </nav>
+        </div>
       </div>
     </header>
   )

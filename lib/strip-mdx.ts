@@ -98,6 +98,12 @@ export function stripMdxToMarkdown(raw: string): string {
       `**${title}**\n${body.trim()}`,
   )
 
+  // Remove decorative hero banners (the content is in the page description)
+  text = text.replace(
+    /<div\s+className="flex items-start gap-4 mb-10 p-5 rounded-xl[\s\S]*?<\/div>\s*<\/div>/g,
+    '',
+  )
+
   // Convert the problem-panel comparison grid to clean markdown
   text = text.replace(
     /<div\s+className="mt-6 grid[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/,

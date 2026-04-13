@@ -223,8 +223,8 @@ export function Sidebar() {
       return null
     }
 
-    // Render Battlechain dropdown directly without header
-    if (dropdown.dropdown === 'Battlechain') {
+    // Render BattleChain dropdown directly without header
+    if (dropdown.dropdown === 'BattleChain') {
       return (
         <div key={`battlechain-${index}`} className="mb-2">
           <ul className="space-y-1">

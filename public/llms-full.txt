@@ -60,9 +60,9 @@ BattleChain runs as a ZKSync-based L2 to keep attacks isolated from mainnet liqu
 
 BattleChain is designed for AI-assisted development. Deploy contracts, create agreements, and run attacks — all through your AI coding tool.
 
-  - [BattleChain in 5 Prompts](https://docs.battlechain.com/battlechain/quickstart/ai-quickstart): Deploy, attack, and collect a bounty with zero coding — just paste 5 prompts into Claude Code
+  - [Quickstart](https://docs.battlechain.com/battlechain/quickstart/deploy-your-contract): Deploy a vulnerable vault and open it for attack — with AI or manually
 
-  - [Configure Your AI Tools](https://docs.battlechain.com/battlechain/quickstart/configure-ai-tools): Add BattleChain context to Claude Code, Cursor, Copilot, and other AI tools
+  - [Configure Your AI Tools](https://docs.battlechain.com/battlechain/how-to/configure-ai-tools): Add BattleChain context to Claude Code, Cursor, Copilot, and other AI tools
 
 > **Note:** BattleChain Testnet is live. Mainnet details will be announced soon.
 
@@ -70,221 +70,43 @@ BattleChain is designed for AI-assisted development. Deploy contracts, create ag
 
 ## Quickstart
 
-### BattleChain in 5 Prompts
-Source: https://docs.battlechain.com/battlechain/quickstart/ai-quickstart
-
-*Deploy a vulnerable contract, open it to whitehat attack, and exploit it yourself — no coding required. Just paste these prompts into Claude Code or any AI coding tool.*
-
-🤖
-  
-    No coding required
-    Your AI is the developer. You're the protocol owner.
-    You'll deploy a real vulnerable contract to BattleChain, open it under a Safe Harbor agreement, then turn around and exploit it yourself — all by pasting prompts into Claude Code.
-  
-
-## What You'll Need
-
-Before you start, get two things in order:
-
-**1. An AI coding tool**
-
-This guide is written for [Claude Code](https://claude.ai/claude-code), but the same prompts work with Cursor, Windsurf, or any agent that can run terminal commands. If you don't have one, [install Claude Code](https://docs.anthropic.com/en/docs/claude-code/getting-started) — it takes about two minutes.
-
-**2. A wallet with BattleChain Testnet ETH**
-
-You need an EVM wallet (MetaMask, Rabby, etc.) with a small amount of ETH on BattleChain Testnet. Here's how to get it:
-
-1. **Add BattleChain to your wallet**
-
-| Field | Value |
-|-------|-------|
-| Network Name | BattleChain Testnet |
-| RPC URL | `https://testnet.battlechain.com` |
-| Chain ID | `627` |
-
-2. **Get free Sepolia ETH** from the [Google Cloud faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia) — paste your address and request some. 0.05 ETH is plenty.
-
-3. **Bridge to BattleChain** at [portal.battlechain.com/bridge](https://portal.battlechain.com/bridge) — select Sepolia → BattleChain Testnet and bridge your ETH over.
-
-Once your BattleChain balance shows ETH, you're ready.
-
----
-
-## How This Works
-
-You're going to paste five prompts into your AI tool. Each one does a concrete thing: set up the project, deploy your contracts, create a Safe Harbor agreement, open for attack, then exploit the vault and collect the bounty.
-
-There is one thing your AI will **not** handle: importing your private key. That step is yours — your key should never be passed to any tool. Foundry's encrypted keystore takes care of signing locally, and we'll walk you through it after Prompt 1 once the tooling is installed.
-
-**Optional: give your AI a head start**
-
-If you run this in an existing project folder, drop in the BattleChain context file first so your AI already knows the workflow, contract addresses, and gotchas without needing the docs URL in every prompt:
-
-```bash
-curl -o CLAUDE.md https://docs.battlechain.com/CLAUDE.md
-```
-
-Then open Claude Code in that folder — it will load the file automatically.
-
----
-
-## Prompt 1 — Setup
-
-Open Claude Code in a new empty folder. Before pasting, **replace `YOUR_WALLET_ADDRESS` with your actual wallet address**:
-
-```
-Read https://docs.battlechain.com/llms-full.txt to understand BattleChain, then do the following:
-
-1. Install Foundry if not already installed (https://getfoundry.sh)
-2. Install `just` if not already installed (https://just.systems)
-3. Clone https://github.com/Cyfrin/battlechain-starter into the current directory
-4. cd into it and run `forge install`
-5. Copy .env.example to .env and set SENDER_ADDRESS to YOUR_WALLET_ADDRESS
-```
-
-> **Check:** When setup is done, confirm your wallet address is set in `.env` and `forge install` completed without errors.
-
----
-
-## Import Your Key — Manual Step
-
-Now that Foundry is installed, you need to import your private key into its encrypted keystore. This is the one step your AI doesn't touch — your key stays on your machine and is never passed to any tool.
-
-Run this in your terminal:
-
-```bash
-cast wallet import battlechain --interactive
-```
-
-You'll be asked to paste your private key and set an encryption password. The key is stored encrypted at `~/.foundry/keystores/battlechain` — your raw private key is never written to disk.
-
-Verify it worked:
-
-```bash
-cast wallet list
-```
-
-You should see `battlechain` listed. From here on, your AI will prompt you for the password when it needs to sign a transaction — that's the only thing you'll need to provide.
-
----
-
-## Prompt 2 — Deploy
-
-```
-Run `just setup` to deploy MockToken and VulnerableVault to BattleChain Testnet.
-After deployment, add TOKEN_ADDRESS and VAULT_ADDRESS to my .env file.
-```
-
-You'll be prompted for your keystore password. Enter it to sign the transaction.
-
-Expected output from your AI:
-
-```
-MockToken deployed: 0x...
-VulnerableVault deployed: 0x...
-Vault seeded with 1000 tokens
-```
-
-> **Check:** Search your `VAULT_ADDRESS` on the [BattleChain explorer](https://explorer.testnet.battlechain.com/) — you should see the deployment transaction and the vault's token balance.
-
----
-
-## Prompt 3 — Create a Safe Harbor Agreement
-
-```
-Run `just create-agreement` to create a Safe Harbor agreement for the deployed vault.
-After it runs, add AGREEMENT_ADDRESS to .env and set RECOVERY_ADDRESS to my wallet address.
-```
-
-This creates an on-chain agreement that defines the rules of engagement for whitehats: 10% bounty, 30-day commitment window, your wallet as the recovery address for any returned funds.
-
-> **Check:** Search your `AGREEMENT_ADDRESS` on the [BattleChain explorer](https://explorer.testnet.battlechain.com/) to see the agreement contract and its creation transaction.
-
----
-
-## Prompt 4 — Open for Attack
-
-```
-Do the following in order:
-
-1. Run `just request-attack-mode` to submit the vault for DAO review
-2. On testnet, approve the request immediately using the MockRegistryModerator:
-   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com
-3. Run `just check-state` and confirm the output is 3
-```
-
-On testnet, the DAO moderator is a permissionless contract — your AI can approve the request itself immediately after submitting it. No waiting.
-
-> **Note:** While this runs, it's worth reading [what the exploit actually does](https://docs.battlechain.com/battlechain/quickstart/execute-first-attack#understand-the-exploit). You'll see the reentrancy vulnerability in the vault code — the same bug class that's drained hundreds of millions from real protocols.
-
-Once your AI reports `3`, your vault is live and open. Whitehats on BattleChain can now attempt to drain it. You're about to become one of them.
-
----
-
-## Prompt 5 — Execute the Attack
-
-```
-Run `just attack` to execute the reentrancy exploit against the vault.
-```
-
-Watch the output:
-
-```
-Vault balance before: 1000 tokens
-Deploying attacker...
-
---- Vault drained ---
-Vault before:          1000 tokens
-Vault after:              0 tokens
-Bounty kept:            100 tokens
-Returned to protocol:   900 tokens
-```
-
-> **Check:** Search your `VAULT_ADDRESS` on the [BattleChain explorer](https://explorer.testnet.battlechain.com/) — you'll see the attack transaction, the vault balance drop to zero, and the bounty transfer to your wallet.
-
----
-
-## What Just Happened
-
-You played both sides of a BattleChain engagement in one session:
-
-- **As the protocol**: you deployed a vulnerable contract, created a Safe Harbor agreement, and opened it to whitehat attack
-- **As the whitehat**: you identified the vulnerability and exploited it under legal, structured terms
-
-The same workflow applies to real mainnet deployments. Protocols that go through BattleChain before shipping know their contracts have been stress-tested by real economic incentives — not just a static review.
-
-If you want to go deeper on either side, see:
-- [Deploy Your First Contract](https://docs.battlechain.com/battlechain/quickstart/deploy-first-contract) — the full protocol walkthrough with technical detail
-- [Execute Your First Attack](https://docs.battlechain.com/battlechain/quickstart/execute-first-attack) — the whitehat walkthrough with exploit mechanics
-
----
-
-## Troubleshooting
-
-### My AI is running commands but transactions keep failing
-
-Check that you have enough ETH on BattleChain Testnet and that your keystore is set up correctly. If a transaction reverts, ask your AI to check the revert reason and retry.
-
-### I have a stuck pending transaction
-
-Tell your AI: *"I have a stuck transaction at nonce [N]. Send a replacement with a higher gas price using cast send with --value 0 to clear it."* You can find your pending nonce by looking at your wallet or searching your address on the [explorer](https://explorer.testnet.battlechain.com/).
-
-### Claude Code is asking about things I don't understand
-
-That's fine — just tell it you're not a developer and ask it to handle the technical details. Claude Code is designed to work autonomously. You only need to provide your wallet address and enter your keystore password when prompted.
-
-### Quickstart
+### Deploy and Battle-Test Your Contract
 Source: https://docs.battlechain.com/battlechain/quickstart/deploy-your-contract
 
-*Deploy a vulnerable contract to BattleChain and open it for whitehat attack.*
+*Deploy a vulnerable contract to BattleChain, create a Safe Harbor agreement, and open it for whitehat attack.*
 
-Deploy a vulnerable vault, create a Safe Harbor agreement, and open it for attack — the core BattleChain workflow. Pick your path and follow along.
+Deploy a vulnerable vault, create a Safe Harbor agreement, and open it for whitehat attack — the core BattleChain workflow for protocol teams.
 
 > **Warning:** **Review what your AI runs.** AI coding tools execute real commands on your machine. Always read the commands before approving them, and never allow anything you don't understand. If in doubt, use the **Manual** tab and run each command yourself.
 
 ## What You'll Need
 
-### A Test Wallet
+**[AI CLI (foundry)]**
+
+- An **AI coding tool** with terminal access — [Claude Code](https://docs.anthropic.com/en/docs/claude-code/getting-started), Cursor, Windsurf, or any agent that can run terminal commands
+- A **test wallet with BattleChain Testnet ETH**
+
+**Windows users:** Use [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and run your AI tool inside the WSL terminal.
+
+**[Manual (foundry)]**
+
+- [Git](https://git-scm.com/)
+- [Foundry](https://book.getfoundry.sh/getting-started/installation): `curl -L https://foundry.paradigm.xyz | bash && foundryup`
+- [just](https://just.systems):
+
+```bash
+brew install just
+```
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/.local/bin
+```
+```bash
+cargo install just
+```
+
+- A **test wallet with BattleChain Testnet ETH**
+
+**Windows users:** Use [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and install everything inside the WSL terminal.
 
 You need a dedicated wallet for BattleChain testing — **do not use a wallet that holds real funds.**
 
@@ -317,43 +139,9 @@ If you've never set up a wallet before, watch the [Cyfrin Updraft wallet setup w
 
 Once your BattleChain balance shows ETH, you're ready.
 
-### Your Tool
-
-**[AI Desktop]**
-
-> **Note:** **Coming soon.** AI Desktop support (Claude Desktop, ChatGPT, etc.) is in progress. Use the **AI CLI** or **Manual** tab for now.
-
-**[AI CLI (foundry)]**
-
-An AI coding tool with terminal access. This guide uses [Claude Code](https://docs.anthropic.com/en/docs/claude-code/getting-started), but the same prompts work in Cursor, Windsurf, Codex, or any agent that can run terminal commands.
-
-**Windows users:** Use [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and run your AI tool inside the WSL terminal.
-
-**[Manual (foundry)]**
-
-- [Git](https://git-scm.com/)
-- [Foundry](https://book.getfoundry.sh/getting-started/installation): `curl -L https://foundry.paradigm.xyz | bash && foundryup`
-- [just](https://just.systems):
-
-```bash
-brew install just
-```
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/.local/bin
-```
-```bash
-cargo install just
-```
-
-**Windows users:** Use [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and install everything inside the WSL terminal.
-
 ---
 
 ## Step 1 — Project Setup
-
-**[AI Desktop]**
-
-> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
 
 **[AI CLI (foundry)]**
 
@@ -364,7 +152,7 @@ Read https://docs.battlechain.com/llms-full.txt to understand BattleChain, then:
 
 1. Install Foundry if not already installed (https://getfoundry.sh)
 2. Install just if not already installed (https://just.systems)
-3. Clone https://github.com/Cyfrin/battlechain-starter into the current directory
+3. Clone https://github.com/Cyfrin/battlechain-starter-foundry into the current directory
 4. cd into it and run forge install
 5. Copy .env.example to .env and set SENDER_ADDRESS to YOUR_WALLET_ADDRESS
 
@@ -376,8 +164,8 @@ Your AI will install the tools, clone the repo, and configure your environment. 
 **[Manual (foundry)]**
 
 ```bash
-git clone https://github.com/Cyfrin/battlechain-starter
-cd battlechain-starter
+git clone https://github.com/Cyfrin/battlechain-starter-foundry
+cd battlechain-starter-foundry
 forge install
 cp .env.example .env
 ```
@@ -392,31 +180,7 @@ SENDER_ADDRESS=0x...your_wallet_address...
 
 ## Step 2 — Set Up Transaction Signing
 
-**[AI Desktop]**
-
-> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
-
-**[AI CLI (foundry)]**
-
-Import your private key into Foundry's encrypted keystore. This is a manual step — your private key should never be passed to any AI tool.
-
-```bash
-cast wallet import battlechain --interactive
-```
-
-Paste your private key and set an encryption password. The key is stored encrypted at `~/.foundry/keystores/battlechain` — your raw private key is never written to disk.
-
-Verify it worked:
-
-```bash
-cast wallet list
-```
-
-You should see `battlechain` listed. From here on, you'll enter the keystore password when transactions need signing.
-
-**[Manual (foundry)]**
-
-Import your private key into Foundry's encrypted keystore:
+Import your private key into Foundry's encrypted keystore. This is always a manual step — your private key should never be passed to any AI tool.
 
 ```bash
 cast wallet import battlechain --interactive
@@ -436,20 +200,21 @@ You should see `battlechain` listed. From here on, you'll enter the keystore pas
 
 ## Step 3 — Deploy
 
-**[AI Desktop]**
-
-> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
-
 **[AI CLI (foundry)]**
 
-```
-Run `just setup` to deploy MockToken and VulnerableVault to BattleChain Testnet.
-After deployment, add TOKEN_ADDRESS and VAULT_ADDRESS to my .env file.
+Tell your AI:
 
-Then, give me the explorer link with the deployed vault, and give me the vault address.
+```
+I'm going to run `just setup` to deploy MockToken and VulnerableVault to BattleChain Testnet. After I paste the output, add TOKEN_ADDRESS and VAULT_ADDRESS to my .env file.
 ```
 
-Enter your keystore password when prompted.
+Then run this yourself in your terminal (you'll be prompted for your keystore password):
+
+```bash
+just setup
+```
+
+Paste the output back to your AI so it can update your `.env`.
 
 **[Manual (foundry)]**
 
@@ -472,18 +237,6 @@ TOKEN_ADDRESS=0x...
 VAULT_ADDRESS=0x...
 ```
 
-**[AI Desktop]**
-
-> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
-
-**[AI CLI (foundry)]**
-
-> **Warning:** **Forge scripts require `--skip-simulation` on BattleChain.** Forge's local gas estimation doesn't work reliably on BattleChain — add `--skip-simulation` to all `forge script` calls. The starter kit's `justfile` already includes this.
-
-> **Check:** Ask your AI for the explorer link — it has the vault address from the deploy output. You should see the deployment transaction and the vault's token balance on the [BattleChain explorer](https://explorer.testnet.battlechain.com/).
-
-**[Manual (foundry)]**
-
 > **Warning:** **Forge scripts require `--skip-simulation` on BattleChain.** Forge's local gas estimation doesn't work reliably on BattleChain — add `--skip-simulation` to all `forge script` calls. The starter kit's `justfile` already includes this.
 
 > **Check:** Search your `VAULT_ADDRESS` on the [BattleChain explorer](https://explorer.testnet.battlechain.com/) — you should see the deployment transaction and the vault's token balance.
@@ -492,16 +245,21 @@ VAULT_ADDRESS=0x...
 
 ## Step 4 — Create a Safe Harbor Agreement
 
-**[AI Desktop]**
-
-> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
-
 **[AI CLI (foundry)]**
 
+Tell your AI:
+
 ```
-Run `just create-agreement` to create a Safe Harbor agreement for the deployed vault.
-After it runs, add AGREEMENT_ADDRESS to .env and set RECOVERY_ADDRESS to my wallet address.
+I'm going to run `just create-agreement` to create a Safe Harbor agreement. After I paste the output, add AGREEMENT_ADDRESS to .env and set RECOVERY_ADDRESS to my wallet address.
 ```
+
+Then run this yourself:
+
+```bash
+just create-agreement
+```
+
+Paste the output back to your AI so it can update your `.env`.
 
 **[Manual (foundry)]**
 
@@ -530,24 +288,7 @@ This creates an on-chain agreement that defines the rules of engagement: 10% bou
 
 ## Step 5 — Open for Attack
 
-**[AI Desktop]**
-
-> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
-
-**[AI CLI (foundry)]**
-
-```
-Do the following in order:
-
-1. Run `just request-attack-mode` to submit the vault for DAO review
-2. On testnet, approve the request immediately using the MockRegistryModerator:
-   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com
-3. Run `just check-state` and confirm the output is 3
-```
-
-**[Manual (foundry)]**
-
-Submit for DAO review:
+Run these commands yourself in your terminal (each will prompt for your keystore password):
 
 ```bash
 just request-attack-mode
@@ -589,8 +330,8 @@ You deployed a contract, created a Safe Harbor agreement, and opened it to white
 
 The same process applies to real contracts. Protocols that go through BattleChain before shipping know their contracts have been stress-tested by real economic incentives — not just a static review.
 
-  - [Attack Tutorial](https://docs.battlechain.com/battlechain/tutorials/attacking-contracts): Now exploit the vault you just deployed
-  - [Configure AI Tools](https://docs.battlechain.com/battlechain/quickstart/configure-ai-tools): Add BattleChain context to your AI tools so they deploy here by default
+  - [Attack Your Vault](https://docs.battlechain.com/battlechain/quickstart/execute-first-attack): Switch to the whitehat side and exploit the vault you just deployed
+  - [The Contract Lifecycle](https://docs.battlechain.com/battlechain/explanation/contract-lifecycle): Learn how contracts move from attack mode through to production
 
 ---
 
@@ -599,10 +340,6 @@ The same process applies to real contracts. Protocols that go through BattleChai
 ### Forge scripts failing
 
 Add `--skip-simulation` to any failing `forge script` command. Forge's local gas estimation doesn't work reliably on BattleChain.
-
-**[AI Desktop]**
-
-> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
 
 **[AI CLI (foundry)]**
 
@@ -613,10 +350,6 @@ Tell your AI: *"All forge script commands need the --skip-simulation flag."*
 Add `--skip-simulation` to every `forge script` call.
 
 ### Stuck pending transaction
-
-**[AI Desktop]**
-
-> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
 
 **[AI CLI (foundry)]**
 
@@ -646,154 +379,314 @@ Find your pending nonce: `cast nonce --rpc-url https://testnet.battlechain.com `
 
 If a `forge script` command fails with a vague error even with `--skip-simulation`, try adding `-g 300` to use 3x the estimated gas.
 
-### Configure Your AI Tools
-Source: https://docs.battlechain.com/battlechain/quickstart/configure-ai-tools
+### Attack a Contract
+Source: https://docs.battlechain.com/battlechain/quickstart/execute-first-attack
 
-*Add BattleChain context to your AI coding tools so they deploy to BattleChain and set up Safe Harbor by default*
+*Find an attackable contract on BattleChain, exploit it, collect your bounty, and walk away clean under Safe Harbor.*
 
-## Why This Matters
+> **Warning:** **Review what your AI runs.** AI coding tools execute real commands on your machine. Always read the commands before approving them, and never allow anything you don't understand. If in doubt, use the **Manual** tab and run each command yourself.
 
-AI coding agents write your deploy scripts, scaffold your tests, and set up infrastructure. If they don't know about BattleChain, they'll deploy straight to mainnet — skipping the battle-testing step entirely.
+## What You'll Need
 
-Adding a short instruction block to your project tells every AI tool to:
+**[AI CLI (foundry)]**
 
-- Deploy contracts to BattleChain first, not mainnet directly
-- Create a Safe Harbor agreement as part of project setup
-- Follow the full BattleChain workflow before promoting to production
+- An **AI coding tool** with terminal access — [Claude Code](https://docs.anthropic.com/en/docs/claude-code/getting-started), Cursor, Windsurf, or any agent that can run terminal commands
+- A **test wallet with BattleChain Testnet ETH**
 
-## The Prompt
+**Windows users:** Use [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and run your AI tool inside the WSL terminal.
 
-Add the following to your AI tool's configuration file. It works with any tool that reads project-level instructions:
+**[Manual (foundry)]**
 
-```markdown
-## BattleChain
-
-This project deploys to BattleChain for security battle-testing before mainnet.
-BattleChain is a pre-mainnet L2 where whitehats legally attack contracts under
-Safe Harbor protection.
-
-Full documentation: https://docs.battlechain.com/llms-full.txt
-
-### Deployment workflow
-
-1. Install `battlechain-lib` (`forge install cyfrin/battlechain-lib`)
-2. Deploy contracts via `bcDeployCreate*` helpers — works on BattleChain and 190+ EVM chains
-3. Create a Safe Harbor agreement via `createAndAdoptAgreement` — auto-scopes per chain
-4. Request attack mode (BattleChain only) — `requestAttackMode(agreement)`
-5. After battle-testing, promote to production
-6. Deploy to mainnet
-
-### Requirements
-
-- Use `battlechain-lib` for all deployment and agreement scripts
-- All deploy scripts must target BattleChain first — never deploy directly to mainnet
-- Only `requestAttackMode` is BattleChain-specific — deploy and agreement helpers work on any chain
-- Read the BattleChain documentation before writing deploy or agreement scripts
-```
-
-## Quickstart: Install the Skills (Recommended)
-
-The fastest way to give your AI agent BattleChain context is to install the Cyfrin skills package:
+- [Git](https://git-scm.com/)
+- [Foundry](https://book.getfoundry.sh/getting-started/installation): `curl -L https://foundry.paradigm.xyz | bash && foundryup`
+- [just](https://just.systems):
 
 ```bash
-npx skills add cyfrin/solskill
+brew install just
+```
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/.local/bin
+```
+```bash
+cargo install just
 ```
 
-This installs three skills:
+- A **test wallet with BattleChain Testnet ETH**
 
-| Skill | What it does |
-|-------|-------------|
-| `solidity` | Production-grade Solidity standards: code quality, testing, security, Foundry workflows |
-| `battlechain` | BattleChain reference: deploying, Safe Harbor, whitehat attacks, contract lifecycle |
-| `battlechain-tutorial` | Interactive wizard: scans your project, asks guided questions, generates all scripts |
+**Windows users:** Use [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and install everything inside the WSL terminal.
 
-After installation, tell your AI agent "Deploy my contracts to BattleChain" and the tutorial skill will walk you through the full process interactively.
+You need a dedicated wallet for BattleChain testing — **do not use a wallet that holds real funds.**
 
-## Alternative: Download the Pre-Built File
+If you've never set up a wallet before, watch the [Cyfrin Updraft wallet setup walkthrough](https://updraft.cyfrin.io/courses/blockchain-basics/sending-transactions/setting-up-a-wallet) first.
 
-If you prefer a static configuration file, download the ready-made CLAUDE.md that includes the full workflow, contract addresses, `battlechain-lib` helpers, network info, and critical gotchas:
+**1.** Click the account selector at the top of MetaMask.
+
+**2.** Click **Add account** to create a new account.
+
+**3.** Click the three-dot menu on the new account and select **Rename**.
+
+**4.** Name it something obvious like **BATTLECHAIN TEST WALLET** so you never confuse it with a real wallet.
+
+### Fund Your Test Wallet
+
+**1. Add BattleChain to your wallet**
+
+| Field | Value |
+|-------|-------|
+| Network Name | BattleChain Testnet |
+| Chain ID | `627` |
+| RPC URL | `https://testnet.battlechain.com` |
+| Explorer | https://explorer.testnet.battlechain.com/ |
+| Currency | ETH |
+| CAIP-2 ID | `eip155:627` |
+
+**2. Get free Sepolia ETH** from the [Google Cloud faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia) — 0.05 ETH is plenty.
+
+**3. Bridge to BattleChain** at [portal.battlechain.com/bridge](https://portal.battlechain.com/bridge) — select Sepolia to BattleChain Testnet and bridge your ETH.
+
+Once your BattleChain balance shows ETH, you're ready.
+
+---
+
+## Step 1 — Find an Attackable Contract
+
+On BattleChain, any contract in **attack mode** (state `3` — `UNDER_ATTACK`) is a legitimate target under Safe Harbor.
+
+**For this quickstart**, you'll attack a pre-built vulnerable vault from the starter repo. In the real world, you'd find targets through the explorer or on-chain queries.
+
+> **Tip:** **Finding real targets:** Browse all currently attackable agreements on the [BattleChain explorer](https://explorer.testnet.battlechain.com/agreements?page=1&state=UNDER_ATTACK). You can also query the [explorer API](https://block-explorer-api.testnet.battlechain.com/docs) programmatically — use `GET /battlechain/agreement/by-contract/:address` to check if a specific contract is in scope, or `GET /battlechain/agreement/:address` to see all covered contracts for an agreement. For on-chain querying via the `AttackRegistry`, see [How to Find Attackable Contracts](https://docs.battlechain.com/battlechain/how-to/find-attackable-contracts).
+
+If you just completed [Deploy and Battle-Test Your Contract](https://docs.battlechain.com/battlechain/quickstart/deploy-your-contract), your vault is already set up — skip to Step 2.
+
+Otherwise, you need to deploy a vault first. The quickest way is to follow the [deploy quickstart](https://docs.battlechain.com/battlechain/quickstart/deploy-your-contract) and come back here when your vault is in attack mode (state `3`).
+
+**[AI CLI (foundry)]**
+
+Open Claude Code in a new empty folder. Replace `YOUR_WALLET_ADDRESS` with your actual address and paste:
+
+```
+Read https://docs.battlechain.com/llms-full.txt to understand BattleChain, then:
+
+1. Install Foundry if not already installed (https://getfoundry.sh)
+2. Install just if not already installed (https://just.systems)
+3. Clone https://github.com/Cyfrin/battlechain-starter-foundry into the current directory
+4. cd into it and run forge install
+5. Copy .env.example to .env and set SENDER_ADDRESS to YOUR_WALLET_ADDRESS
+```
+
+Then run these yourself in your terminal (each prompts for your keystore password):
 
 ```bash
-curl -o CLAUDE.md https://docs.battlechain.com/CLAUDE.md
+cast wallet import battlechain --interactive
+just setup
 ```
 
-This works for Claude Code out of the box. For other tools, rename the file to match the table below and drop it in your project root.
-
-## Where to Add It
-
-Each AI tool reads instructions from a different file. Add the prompt above to whichever tools your team uses:
-
-### Claude Code
-
-Add to `CLAUDE.md` in your project root. Claude Code loads this file automatically at the start of every session.
+Tell your AI to add `TOKEN_ADDRESS` and `VAULT_ADDRESS` from the output to `.env`, then continue:
 
 ```bash
-# Create or append to CLAUDE.md
-cat >> CLAUDE.md << 'EOF'
-
-## BattleChain
-...
-EOF
+just create-agreement
 ```
 
-### Cursor
-
-Add to `.cursor/rules/battlechain.mdc` in your project root. Cursor loads all `.mdc` files from this directory as project rules.
+Tell your AI to add `AGREEMENT_ADDRESS` to `.env` and set `RECOVERY_ADDRESS` to your wallet address, then:
 
 ```bash
-mkdir -p .cursor/rules
-# Create .cursor/rules/battlechain.mdc with the prompt above
+just request-attack-mode
+cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
+  "approveAttack(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com
+just check-state
 ```
 
-### GitHub Copilot
+You need to see `3` (`UNDER_ATTACK`).
 
-Add to `.github/copilot-instructions.md`. Copilot reads this file for Chat, code review, and the coding agent.
+**[Manual (foundry)]**
 
 ```bash
-mkdir -p .github
-# Append to .github/copilot-instructions.md
+git clone https://github.com/Cyfrin/battlechain-starter-foundry
+cd battlechain-starter-foundry
+forge install
+cp .env.example .env
 ```
 
-### OpenAI Codex
-
-Add to `AGENTS.md` in your project root. Codex CLI loads this file as project-level instructions.
+Set `SENDER_ADDRESS` in `.env` to your wallet address, then:
 
 ```bash
-# Create or append to AGENTS.md
+cast wallet import battlechain --interactive
+just setup
 ```
 
-### Windsurf
-
-Add to `.windsurfrules` in your project root.
+Copy `TOKEN_ADDRESS` and `VAULT_ADDRESS` into `.env`, then:
 
 ```bash
-# Create or append to .windsurfrules
+just create-agreement
 ```
 
-### OpenClaw
+Copy `AGREEMENT_ADDRESS` into `.env` and set `RECOVERY_ADDRESS` to your wallet address. Then:
 
-Add to your OpenClaw skill configuration or system prompt. Point it at the docs URL so it can fetch full context:
+```bash
+just request-attack-mode
+cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
+  "approveAttack(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com
+just check-state
+```
+
+You need to see `3` (`UNDER_ATTACK`). If you see `2`, the approval hasn't been processed yet.
+
+---
+
+## Step 2 — Check the Terms
+
+Before attacking any contract, read the agreement terms. For the starter vault the terms are straightforward — but on real targets, this step is critical.
+
+Key things to check:
+
+- **Bounty percentage** — how much you keep (starter vault: 10%)
+- **Recovery address** — where you send the remaining funds
+- **Retainability** — whether you keep the bounty from drained funds directly, or return everything and get paid separately
+- **Identity requirements** — whether the protocol requires you to identify yourself
+- **Scope** — which contracts are covered by the agreement
+
+> **Tip:** You can view all agreement details on the [BattleChain explorer](https://explorer.testnet.battlechain.com/agreements?page=1&state=UNDER_ATTACK) — click any agreement to see its terms, covered contracts, and recovery address. The [explorer API](https://block-explorer-api.testnet.battlechain.com/docs) also exposes these details via `GET /battlechain/agreement/:agreementAddress`. For a full reference, see [Bounty Terms](https://docs.battlechain.com/battlechain/reference/bounty-terms).
+
+---
+
+## Step 3 — Understand the Exploit
+
+Open `src/Attacker.sol` in the starter repo. The attack exploits two things working together: the CEI violation in `VulnerableVault` and the hook system in `MockToken`.
+
+**MockToken's hook system:** Any address can register a hook contract via `setTransferHook(address hook)`. When tokens are transferred *to* that address, the token calls `hook.onTokenTransfer()` after the transfer completes.
+
+**The vault's CEI violation:** `withdrawAll()` calls `TOKEN.transfer()` *before* zeroing `balances[msg.sender]`.
+
+Put them together and the reentrancy chain looks like this:
 
 ```
-https://docs.battlechain.com/llms-full.txt
+attack()
+└── TOKEN.setTransferHook(address(this))  ← register as our own hook
+└── vault.deposit(seedAmount)             ← establish a balance
+└── vault.withdrawAll()
+    └── TOKEN.transfer(attacker, amount)
+        └── onTokenTransfer()             ← hook fires, balance not yet zeroed
+            └── vault.withdrawAll()
+                └── TOKEN.transfer(attacker, amount)
+                    └── onTokenTransfer() ← still not zeroed
+                        └── ...           ← repeats until vault is empty
 ```
 
-### Other Tools
+Once the vault is drained, the Safe Harbor settlement runs automatically:
 
-The same prompt works with any AI tool that reads project-level instruction files. Common patterns:
+```solidity
+uint256 total = TOKEN.balanceOf(address(this));
+uint256 bounty = (total * BOUNTY_BPS) / 10_000; // 10%
 
-| Tool | File |
-|------|------|
-| Claude Code | `CLAUDE.md` |
-| Cursor | `.cursor/rules/*.mdc` |
-| GitHub Copilot | `.github/copilot-instructions.md` |
-| OpenAI Codex | `AGENTS.md` |
-| Windsurf | `.windsurfrules` |
-| Gemini | `GEMINI.md` |
-| JetBrains Junie | `.junie/guidelines.md` |
-| Aider | `.aider.conf.yml` |
+TOKEN.transfer(RECOVERY_ADDRESS, total - bounty); // return 90% to protocol
+TOKEN.transfer(OWNER, bounty);                    // keep 10%
+```
 
-> **Tip:** The docs URL `https://docs.battlechain.com/llms-full.txt` is the key piece. Any AI that can fetch a URL will get the full BattleChain documentation in one request (~100 KB, fits in most context windows).
+You're not stealing. The protocol gets the majority of funds back minus the agreed bounty. Everyone knew the rules when the agreement was signed.
+
+---
+
+## Step 4 — Execute the Attack
+
+Run this yourself in your terminal (you'll be prompted for your keystore password):
+
+```bash
+just attack
+```
+
+Expected output:
+
+```
+Vault balance before: 1000 tokens
+Deploying attacker...
+
+--- Vault drained ---
+Vault before:          1000 tokens
+Vault after:              0 tokens
+Bounty kept:            100 tokens
+Returned to protocol:   900 tokens
+```
+
+---
+
+## Step 5 — Verify and Settle
+
+> **Check:** Search your `VAULT_ADDRESS` on the [BattleChain explorer](https://explorer.testnet.battlechain.com/) — you'll see the attack transaction, the vault balance drop to zero, and the bounty transfer to your wallet.
+
+### Verify the math
+
+The agreement set a 10% bounty (`BOUNTY_BPS = 1_000`). The vault had 1,000 seeded tokens plus your 100 seed tokens = 1,100 total.
+
+- Bounty: `1,100 × 10% = 110 tokens`
+- Returned: `1,100 - 110 = 990 tokens`
+
+If the numbers don't look right, check that `RECOVERY_ADDRESS` in your `.env` matches the address in the agreement — that's where the returned funds go.
+
+---
+
+## What Just Happened
+
+You found a vulnerable contract on BattleChain, verified it was in attack mode, exploited it, and collected a bounty — all under Safe Harbor protection.
+
+- **Found** a contract open for attack
+- **Checked** the agreement terms and bounty structure
+- **Exploited** a reentrancy vulnerability
+- **Settled** automatically — bounty kept, remaining funds returned to the protocol
+
+The same workflow applies to real contracts. Whitehats on BattleChain earn bounties by finding vulnerabilities before they reach mainnet, and protocols get battle-tested code they can deploy with confidence.
+
+  - [Find Attackable Contracts](https://docs.battlechain.com/battlechain/how-to/find-attackable-contracts): Discover real targets beyond the starter vault using on-chain queries
+  - [Claim Bounties](https://docs.battlechain.com/battlechain/how-to/claim-bounties): Detailed bounty calculations, caps, retainability, and settlement mechanics
+
+---
+
+## Troubleshooting
+
+### Forge scripts failing
+
+Add `--skip-simulation` to any failing `forge script` command. Forge's local gas estimation doesn't work reliably on BattleChain.
+
+**[AI CLI (foundry)]**
+
+Tell your AI: *"All forge script commands need the --skip-simulation flag."*
+
+**[Manual (foundry)]**
+
+Add `--skip-simulation` to every `forge script` call.
+
+### Stuck pending transaction
+
+**[AI CLI (foundry)]**
+
+Tell your AI: *"I have a stuck transaction at nonce [N]. Send a replacement with a higher gas price using cast send with --value 0 to clear it."*
+
+**[Manual (foundry)]**
+
+Send a replacement transaction to clear the stuck nonce:
+
+```bash
+# Get current base fee
+cast gas-price --rpc-url https://testnet.battlechain.com
+
+# Send a replacement with a higher max fee (e.g. 2x the current base fee)
+cast send \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com \
+  --nonce <stuck-nonce> \
+  --max-fee-per-gas <2x-current-base-fee> \
+  --value 0 \
+  0x0000000000000000000000000000000000000000
+```
+
+Find your pending nonce: `cast nonce --rpc-url https://testnet.battlechain.com `
+
+### Out-of-gas failures
+
+If a `forge script` command fails with a vague error even with `--skip-simulation`, try adding `-g 300` to use 3x the estimated gas.
 
 ---
 
@@ -1183,22 +1076,11 @@ Source: https://docs.battlechain.com/battlechain/tutorials/attacking-contracts
 
 *Find the vulnerability in a BattleChain vault, exploit it, collect your bounty, and walk away clean under Safe Harbor.*
 
-&#x2694;&#xFE0F;
-  
-    You are the Whitehat
-    There's a vulnerable vault on BattleChain. The DAO approved it. Safe Harbor is in place.
-    Your job is to find the bug, drain the vault, keep your bounty, and return the rest. Everything you're about to do is legal, structured, and profitable.
-  
-
 ## Prerequisites
 
 You need a deployed, attackable vault to target. If you completed the [Quickstart](https://docs.battlechain.com/battlechain/quickstart/deploy-your-contract), you already have one — your `.env` has everything you need.
 
 If you're attacking someone else's vault, you need their `VAULT_ADDRESS` and `TOKEN_ADDRESS` (find these on the [BattleChain explorer](https://explorer.testnet.battlechain.com/) or by querying the `AttackRegistry`).
-
-**[AI Desktop]**
-
-> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
 
 **[AI CLI (foundry)]**
 
@@ -1209,7 +1091,7 @@ Your AI coding tool with terminal access (Claude Code, Cursor, Windsurf, etc.). 
 You need [Foundry](https://book.getfoundry.sh/getting-started/installation) and [just](https://just.systems) installed, and the starter repo cloned:
 
 ```bash
-git clone https://github.com/Cyfrin/battlechain-starter
+git clone https://github.com/Cyfrin/battlechain-starter-foundry
 cd battlechain-starter
 forge install
 ```
@@ -1234,10 +1116,6 @@ cast wallet import battlechain --interactive
 ## Step 1 — Verify the Vault is Attackable
 
 Before doing anything, confirm the vault is in `UNDER_ATTACK` state.
-
-**[AI Desktop]**
-
-> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
 
 **[AI CLI (foundry)]**
 
@@ -1304,26 +1182,13 @@ You're not stealing. The protocol gets the majority of funds back minus the agre
 
 ## Step 3 — Execute the Attack
 
-**[AI Desktop]**
-
-> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
-
-**[AI CLI (foundry)]**
-
-```
-Run `just attack` to execute the reentrancy exploit against the vault.
-Use --skip-simulation for all forge script calls.
-```
-
-Enter your keystore password when prompted.
-
-**[Manual (foundry)]**
+Run this yourself in your terminal (you'll be prompted for your keystore password):
 
 ```bash
 just attack
 ```
 
-Enter your keystore password when prompted. Watch the output:
+Watch the output:
 
 ```
 Vault balance before: 1000 tokens
@@ -1630,6 +1495,155 @@ Join the community for announcements:
 
 ## How-to Guides
 
+### Configure Your AI Tools
+Source: https://docs.battlechain.com/battlechain/how-to/configure-ai-tools
+
+*Add BattleChain context to your AI coding tools so they deploy to BattleChain and set up Safe Harbor by default*
+
+## Why This Matters
+
+AI coding agents write your deploy scripts, scaffold your tests, and set up infrastructure. If they don't know about BattleChain, they'll deploy straight to mainnet — skipping the battle-testing step entirely.
+
+Adding a short instruction block to your project tells every AI tool to:
+
+- Deploy contracts to BattleChain first, not mainnet directly
+- Create a Safe Harbor agreement as part of project setup
+- Follow the full BattleChain workflow before promoting to production
+
+## The Prompt
+
+Add the following to your AI tool's configuration file. It works with any tool that reads project-level instructions:
+
+```markdown
+## BattleChain
+
+This project deploys to BattleChain for security battle-testing before mainnet.
+BattleChain is a pre-mainnet L2 where whitehats legally attack contracts under
+Safe Harbor protection.
+
+Full documentation: https://docs.battlechain.com/llms-full.txt
+
+### Deployment workflow
+
+1. Install `battlechain-lib` (`forge install cyfrin/battlechain-lib`)
+2. Deploy contracts via `bcDeployCreate*` helpers — works on BattleChain and 190+ EVM chains
+3. Create a Safe Harbor agreement via `createAndAdoptAgreement` — auto-scopes per chain
+4. Request attack mode (BattleChain only) — `requestAttackMode(agreement)`
+5. After battle-testing, promote to production
+6. Deploy to mainnet
+
+### Requirements
+
+- Use `battlechain-lib` for all deployment and agreement scripts
+- All deploy scripts must target BattleChain first — never deploy directly to mainnet
+- Only `requestAttackMode` is BattleChain-specific — deploy and agreement helpers work on any chain
+- Read the BattleChain documentation before writing deploy or agreement scripts
+```
+
+## Quickstart: Install the Skills (Recommended)
+
+The fastest way to give your AI agent BattleChain context is to install the Cyfrin skills package:
+
+```bash
+npx skills add cyfrin/solskill
+```
+
+This installs three skills:
+
+| Skill | What it does |
+|-------|-------------|
+| `solidity` | Production-grade Solidity standards: code quality, testing, security, Foundry workflows |
+| `battlechain` | BattleChain reference: deploying, Safe Harbor, whitehat attacks, contract lifecycle |
+| `battlechain-tutorial` | Interactive wizard: scans your project, asks guided questions, generates all scripts |
+
+After installation, tell your AI agent "Deploy my contracts to BattleChain" and the tutorial skill will walk you through the full process interactively.
+
+## Alternative: Download the Pre-Built File
+
+If you prefer a static configuration file, download the ready-made CLAUDE.md that includes the full workflow, contract addresses, `battlechain-lib` helpers, network info, and critical gotchas:
+
+```bash
+curl -o CLAUDE.md https://docs.battlechain.com/CLAUDE.md
+```
+
+This works for Claude Code out of the box. For other tools, rename the file to match the table below and drop it in your project root.
+
+## Where to Add It
+
+Each AI tool reads instructions from a different file. Add the prompt above to whichever tools your team uses:
+
+### Claude Code
+
+Add to `CLAUDE.md` in your project root. Claude Code loads this file automatically at the start of every session.
+
+```bash
+# Create or append to CLAUDE.md
+cat >> CLAUDE.md << 'EOF'
+
+## BattleChain
+...
+EOF
+```
+
+### Cursor
+
+Add to `.cursor/rules/battlechain.mdc` in your project root. Cursor loads all `.mdc` files from this directory as project rules.
+
+```bash
+mkdir -p .cursor/rules
+# Create .cursor/rules/battlechain.mdc with the prompt above
+```
+
+### GitHub Copilot
+
+Add to `.github/copilot-instructions.md`. Copilot reads this file for Chat, code review, and the coding agent.
+
+```bash
+mkdir -p .github
+# Append to .github/copilot-instructions.md
+```
+
+### OpenAI Codex
+
+Add to `AGENTS.md` in your project root. Codex CLI loads this file as project-level instructions.
+
+```bash
+# Create or append to AGENTS.md
+```
+
+### Windsurf
+
+Add to `.windsurfrules` in your project root.
+
+```bash
+# Create or append to .windsurfrules
+```
+
+### OpenClaw
+
+Add to your OpenClaw skill configuration or system prompt. Point it at the docs URL so it can fetch full context:
+
+```
+https://docs.battlechain.com/llms-full.txt
+```
+
+### Other Tools
+
+The same prompt works with any AI tool that reads project-level instruction files. Common patterns:
+
+| Tool | File |
+|------|------|
+| Claude Code | `CLAUDE.md` |
+| Cursor | `.cursor/rules/*.mdc` |
+| GitHub Copilot | `.github/copilot-instructions.md` |
+| OpenAI Codex | `AGENTS.md` |
+| Windsurf | `.windsurfrules` |
+| Gemini | `GEMINI.md` |
+| JetBrains Junie | `.junie/guidelines.md` |
+| Aider | `.aider.conf.yml` |
+
+> **Tip:** The docs URL `https://docs.battlechain.com/llms-full.txt` is the key piece. Any AI that can fetch a URL will get the full BattleChain documentation in one request (~100 KB, fits in most context windows).
+
 ### How to Use AI with BattleChain Docs
 Source: https://docs.battlechain.com/battlechain/how-to/use-ai-with-docs
 
@@ -1754,7 +1768,7 @@ If you prefer to add the network manually:
 
 ## Next Steps
 
-  - [Deploy Your First Contract](https://docs.battlechain.com/battlechain/quickstart/deploy-first-contract): Get started deploying contracts on BattleChain
+  - [Deploy Your First Contract](https://docs.battlechain.com/battlechain/quickstart/deploy-your-contract): Get started deploying contracts on BattleChain
   - [Find Attackable Contracts](https://docs.battlechain.com/battlechain/how-to/find-attackable-contracts): Discover contracts you can legally attack
 
 ### Exploring Agreements
@@ -3057,13 +3071,6 @@ Actions taken:
 Source: https://docs.battlechain.com/battlechain/quickstart/review-first-request
 
 *Evaluate an attack mode request as a DAO member — check for mainnet copycats, verify terms, and approve or reject.*
-
-⚖️
-  
-    You are the DAO
-    A protocol wants to open their contracts for attack. You decide if they're allowed to.
-    Your job is to prevent abuse — mainly ensuring no one copies a live mainnet protocol onto BattleChain to have it "attacked" and drained under Safe Harbor cover.
-  
 
 > **Note:** **Prerequisites**: You must be the registry moderator or part of the DAO multisig to approve or reject requests.
 
@@ -4380,7 +4387,7 @@ You can also reset your MetaMask account (Settings → Advanced → Reset Accoun
 
 ### Forge scripts failing
 
-Add `--skip-simulation` to any failing `forge script` command. Forge's local gas estimation doesn't work reliably on BattleChain. The [battlechain-starter](https://github.com/Cyfrin/battlechain-starter) justfile already includes this flag.
+Add `--skip-simulation` to any failing `forge script` command. Forge's local gas estimation doesn't work reliably on BattleChain. The [battlechain-starter](https://github.com/Cyfrin/battlechain-starter-foundry) justfile already includes this flag.
 
 ### Out-of-gas failures
 

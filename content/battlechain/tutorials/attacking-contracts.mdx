@@ -12,27 +12,13 @@ description: "Find the vulnerability in a BattleChain vault, exploit it, collect
   </div>
 </div>
 
-<Tabs labels="AI CLI (foundry), AI Desktop, Manual (foundry)">
+<Tabs labels="AI CLI (foundry), AI Desktop, Manual (foundry)" disabled="AI Desktop">
 
 ## Prerequisites
 
 You need a deployed, attackable vault to target. If you completed the [Quickstart](/battlechain/quickstart/deploy-your-contract), you already have one — your `.env` has everything you need.
 
 If you're attacking someone else's vault, you need their `VAULT_ADDRESS` and `TOKEN_ADDRESS` (find these on the [BattleChain explorer](https://explorer.testnet.battlechain.com/) or by querying the `AttackRegistry`).
-
-<Tab title="AI Desktop">
-
-<Note>
-**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
-</Note>
-
-{/* COMING SOON — AI Desktop prerequisites
-**[Claude Desktop](https://claude.ai/download)** (macOS or Linux). If you completed the quickstart with Claude Desktop, continue in the same conversation. If starting fresh, select **Code** at the top and choose the `battlechain-starter` folder.
-
-![Claude Desktop — select Code mode and choose a project folder](/images/other/claude-code-arrows.png)
-*/}
-
-</Tab>
 
 <Tab title="AI CLI (foundry)">
 
@@ -45,7 +31,7 @@ Your AI coding tool with terminal access (Claude Code, Cursor, Windsurf, etc.). 
 You need [Foundry](https://book.getfoundry.sh/getting-started/installation) and [just](https://just.systems) installed, and the starter repo cloned:
 
 ```bash
-git clone https://github.com/Cyfrin/battlechain-starter
+git clone https://github.com/Cyfrin/battlechain-starter-foundry
 cd battlechain-starter
 forge install
 ```
@@ -72,20 +58,6 @@ cast wallet import battlechain --interactive
 ## Step 1 — Verify the Vault is Attackable
 
 Before doing anything, confirm the vault is in `UNDER_ATTACK` state.
-
-<Tab title="AI Desktop">
-
-<Note>
-**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
-</Note>
-
-{/* COMING SOON — AI Desktop verify attackable
-```
-Run `just check-state` and tell me the result. I need it to be 3 (UNDER_ATTACK).
-```
-*/}
-
-</Tab>
 
 <Tab title="AI CLI (foundry)">
 
@@ -156,41 +128,13 @@ You're not stealing. The protocol gets the majority of funds back minus the agre
 
 ## Step 3 — Execute the Attack
 
-<Tab title="AI Desktop">
-
-<Note>
-**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
-</Note>
-
-{/* COMING SOON — AI Desktop execute attack
-```
-Run `just attack` to execute the reentrancy exploit against the vault.
-Use --skip-simulation for all forge script calls.
-```
-
-Enter your keystore password when prompted. Watch the output — Claude will show you the vault draining in real time.
-*/}
-
-</Tab>
-
-<Tab title="AI CLI (foundry)">
-
-```
-Run `just attack` to execute the reentrancy exploit against the vault.
-Use --skip-simulation for all forge script calls.
-```
-
-Enter your keystore password when prompted.
-
-</Tab>
-
-<Tab title="Manual (foundry)">
+Run this yourself in your terminal (you'll be prompted for your keystore password):
 
 ```bash
 just attack
 ```
 
-Enter your keystore password when prompted. Watch the output:
+Watch the output:
 
 ```
 Vault balance before: 1000 tokens

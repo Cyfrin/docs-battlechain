@@ -264,7 +264,7 @@ export function AIChatPanel({ onClose }: { onClose?: () => void }) {
             <Sparkles className="w-12 h-12 mb-3 opacity-30" />
             <p className="text-sm">Ask me anything about Cyfrin documentation</p>
             <p className="text-xs mt-2 max-w-xs">
-              I can help you find information about CodeHawks, Updraft, Solodit, Profiles, and Battlechain.
+              I can help you find information about CodeHawks, Updraft, Solodit, Profiles, and BattleChain.
             </p>
           </div>
         ) : (

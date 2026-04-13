@@ -222,8 +222,8 @@ The keystore lives at `~/.foundry/keystores/battlechain`. The user will be promp
 ## Starter Repo
 
 ```bash
-git clone https://github.com/Cyfrin/battlechain-starter
-cd battlechain-starter
+git clone https://github.com/Cyfrin/battlechain-starter-foundry
+cd battlechain-starter-foundry
 forge install
 ```
 

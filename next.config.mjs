@@ -4,6 +4,25 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  async redirects() {
+    return [
+      {
+        source: '/battlechain/quickstart/ai-quickstart',
+        destination: '/battlechain/quickstart/deploy-your-contract',
+        permanent: true,
+      },
+      {
+        source: '/battlechain/quickstart/deploy-first-contract',
+        destination: '/battlechain/quickstart/deploy-your-contract',
+        permanent: true,
+      },
+      {
+        source: '/battlechain/quickstart/configure-ai-tools',
+        destination: '/battlechain/how-to/configure-ai-tools',
+        permanent: true,
+      },
+    ]
+  },
 }
 
 export default nextConfig

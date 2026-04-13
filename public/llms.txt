@@ -8,9 +8,8 @@
 
 ## Quickstart
 
-- [BattleChain in 5 Prompts](https://docs.battlechain.com/battlechain/quickstart/ai-quickstart): Deploy a vulnerable contract, open it to whitehat attack, and exploit it yourself — no coding required. Just paste these prompts into Claude Code or any AI coding tool.
-- [Quickstart](https://docs.battlechain.com/battlechain/quickstart/deploy-your-contract): Deploy a vulnerable contract to BattleChain and open it for whitehat attack.
-- [Configure Your AI Tools](https://docs.battlechain.com/battlechain/quickstart/configure-ai-tools): Add BattleChain context to your AI coding tools so they deploy to BattleChain and set up Safe Harbor by default
+- [Deploy and Battle-Test Your Contract](https://docs.battlechain.com/battlechain/quickstart/deploy-your-contract): Deploy a vulnerable contract to BattleChain, create a Safe Harbor agreement, and open it for whitehat attack.
+- [Attack a Contract](https://docs.battlechain.com/battlechain/quickstart/execute-first-attack): Find an attackable contract on BattleChain, exploit it, collect your bounty, and walk away clean under Safe Harbor.
 
 ## Tutorials
 
@@ -22,6 +21,7 @@
 
 ## How-to Guides
 
+- [Configure Your AI Tools](https://docs.battlechain.com/battlechain/how-to/configure-ai-tools): Add BattleChain context to your AI coding tools so they deploy to BattleChain and set up Safe Harbor by default
 - [How to Use AI with BattleChain Docs](https://docs.battlechain.com/battlechain/how-to/use-ai-with-docs): Give your AI agent full context on BattleChain by pointing it at our machine-readable docs
 - [How to Add BattleChain to MetaMask](https://docs.battlechain.com/battlechain/how-to/add-battlechain-to-metamask): Connect your wallet to the BattleChain network
 - [Exploring Agreements](https://docs.battlechain.com/battlechain/how-to/exploring-agreements): Browse Safe Harbor Agreements, filter by state, and inspect bounty terms and contract coverage

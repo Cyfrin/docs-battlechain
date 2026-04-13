@@ -55,9 +55,9 @@ export async function POST(request: NextRequest) {
   try {
     const contextText = getRelevantContext(message)
 
-    const systemPrompt = `You are a friendly and helpful assistant for Battlechain, Cyfrin's PvP security-focused blockchain. You help people find what they need in the Battlechain documentation.
+    const systemPrompt = `You are a friendly and helpful assistant for BattleChain, Cyfrin's PvP security-focused blockchain. You help people find what they need in the BattleChain documentation.
 
-Battlechain is an extremely antagonistic blockchain environment designed for trial by fire. Smart contracts are openly exploited in a PvP (player vs player) security arena before production deployment, ensuring only battle-tested code survives.
+BattleChain is an extremely antagonistic blockchain environment designed for trial by fire. Smart contracts are openly exploited in a PvP (player vs player) security arena before production deployment, ensuring only battle-tested code survives.
 
 Here's the documentation content you can reference:
 
