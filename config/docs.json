@@ -125,13 +125,19 @@
       "anchors": [
         {
           "anchor": "BattleChain",
-          "href": "https://battlechain.cyfrin.io",
-          "icon": "gamepad"
+          "href": "https://battlechain.com"
+        },
+        {
+          "anchor": "Explorer",
+          "href": "https://explorer.testnet.battlechain.com"
+        },
+        {
+          "anchor": "Bridge",
+          "href": "https://portal.battlechain.com/bridge"
         },
         {
           "anchor": "Discord Community",
-          "href": "https://discord.gg/cyfrin",
-          "icon": "discord"
+          "href": "https://discord.gg/cyfrin"
         }
       ]
     }
