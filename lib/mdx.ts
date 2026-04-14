@@ -73,6 +73,16 @@ export function getMDXContent(directory: string, slug: string | string[]): MDXCo
   }
 }
 
+export function getPageTitleFromFrontmatter(pagePath: string): string | null {
+  const mdxPath = path.join(contentDirectory, `${pagePath}.mdx`)
+  const mdPath = path.join(contentDirectory, `${pagePath}.md`)
+  const filePath = fs.existsSync(mdxPath) ? mdxPath : fs.existsSync(mdPath) ? mdPath : null
+  if (!filePath) return null
+  const raw = fs.readFileSync(filePath, 'utf-8')
+  const { data } = matter(raw)
+  return data.title || null
+}
+
 export function getMDXContentByPath(filePath: string): MDXContent | null {
   const fullPath = path.join(contentDirectory, filePath)
 

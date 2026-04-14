@@ -31,8 +31,7 @@ export function Tabs({ labels, children }: TabsProps) {
       return
     }
     const stored = localStorage.getItem(STORAGE_KEY)
-    const valid = labels.split(',').map((l) => l.trim())
-    if (stored && valid.includes(stored)) {
+    if (stored && tabLabels.includes(stored)) {
       setActive(stored)
     }
   }, [labels])

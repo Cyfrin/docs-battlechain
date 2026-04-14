@@ -162,6 +162,14 @@ contract Deploy is BCScript {
 
 ---
 
+## Contract ABIs
+
+Typed viem-compatible ABIs for all BattleChain contracts: https://github.com/Cyfrin/battlechain-lib/blob/main/ts/abi.ts
+
+Exports: `attackRegistryAbi`, `registryAbi`, `agreementFactoryAbi`, `agreementAbi`, `deployerAbi`
+
+---
+
 ## Workflow
 
 1. **Deploy** contracts via `bcDeployCreate` / `bcDeployCreate2` — on BattleChain this registers with `AttackRegistry` automatically
@@ -216,8 +224,8 @@ The keystore lives at `~/.foundry/keystores/battlechain`. The user will be promp
 ## Starter Repo
 
 ```bash
-git clone https://github.com/Cyfrin/battlechain-starter
-cd battlechain-starter
+git clone https://github.com/Cyfrin/battlechain-starter-foundry
+cd battlechain-starter-foundry
 forge install
 ```
 
