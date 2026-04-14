@@ -45,6 +45,46 @@ https://docs.battlechain.com/llms-full.txt
 
 Once indexed, Cursor's AI will have full BattleChain context when you reference `@docs` in chat.
 
+## MCP Server
+
+BattleChain publishes an [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server that gives AI tools programmatic access to search and read these docs.
+
+**Server URL:**
+
+```
+https://docs.battlechain.com/api/mcp
+```
+
+### Claude Code
+
+```bash
+claude mcp add battlechain-docs https://docs.battlechain.com/api/mcp
+```
+
+### Claude Desktop
+
+Add to your Claude Desktop config (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "battlechain-docs": {
+      "url": "https://docs.battlechain.com/api/mcp"
+    }
+  }
+}
+```
+
+### Other MCP Clients
+
+Any MCP-compatible client can connect using the server URL above. The server exposes three tools:
+
+| Tool | Description |
+|------|-------------|
+| `search_docs` | Search documentation by keyword or topic |
+| `read_page` | Read the full content of a specific page as clean markdown |
+| `list_pages` | List all available documentation pages |
+
 ## Custom Agents
 
 If you're building an agent that interacts with BattleChain, fetch the docs at startup and include them as context:
