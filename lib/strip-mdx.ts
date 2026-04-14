@@ -98,10 +98,16 @@ export function stripMdxToMarkdown(raw: string): string {
       `**${title}**\n${body.trim()}`,
   )
 
+  // Remove CTA buttons with inline SVGs (e.g. "Get Started" on overview)
+  text = text.replace(
+    /<a\s[^>]*className="[^"]*rounded-xl[^"]*"[^>]*>[\s\S]*?<\/a>/g,
+    '',
+  )
+
   // Convert the workflow stepper to clean markdown
   text = text.replace(
-    /<div\s+className="workflow-stepper[\s\S]*?\n<\/div>\n\n/,
-    '1. **Audit** — Get your contracts reviewed\n2. **Deploy** — Deploy contracts to BattleChain\n3. **Stress Test** — Whitehats attack under Safe Harbor\n4. **Promote** — DAO approves battle-tested contracts\n5. **Mainnet** — Ship with confidence\n\n',
+    /<div\s+className="workflow-stepper[\s\S]*?Ship with confidence[\s\S]*?(?:<\/div>\s*){3}/,
+    '1. **Audit** — Get your contracts reviewed\n2. **Deploy** — Deploy contracts to BattleChain\n3. **Stress Test** — Whitehats attack under Safe Harbor\n4. **Promote** — DAO approves battle-tested contracts\n5. **Mainnet** — Ship with confidence',
   )
 
   // Remove decorative hero banners (the content is in the page description)
