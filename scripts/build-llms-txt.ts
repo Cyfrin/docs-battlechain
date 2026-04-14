@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
+import { stripMdxToMarkdown } from '../lib/strip-mdx'
 
 const CONTENT_DIR = path.join(process.cwd(), 'content')
 const OUTPUT_DIR = path.join(process.cwd(), 'public')
@@ -10,6 +11,14 @@ const SITE_DESCRIPTION =
   ' smart contracts with real funds. Protocols deploy audited contracts,' +
   ' whitehats legally attack them for bounties under Safe Harbor protection,' +
   ' and battle-tested contracts promote to mainnet.'
+
+const docsConfig = JSON.parse(
+  fs.readFileSync(
+    path.join(process.cwd(), '.docs-config.json'),
+    'utf-8',
+  ),
+)
+const BASE_URL = `https://${docsConfig.production_url}`
 
 interface PageMeta {
   pagePath: string
@@ -126,81 +135,6 @@ function extractNavGroups(): NavGroup[] {
   return groups
 }
 
-// ── MDX → clean markdown ────────────────────────────────────────
-
-function stripMdxToMarkdown(raw: string): string {
-  // Protect fenced code blocks from tag/brace stripping
-  const codeBlocks: string[] = []
-  let text = raw.replace(/```[\s\S]*?```/g, (match) => {
-    codeBlocks.push(match)
-    return `%%CODE${codeBlocks.length - 1}%%`
-  })
-
-  // Convert callout components to blockquotes
-  const callouts: [string, string][] = [
-    ['Note', 'Note'],
-    ['Info', 'Note'],
-    ['Warning', 'Warning'],
-    ['Danger', 'Danger'],
-    ['Tip', 'Tip'],
-    ['Check', 'Check'],
-  ]
-  for (const [tag, label] of callouts) {
-    const re = new RegExp(
-      `<${tag}>\\s*([\\s\\S]*?)\\s*</${tag}>`,
-      'g',
-    )
-    text = text.replace(re, (_match, body: string) => {
-      const lines = body.trim().split('\n')
-      return lines
-        .map((l, i) =>
-          i === 0 ? `> **${label}:** ${l}` : `> ${l}`,
-        )
-        .join('\n')
-    })
-  }
-
-  // Convert Card components with href to markdown links
-  text = text.replace(
-    /<Card\s+[^>]*?title="([^"]*)"[^>]*?href="([^"]*)"[^>]*>\s*([\s\S]*?)\s*<\/Card>/g,
-    (_m, title: string, href: string, body: string) =>
-      `- [${title}](${href}): ${body.trim()}`,
-  )
-  // Also match href before title
-  text = text.replace(
-    /<Card\s+[^>]*?href="([^"]*)"[^>]*?title="([^"]*)"[^>]*>\s*([\s\S]*?)\s*<\/Card>/g,
-    (_m, href: string, title: string, body: string) =>
-      `- [${title}](${href}): ${body.trim()}`,
-  )
-
-  // Convert Card/Step components without href — extract title
-  text = text.replace(
-    /<(?:Card|Step)\s+[^>]*?title="([^"]*)"[^>]*>\s*([\s\S]*?)\s*<\/(?:Card|Step)>/g,
-    (_m, title: string, body: string) =>
-      `**${title}**\n${body.trim()}`,
-  )
-
-  // Remove self-closing JSX tags (<Component /> and <br/>)
-  text = text.replace(/<[A-Za-z][A-Za-z0-9.]*\b[^>]*\/>/g, '')
-
-  // Remove opening and closing HTML/JSX tags, keep children
-  text = text.replace(/<\/?[A-Za-z][A-Za-z0-9.]*\b[^>]*>/g, '')
-
-  // Remove stray JSX expressions (style={{...}}, className="...")
-  // that may remain on their own lines after tag removal
-  text = text.replace(/^\s*\{[^}]*\}\s*$/gm, '')
-
-  // Collapse runs of 3+ blank lines into 2
-  text = text.replace(/\n{3,}/g, '\n\n')
-
-  // Restore code blocks
-  text = text.replace(/%%CODE(\d+)%%/g, (_, i) =>
-    codeBlocks[parseInt(i, 10)],
-  )
-
-  return text.trim()
-}
-
 // ── Generators ──────────────────────────────────────────────────
 
 function buildLlmsTxt(groups: NavGroup[]): string {
@@ -215,7 +149,7 @@ function buildLlmsTxt(groups: NavGroup[]): string {
     lines.push(`## ${group.name}`)
     lines.push('')
     for (const page of group.pages) {
-      const url = `/${page.pagePath}`
+      const url = `${BASE_URL}/${page.pagePath}`
       const desc = page.description
         ? `: ${page.description}`
         : ''
@@ -243,6 +177,7 @@ function buildLlmsFullTxt(groups: NavGroup[]): string {
     for (const page of group.pages) {
       const clean = stripMdxToMarkdown(page.content)
       sections.push(`### ${page.title}`)
+      sections.push(`Source: ${BASE_URL}/${page.pagePath}`)
       sections.push('')
       if (page.description) {
         sections.push(`*${page.description}*`)

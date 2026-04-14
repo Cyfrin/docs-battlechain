@@ -244,7 +244,7 @@ export function SearchModal({ isOpen, onClose, searchIndex }: SearchModalProps) 
             <div className="p-8 text-center text-gray-500 dark:text-gray-400">
               <Search className="w-12 h-12 mx-auto mb-3 opacity-30" />
               <p className="text-sm">Start typing to search documentation...</p>
-              <div className="mt-4 text-xs space-y-1">
+              <div className="mt-4 text-xs space-y-2">
                 <p>
                   <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded">↑↓</kbd> to navigate
                 </p>

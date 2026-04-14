@@ -1,19 +1,52 @@
 ---
-title: "Quickstart"
-description: "Deploy a vulnerable contract to BattleChain and open it for whitehat attack."
+title: "Deploy and Battle-Test Your Contract"
+description: "Deploy a vulnerable contract to BattleChain, create a Safe Harbor agreement, and open it for whitehat attack."
 ---
 
-Deploy a vulnerable vault, create a Safe Harbor agreement, and open it for attack — the core BattleChain workflow. Pick your path and follow along.
+Deploy a vulnerable vault, create a Safe Harbor agreement, and open it for whitehat attack — the core BattleChain workflow for protocol teams.
 
 <Warning>
 **Review what your AI runs.** AI coding tools execute real commands on your machine. Always read the commands before approving them, and never allow anything you don't understand. If in doubt, use the **Manual** tab and run each command yourself.
 </Warning>
 
-<Tabs labels="AI CLI (foundry), AI Desktop, Manual (foundry)">
+<Tabs labels="AI CLI (foundry), Manual (foundry)">
 
 ## What You'll Need
 
-### A Test Wallet
+<Tab title="AI CLI (foundry)">
+
+- An **AI coding tool** with terminal access — [Claude Code](https://docs.anthropic.com/en/docs/claude-code/getting-started), Cursor, Windsurf, or any agent that can run terminal commands
+- A **test wallet with BattleChain Testnet ETH**
+
+**Windows users:** Use [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and run your AI tool inside the WSL terminal.
+
+</Tab>
+
+<Tab title="Manual (foundry)">
+
+- [Git](https://git-scm.com/)
+- [Foundry](https://book.getfoundry.sh/getting-started/installation): `curl -L https://foundry.paradigm.xyz | bash && foundryup`
+- [just](https://just.systems):
+
+<CodeGroup labels="macOS, Linux/WSL, Cargo">
+```bash
+brew install just
+```
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/.local/bin
+```
+```bash
+cargo install just
+```
+</CodeGroup>
+
+- A **test wallet with BattleChain Testnet ETH**
+
+**Windows users:** Use [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and install everything inside the WSL terminal.
+
+</Tab>
+
+<Accordion title="Wallet setup — get a test wallet with BattleChain ETH" icon="wallet">
 
 You need a dedicated wallet for BattleChain testing — **do not use a wallet that holds real funds.**
 
@@ -51,90 +84,11 @@ If you've never set up a wallet before, watch the [Cyfrin Updraft wallet setup w
 
 Once your BattleChain balance shows ETH, you're ready.
 
-### Your Tool
-
-<Tab title="AI Desktop">
-
-<Note>
-**Coming soon.** AI Desktop support (Claude Desktop, ChatGPT, etc.) is in progress. Use the **AI CLI** or **Manual** tab for now.
-</Note>
-
-{/* COMING SOON — AI Desktop tool section
-**[Claude Desktop](https://claude.ai/download)** (macOS or Linux). Claude Desktop can execute code directly — you paste prompts and it handles the rest. No terminal or IDE needed.
-
-Transactions will open in your browser wallet (MetaMask, Rabby, etc.) for you to approve — Claude never sees your private key.
-
-**Windows users:** Claude Desktop runs on Windows, but Foundry tooling works best under [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install). Install WSL first, then use the **AI CLI** tab with Claude Code inside WSL instead.
-*/}
-
-</Tab>
-
-<Tab title="AI CLI (foundry)">
-
-An AI coding tool with terminal access. This guide uses [Claude Code](https://docs.anthropic.com/en/docs/claude-code/getting-started), but the same prompts work in Cursor, Windsurf, Codex, or any agent that can run terminal commands.
-
-**Windows users:** Use [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and run your AI tool inside the WSL terminal.
-
-</Tab>
-
-<Tab title="Manual (foundry)">
-
-- [Git](https://git-scm.com/)
-- [Foundry](https://book.getfoundry.sh/getting-started/installation): `curl -L https://foundry.paradigm.xyz | bash && foundryup`
-- [just](https://just.systems):
-
-<CodeGroup labels="macOS, Linux/WSL, Cargo">
-```bash
-brew install just
-```
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/.local/bin
-```
-```bash
-cargo install just
-```
-</CodeGroup>
-
-**Windows users:** Use [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and install everything inside the WSL terminal.
-
-</Tab>
+</Accordion>
 
 ---
 
 ## Step 1 — Project Setup
-
-<Tab title="AI Desktop">
-
-<Note>
-**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
-</Note>
-
-{/* COMING SOON — AI Desktop project setup
-Open Claude Desktop and select **Code** at the top of the window. Then click the folder name in the bottom-left to create or choose a new empty folder for your project.
-
-![Claude Desktop — select Code mode and choose a project folder](/images/other/claude-code-arrows.png)
-
-Once you're in Code mode with a folder selected, replace `YOUR_WALLET_ADDRESS` with your actual address and paste:
-
-```
-Read https://docs.battlechain.com/llms-full.txt to understand BattleChain, then:
-
-1. Install Foundry nightly (needed for browser wallet signing):
-   curl -L https://foundry.paradigm.xyz | bash && foundryup --install nightly-c1cdc6c110e7330293ff287c55c293474ce5674f
-2. Install just if not already installed (https://just.systems)
-3. Clone https://github.com/Cyfrin/battlechain-starter into the current directory
-4. cd into it and run forge install
-5. Copy .env.example to .env and set SENDER_ADDRESS to YOUR_WALLET_ADDRESS
-
-Once done, tell the user to PROCEED TO THE NEXT STEP
-```
-
-Claude will install the tools, clone the repo, and configure your environment. Wait for it to finish before moving on.
-
-You'll need to allow those commands to run.
-*/}
-
-</Tab>
 
 <Tab title="AI CLI (foundry)">
 
@@ -145,7 +99,7 @@ Read https://docs.battlechain.com/llms-full.txt to understand BattleChain, then:
 
 1. Install Foundry if not already installed (https://getfoundry.sh)
 2. Install just if not already installed (https://just.systems)
-3. Clone https://github.com/Cyfrin/battlechain-starter into the current directory
+3. Clone https://github.com/Cyfrin/battlechain-starter-foundry into the current directory
 4. cd into it and run forge install
 5. Copy .env.example to .env and set SENDER_ADDRESS to YOUR_WALLET_ADDRESS
 
@@ -159,8 +113,8 @@ Your AI will install the tools, clone the repo, and configure your environment. 
 <Tab title="Manual (foundry)">
 
 ```bash
-git clone https://github.com/Cyfrin/battlechain-starter
-cd battlechain-starter
+git clone https://github.com/Cyfrin/battlechain-starter-foundry
+cd battlechain-starter-foundry
 forge install
 cp .env.example .env
 ```
@@ -177,21 +131,7 @@ SENDER_ADDRESS=0x...your_wallet_address...
 
 ## Step 2 — Set Up Transaction Signing
 
-<Tab title="AI Desktop">
-
-<Note>
-**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
-</Note>
-
-{/* COMING SOON — AI Desktop signing setup
-Just make sure your test wallet is connected to BattleChain Testnet in your browser extension before moving on.
-*/}
-
-</Tab>
-
-<Tab title="AI CLI (foundry)">
-
-Import your private key into Foundry's encrypted keystore. This is a manual step — your private key should never be passed to any AI tool.
+Import your private key into Foundry's encrypted keystore. This is always a manual step — your private key should never be passed to any AI tool.
 
 ```bash
 cast wallet import battlechain --interactive
@@ -206,68 +146,10 @@ cast wallet list
 ```
 
 You should see `battlechain` listed. From here on, you'll enter the keystore password when transactions need signing.
-
-</Tab>
-
-<Tab title="Manual (foundry)">
-
-Import your private key into Foundry's encrypted keystore:
-
-```bash
-cast wallet import battlechain --interactive
-```
-
-Paste your private key and set an encryption password. The key is stored encrypted at `~/.foundry/keystores/battlechain` — your raw private key is never written to disk.
-
-Verify it worked:
-
-```bash
-cast wallet list
-```
-
-You should see `battlechain` listed. From here on, you'll enter the keystore password when transactions need signing.
-
-</Tab>
 
 ---
 
 ## Step 3 — Deploy
-
-<Tab title="AI Desktop">
-
-<Note>
-**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
-</Note>
-
-{/* COMING SOON — AI Desktop deploy
-Paste into the same Claude Desktop conversation:
-
-```
-Run `just setup-browser` to deploy MockToken and VulnerableVault to BattleChain Testnet.
-After deployment, add TOKEN_ADDRESS and VAULT_ADDRESS to my .env file.
-
-Then, give me the explorer link with the deployed vault, and give me the vault address.
-```
-
-Your browser wallet will pop up for each transaction — approve them in MetaMask. You should then get an output of your newly deployed vault, and an explorer link.
-*/}
-
-</Tab>
-
-<Tab title="AI CLI (foundry)">
-
-```
-Run `just setup` to deploy MockToken and VulnerableVault to BattleChain Testnet.
-After deployment, add TOKEN_ADDRESS and VAULT_ADDRESS to my .env file.
-
-Then, give me the explorer link with the deployed vault, and give me the vault address.
-```
-
-Enter your keystore password when prompted.
-
-</Tab>
-
-<Tab title="Manual (foundry)">
 
 ```bash
 just setup
@@ -288,30 +170,6 @@ TOKEN_ADDRESS=0x...
 VAULT_ADDRESS=0x...
 ```
 
-</Tab>
-
-<Tab title="AI Desktop">
-
-<Note>
-**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
-</Note>
-
-</Tab>
-
-<Tab title="AI CLI (foundry)">
-
-<Warning>
-**Forge scripts require `--skip-simulation` on BattleChain.** Forge's local gas estimation doesn't work reliably on BattleChain — add `--skip-simulation` to all `forge script` calls. The starter kit's `justfile` already includes this.
-</Warning>
-
-<Check>
-Ask your AI for the explorer link — it has the vault address from the deploy output. You should see the deployment transaction and the vault's token balance on the [BattleChain explorer](https://explorer.testnet.battlechain.com/).
-</Check>
-
-</Tab>
-
-<Tab title="Manual (foundry)">
-
 <Warning>
 **Forge scripts require `--skip-simulation` on BattleChain.** Forge's local gas estimation doesn't work reliably on BattleChain — add `--skip-simulation` to all `forge script` calls. The starter kit's `justfile` already includes this.
 </Warning>
@@ -320,37 +178,9 @@ Ask your AI for the explorer link — it has the vault address from the deploy o
 Search your `VAULT_ADDRESS` on the [BattleChain explorer](https://explorer.testnet.battlechain.com/) — you should see the deployment transaction and the vault's token balance.
 </Check>
 
-</Tab>
-
 ---
 
 ## Step 4 — Create a Safe Harbor Agreement
-
-<Tab title="AI Desktop">
-
-<Note>
-**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
-</Note>
-
-{/* COMING SOON — AI Desktop create agreement
-```
-Run `just create-agreement-browser` to create a Safe Harbor agreement for the deployed vault.
-After it runs, add AGREEMENT_ADDRESS to .env and set RECOVERY_ADDRESS to my wallet address.
-```
-*/}
-
-</Tab>
-
-<Tab title="AI CLI (foundry)">
-
-```
-Run `just create-agreement` to create a Safe Harbor agreement for the deployed vault.
-After it runs, add AGREEMENT_ADDRESS to .env and set RECOVERY_ADDRESS to my wallet address.
-```
-
-</Tab>
-
-<Tab title="Manual (foundry)">
 
 ```bash
 just create-agreement
@@ -371,49 +201,13 @@ AGREEMENT_ADDRESS=0x...
 RECOVERY_ADDRESS=0x...your_wallet_address...
 ```
 
-</Tab>
-
 This creates an on-chain agreement that defines the rules of engagement: 10% bounty, 30-day commitment window, your wallet as the recovery address for returned funds.
 
 ---
 
 ## Step 5 — Open for Attack
 
-<Tab title="AI Desktop">
-
-<Note>
-**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
-</Note>
-
-{/* COMING SOON — AI Desktop open for attack
-```
-Do the following in order:
-
-1. Run `just request-attack-mode-browser` to submit the vault for DAO review
-2. On testnet, approve the request immediately using the MockRegistryModerator:
-   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com
-3. Run `just check-state` and confirm the output is 3
-```
-*/}
-
-</Tab>
-
-<Tab title="AI CLI (foundry)">
-
-```
-Do the following in order:
-
-1. Run `just request-attack-mode` to submit the vault for DAO review
-2. On testnet, approve the request immediately using the MockRegistryModerator:
-   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com
-3. Run `just check-state` and confirm the output is 3
-```
-
-</Tab>
-
-<Tab title="Manual (foundry)">
-
-Submit for DAO review:
+Run these commands yourself in your terminal (each will prompt for your keystore password):
 
 ```bash
 just request-attack-mode
@@ -439,8 +233,6 @@ just check-state
 | `2` | `ATTACK_REQUESTED` — waiting for DAO |
 | `3` | `UNDER_ATTACK` — approved, vault is open |
 
-</Tab>
-
 <Note>
 On testnet, the `MockRegistryModerator` lets you approve your own request immediately. On mainnet, this is a real DAO governance action.
 </Note>
@@ -462,11 +254,11 @@ You deployed a contract, created a Safe Harbor agreement, and opened it to white
 The same process applies to real contracts. Protocols that go through BattleChain before shipping know their contracts have been stress-tested by real economic incentives — not just a static review.
 
 <CardGroup cols={2}>
-  <Card title="Attack Tutorial" icon="sword" href="/battlechain/tutorials/attacking-contracts">
-    Now exploit the vault you just deployed
+  <Card title="Attack Your Vault" icon="sword" href="/battlechain/quickstart/execute-first-attack">
+    Switch to the whitehat side and exploit the vault you just deployed
   </Card>
-  <Card title="Configure AI Tools" icon="wand" href="/battlechain/quickstart/configure-ai-tools">
-    Add BattleChain context to your AI tools so they deploy here by default
+  <Card title="The Contract Lifecycle" icon="arrows-spin" href="/battlechain/explanation/contract-lifecycle">
+    Learn how contracts move from attack mode through to production
   </Card>
 </CardGroup>
 
@@ -477,18 +269,6 @@ The same process applies to real contracts. Protocols that go through BattleChai
 ### Forge scripts failing
 
 Add `--skip-simulation` to any failing `forge script` command. Forge's local gas estimation doesn't work reliably on BattleChain.
-
-<Tab title="AI Desktop">
-
-<Note>
-**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
-</Note>
-
-{/* COMING SOON — AI Desktop forge scripts troubleshooting
-Tell Claude: *"All forge script commands need the --skip-simulation flag."*
-*/}
-
-</Tab>
 
 <Tab title="AI CLI (foundry)">
 
@@ -503,18 +283,6 @@ Add `--skip-simulation` to every `forge script` call.
 </Tab>
 
 ### Stuck pending transaction
-
-<Tab title="AI Desktop">
-
-<Note>
-**Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
-</Note>
-
-{/* COMING SOON — AI Desktop stuck transaction troubleshooting
-Tell Claude: *"I have a stuck transaction at nonce [N]. Send a replacement with a higher gas price using cast send with --value 0 to clear it."*
-*/}
-
-</Tab>
 
 <Tab title="AI CLI (foundry)">
 

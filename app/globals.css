@@ -67,8 +67,48 @@ body {
 }
 
 /* ========================================
-   GLASSMORPHISM CARD EFFECTS
+   WORKFLOW STEPPER
    ======================================== */
+
+/* Mobile: vertical line connecting circles */
+.workflow-step:not(:last-child) {
+  position: relative;
+}
+.workflow-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 18px;
+  top: calc(50% + 18px);
+  bottom: calc(-50% + 18px);
+  width: 2px;
+  background: #D0D5DD;
+}
+.dark .workflow-step:not(:last-child)::after {
+  background: #333741;
+}
+
+/* Desktop: horizontal line connecting circles */
+@media (min-width: 768px) {
+  .workflow-step:not(:last-child)::after {
+    left: calc(50% + 20px);
+    right: calc(-50% + 20px);
+    top: 18px;
+    bottom: auto;
+    width: auto;
+    height: 2px;
+  }
+}
+
+/* ========================================
+   CARD STYLES
+   ======================================== */
+
+.card p,
+.card ul,
+.card ol {
+  margin-top: 0;
+  margin-bottom: 0;
+}
 
 .card {
   --card-border-color: #D0D5DD;
@@ -85,6 +125,15 @@ body {
   border: 1px solid var(--card-hover-border-color);
   box-shadow: inset 0 -4px 0 0 var(--card-hover-border-color);
   transform: translateY(-2px);
+}
+
+.card.card-static,
+.card.card-static:hover,
+.dark .card.card-static,
+.dark .card.card-static:hover {
+  cursor: default;
+  transform: none;
+  box-shadow: none;
 }
 
 .dark .card {
@@ -127,80 +176,7 @@ body {
   box-shadow: inset 0 -4px 0 0 var(--card-hover-border-color);
 }
 
-/* Problem panel cards need stronger separation from the tinted parent container */
-.problem-panel .card {
-  --card-border-color: #f2c9c2;
-  --card-hover-border-color: #e7b2a8;
-  background: #fffafb;
-  border: 1px solid var(--card-border-color);
-}
 
-.problem-panel .card:hover {
-  background: #fffafb;
-  border: 1px solid var(--card-hover-border-color);
-}
-
-.problem-panel .card h3 {
-  color: #7a271a;
-}
-
-.problem-panel .card > div:first-child {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.625rem;
-  border-radius: 0;
-  background: #fef3f2;
-  border: 1px solid #f3d1cb;
-}
-
-.problem-panel .card svg,
-.problem-panel .card img {
-  color: #b42318;
-  opacity: 1;
-}
-
-.problem-panel .card strong {
-  color: #111827;
-}
-
-.problem-panel .card > div {
-  color: #4b5563;
-}
-
-.dark .problem-panel .card {
-  --card-border-color: #5c3137;
-  --card-hover-border-color: #7a4148;
-  background: #21171b;
-  border: 1px solid var(--card-border-color);
-}
-
-.dark .problem-panel .card:hover {
-  background: #21171b;
-  border: 1px solid var(--card-hover-border-color);
-}
-
-.dark .problem-panel .card h3 {
-  color: #fecaca;
-}
-
-.dark .problem-panel .card > div:first-child {
-  background: #3a1f24;
-  border: 1px solid #6e3942;
-}
-
-.dark .problem-panel .card svg,
-.dark .problem-panel .card img {
-  color: #fda29b;
-}
-
-.dark .problem-panel .card strong {
-  color: #f9fafb;
-}
-
-.dark .problem-panel .card > div {
-  color: #d1d5db;
-}
 
 /* Glass utility class */
 .glass {

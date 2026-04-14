@@ -50,7 +50,7 @@ const PRODUCTS: Product[] = [
   },
   {
     id: 'battlechain',
-    name: 'Battlechain',
+    name: 'BattleChain',
     icon: '/images/product-logos/battlechain.svg',
     href: '/battlechain/overview',
     color: '#FFFFFF'

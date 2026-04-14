@@ -1,5 +1,5 @@
 {
-  "name": "Battlechain Docs",
+  "name": "BattleChain Docs",
   "colors": {
     "primary": "#FFFFFF",
     "light": "#FFFFFF",
@@ -34,7 +34,7 @@
         "tab": "Documentation",
         "dropdowns": [
           {
-            "dropdown": "Battlechain",
+            "dropdown": "BattleChain",
             "icon": "/images/product-logos/battlechain.svg",
             "pages": [
               "overview",
@@ -46,7 +46,7 @@
                 "pages": [
                   "battlechain/quickstart/claude-desktop-demo",
                   "battlechain/quickstart/deploy-your-contract",
-                  "battlechain/quickstart/configure-ai-tools"
+                  "battlechain/quickstart/execute-first-attack"
                 ]
               },
               {
@@ -62,6 +62,7 @@
               {
                 "group": "How-to Guides",
                 "pages": [
+                  "battlechain/how-to/configure-ai-tools",
                   "battlechain/how-to/use-ai-with-docs",
                   "battlechain/how-to/add-battlechain-to-metamask",
                   {
@@ -124,14 +125,20 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Battlechain",
-          "href": "https://battlechain.cyfrin.io",
-          "icon": "gamepad"
+          "anchor": "BattleChain",
+          "href": "https://battlechain.com"
+        },
+        {
+          "anchor": "Explorer",
+          "href": "https://explorer.testnet.battlechain.com"
+        },
+        {
+          "anchor": "Bridge",
+          "href": "https://portal.battlechain.com/bridge"
         },
         {
           "anchor": "Discord Community",
-          "href": "https://discord.gg/cyfrin",
-          "icon": "discord"
+          "href": "https://discord.gg/cyfrin"
         }
       ]
     }

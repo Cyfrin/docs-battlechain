@@ -28,7 +28,6 @@ export interface NavTab {
 export interface NavAnchor {
   anchor: string
   href: string
-  icon: string
 }
 
 export interface NavigationConfig {
