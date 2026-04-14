@@ -65,17 +65,130 @@ BattleChain runs as a ZKSync-based L2 to keep attacks isolated from mainnet liqu
 
 ## Quickstart
 
+### Demo with Claude Desktop
+
+*Install the BattleChain MCP server and run the full security demo through Claude Desktop — no coding required.*
+
+Run the complete BattleChain security demo without writing a line of code. The MCP server wires directly into Claude Desktop — Claude deploys the contracts, creates the safe harbor agreement, and guides you through the exploit step by step. MetaMask handles all transaction signing.
+
+## What You'll Need
+
+**Claude Desktop**
+
+Download and install [Claude Desktop](https://claude.ai/download) and sign in with your Anthropic account. This is the desktop application — not the Claude.ai web app or Claude Code CLI.
+
+**MetaMask**
+
+Install the [MetaMask browser extension](https://metamask.io/download/) in Chrome, Firefox, or Brave. Claude opens a local signing page for each step — MetaMask handles approvals directly in your browser.
+
+**A test wallet with BattleChain Testnet ETH**
+
+You need a small amount of ETH on BattleChain Testnet for gas. Use a dedicated test wallet — do not use a wallet that holds real funds.
+
+**1. Add BattleChain to your wallet**
+
+**2. Get free Sepolia ETH** from the [Google Cloud faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia) — 0.05 ETH is plenty.
+
+**3. Bridge to BattleChain** at [portal.battlechain.com/bridge](https://portal.battlechain.com/bridge) — select Sepolia to BattleChain Testnet.
+
+**Python (macOS / Linux) or WSL (Windows)**
+
+On **macOS or Linux**, Python 3.10 or higher is required. Check with `python3 --version`.
+
+On **Windows**, the installer runs inside WSL. If you don't have it, open PowerShell as Administrator and run `wsl --install`, then restart before continuing.
+
+---
+
+## Step 1 — Install
+
+Run the installer for your platform. It installs the BattleChain MCP server and updates Claude Desktop's config automatically.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Cyfrin/battlechain-mcp/main/install.sh | bash
+```
+```powershell
+irm https://raw.githubusercontent.com/Cyfrin/battlechain-mcp/main/install.ps1 | iex
+```
+
+Run the Windows command in PowerShell — not inside a WSL terminal.
+
+> **Check:** The installer will confirm that Claude Desktop's configuration was updated when it completes.
+
+---
+
+## Step 2 — Restart Claude Desktop
+
+Fully quit Claude Desktop and reopen it. New MCP servers are not loaded until the application restarts.
+
+---
+
+## Step 3 — Start the Demo
+
+Open a new conversation in Claude Desktop and send:
+
+```
+Run the BattleChain security demo.
+```
+
+Claude will narrate each step and open a signing page in your browser when transactions are ready. Approve them in MetaMask, then return to Claude Desktop to continue.
+
+---
+
+## What Happens
+
+| Step | What Claude does |
+|------|-----------------|
+| 1 — Deploy | Deploys `BCToken` and `VulnerableVault` to BattleChain Testnet, seeds the vault with 1,000 tokens |
+| 2 — Safe Harbor | Creates an on-chain safe harbor agreement defining bounty terms and recovery rules |
+| 3 — Attack Mode | Submits an attack mode request and immediately approves it via the testnet DAO moderator |
+| 4 — Exploit | Deploys an Attacker contract that drains the vault via reentrancy, then splits proceeds: 90% returned to the protocol, 10% kept as the whitehat bounty |
+
+> **Note:** In this demo you are both the protocol owner and the whitehat, so both the 90% recovery and the 10% bounty arrive in the same wallet. The vault holds 1,000 tokens; the Attacker deposits an additional 100-token seed to open its vault position, so you end up with 1,100 tokens total.
+
+  - [Going Attackable](/battlechain/tutorials/going-attackable): Understand the full attack mode process
+  - [Add BattleChain to MetaMask](/battlechain/how-to/add-battlechain-to-metamask): Manual network setup if MetaMask doesn't auto-add
+
+---
+
+## Troubleshooting
+
+### Claude says it doesn't have BattleChain tools
+
+The MCP server isn't loaded. Make sure you fully quit and reopened Claude Desktop after running the installer.
+
+### The signing page opens but MetaMask doesn't appear
+
+MetaMask must be installed in the same browser that opened the signing page. Set that browser as your system default and try again.
+
+### Transactions are failing or the demo is stuck
+
+Check that MetaMask is connected to BattleChain Testnet (chain ID `627`) and that your wallet has testnet ETH. If a previous run left partial state, ask Claude to run `prepare_environment` — it resets the demo so you can start fresh.
+
 ### Quickstart
 
 *Deploy a vulnerable contract to BattleChain and open it for whitehat attack.*
 
 Deploy a vulnerable vault, create a Safe Harbor agreement, and open it for attack — the core BattleChain workflow. Pick your path and follow along.
 
+> **Warning:** **Review what your AI runs.** AI coding tools execute real commands on your machine. Always read the commands before approving them, and never allow anything you don't understand. If in doubt, use the **Manual** tab and run each command yourself.
+
 ## What You'll Need
 
-### A Wallet with BattleChain Testnet ETH
+### A Test Wallet
 
-You need an EVM wallet (MetaMask, Rabby, etc.) with a small amount of ETH on BattleChain Testnet:
+You need a dedicated wallet for BattleChain testing — **do not use a wallet that holds real funds.**
+
+If you've never set up a wallet before, watch the [Cyfrin Updraft wallet setup walkthrough](https://updraft.cyfrin.io/courses/blockchain-basics/sending-transactions/setting-up-a-wallet) first.
+
+**1.** Click the account selector at the top of MetaMask.
+
+**2.** Click **Add account** to create a new account.
+
+**3.** Click the three-dot menu on the new account and select **Rename**.
+
+**4.** Name it something obvious like **BATTLECHAIN TEST WALLET** so you never confuse it with a real wallet.
+
+### Fund Your Test Wallet
 
 **1. Add BattleChain to your wallet**
 
@@ -87,9 +200,7 @@ Once your BattleChain balance shows ETH, you're ready.
 
 ### Your Tool
 
-**[Claude Desktop](https://claude.ai/download)** (macOS or Linux). Claude Desktop can execute code directly — you paste prompts and it handles the rest. No terminal or IDE needed.
-
-**Windows users:** Claude Desktop runs on Windows, but Foundry tooling works best under [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install). Install WSL first, then use the **AI CLI** tab with Claude Code inside WSL instead.
+> **Note:** **Coming soon.** AI Desktop support (Claude Desktop, ChatGPT, etc.) is in progress. Use the **AI CLI** or **Manual** tab for now.
 
 An AI coding tool with terminal access. This guide uses [Claude Code](https://docs.anthropic.com/en/docs/claude-code/getting-started), but the same prompts work in Cursor, Windsurf, Codex, or any agent that can run terminal commands.
 
@@ -115,19 +226,7 @@ cargo install just
 
 ## Step 1 — Project Setup
 
-Open Claude Desktop and start a new conversation. Replace `YOUR_WALLET_ADDRESS` with your actual address and paste:
-
-```
-Read https://docs.battlechain.com/llms-full.txt to understand BattleChain, then:
-
-1. Install Foundry if not already installed (https://getfoundry.sh)
-2. Install just if not already installed (https://just.systems)
-3. Clone https://github.com/Cyfrin/battlechain-starter into ~/battlechain-quickstart
-4. cd into it and run forge install
-5. Copy .env.example to .env and set SENDER_ADDRESS to YOUR_WALLET_ADDRESS
-```
-
-Claude will install the tools, clone the repo, and configure your environment. Wait for it to finish before moving on.
+> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
 
 Open Claude Code in a new empty folder (or open your AI tool of choice). Replace `YOUR_WALLET_ADDRESS` with your actual address and paste:
 
@@ -139,6 +238,8 @@ Read https://docs.battlechain.com/llms-full.txt to understand BattleChain, then:
 3. Clone https://github.com/Cyfrin/battlechain-starter into the current directory
 4. cd into it and run forge install
 5. Copy .env.example to .env and set SENDER_ADDRESS to YOUR_WALLET_ADDRESS
+
+Once done, tell the user to PROCEED TO THE NEXT STEP
 ```
 
 Your AI will install the tools, clone the repo, and configure your environment. Wait for it to finish before moving on.
@@ -158,9 +259,27 @@ SENDER_ADDRESS=0x...your_wallet_address...
 
 ---
 
-## Step 2 — Import Your Private Key
+## Step 2 — Set Up Transaction Signing
 
-This step is manual for everyone — your private key should never be passed to any tool.
+> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
+
+Import your private key into Foundry's encrypted keystore. This is a manual step — your private key should never be passed to any AI tool.
+
+```bash
+cast wallet import battlechain --interactive
+```
+
+Paste your private key and set an encryption password. The key is stored encrypted at `~/.foundry/keystores/battlechain` — your raw private key is never written to disk.
+
+Verify it worked:
+
+```bash
+cast wallet list
+```
+
+You should see `battlechain` listed. From here on, you'll enter the keystore password when transactions need signing.
+
+Import your private key into Foundry's encrypted keystore:
 
 ```bash
 cast wallet import battlechain --interactive
@@ -180,20 +299,13 @@ You should see `battlechain` listed. From here on, you'll enter the keystore pas
 
 ## Step 3 — Deploy
 
-Paste into the same Claude Desktop conversation:
+> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
 
 ```
 Run `just setup` to deploy MockToken and VulnerableVault to BattleChain Testnet.
-Make sure all forge script calls use --legacy (BattleChain Testnet requires it).
 After deployment, add TOKEN_ADDRESS and VAULT_ADDRESS to my .env file.
-```
 
-Enter your keystore password when prompted.
-
-```
-Run `just setup` to deploy MockToken and VulnerableVault to BattleChain Testnet.
-Make sure all forge script calls use --legacy (BattleChain Testnet requires it).
-After deployment, add TOKEN_ADDRESS and VAULT_ADDRESS to my .env file.
+Then, give me the explorer link with the deployed vault, and give me the vault address.
 ```
 
 Enter your keystore password when prompted.
@@ -217,7 +329,13 @@ TOKEN_ADDRESS=0x...
 VAULT_ADDRESS=0x...
 ```
 
-> **Warning:** **BattleChain Testnet requires `--legacy`**. All `forge script` calls must include this flag — EIP-1559 is not supported. If a transaction fails without a clear error, add `--legacy`.
+> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
+
+> **Warning:** **Forge scripts require `--skip-simulation` on BattleChain.** Forge's local gas estimation doesn't work reliably on BattleChain — add `--skip-simulation` to all `forge script` calls. The starter kit's `justfile` already includes this.
+
+> **Check:** Ask your AI for the explorer link — it has the vault address from the deploy output. You should see the deployment transaction and the vault's token balance on the [BattleChain explorer](https://explorer.testnet.battlechain.com/).
+
+> **Warning:** **Forge scripts require `--skip-simulation` on BattleChain.** Forge's local gas estimation doesn't work reliably on BattleChain — add `--skip-simulation` to all `forge script` calls. The starter kit's `justfile` already includes this.
 
 > **Check:** Search your `VAULT_ADDRESS` on the [BattleChain explorer](https://explorer.testnet.battlechain.com/) — you should see the deployment transaction and the vault's token balance.
 
@@ -225,15 +343,10 @@ VAULT_ADDRESS=0x...
 
 ## Step 4 — Create a Safe Harbor Agreement
 
-```
-Run `just create-agreement` to create a Safe Harbor agreement for the deployed vault.
-Use --legacy for all forge script calls.
-After it runs, add AGREEMENT_ADDRESS to .env and set RECOVERY_ADDRESS to my wallet address.
-```
+> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
 
 ```
 Run `just create-agreement` to create a Safe Harbor agreement for the deployed vault.
-Use --legacy for all forge script calls.
 After it runs, add AGREEMENT_ADDRESS to .env and set RECOVERY_ADDRESS to my wallet address.
 ```
 
@@ -262,21 +375,14 @@ This creates an on-chain agreement that defines the rules of engagement: 10% bou
 
 ## Step 5 — Open for Attack
 
-```
-Do the following in order:
-
-1. Run `just request-attack-mode` to submit the vault for DAO review
-2. On testnet, approve the request immediately using the MockRegistryModerator:
-   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com --legacy
-3. Run `just check-state` and confirm the output is 3
-```
+> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
 
 ```
 Do the following in order:
 
 1. Run `just request-attack-mode` to submit the vault for DAO review
 2. On testnet, approve the request immediately using the MockRegistryModerator:
-   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com --legacy
+   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" $AGREEMENT_ADDRESS --account battlechain --rpc-url https://testnet.battlechain.com
 3. Run `just check-state` and confirm the output is 3
 ```
 
@@ -292,8 +398,7 @@ On testnet, the DAO moderator is a permissionless contract — approve your own 
 cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com \
-  --legacy
+  --rpc-url https://testnet.battlechain.com
 ```
 
 Verify the state:
@@ -330,31 +435,34 @@ The same process applies to real contracts. Protocols that go through BattleChai
 
 ## Troubleshooting
 
-### Transactions keep failing
+### Forge scripts failing
 
-Add `--legacy` to any failing `forge script` command. BattleChain Testnet doesn't support EIP-1559.
+Add `--skip-simulation` to any failing `forge script` command. Forge's local gas estimation doesn't work reliably on BattleChain.
 
-Tell Claude: *"All forge script commands need the --legacy flag."*
+> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
 
-Tell your AI: *"All forge script commands need the --legacy flag."*
+Tell your AI: *"All forge script commands need the --skip-simulation flag."*
 
-Add `--legacy` to every `forge script` call.
+Add `--skip-simulation` to every `forge script` call.
 
 ### Stuck pending transaction
 
-Tell Claude: *"I have a stuck transaction at nonce [N]. Send a replacement with a higher gas price using cast send with --legacy and --value 0 to clear it."*
+> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
 
-Tell your AI: *"I have a stuck transaction at nonce [N]. Send a replacement with a higher gas price using cast send with --legacy and --value 0 to clear it."*
+Tell your AI: *"I have a stuck transaction at nonce [N]. Send a replacement with a higher gas price using cast send with --value 0 to clear it."*
 
 Send a replacement transaction to clear the stuck nonce:
 
 ```bash
+# Get current base fee
+cast gas-price --rpc-url https://testnet.battlechain.com
+
+# Send a replacement with a higher max fee (e.g. 2x the current base fee)
 cast send \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com \
   --nonce <stuck-nonce> \
-  --gas-price <higher-price-in-wei> \
-  --legacy \
+  --max-fee-per-gas <2x-current-base-fee> \
   --value 0 \
   0x0000000000000000000000000000000000000000
 ```
@@ -363,7 +471,7 @@ Find your pending nonce: `cast nonce --rpc-url https://testnet.battlechain.com `
 
 ### Out-of-gas failures
 
-Forge estimates gas locally, which can underestimate on BattleChain. If a command fails with a vague error, retry with `-g 300` (3x gas estimate) or `--skip-simulation`.
+If a `forge script` command fails with a vague error even with `--skip-simulation`, try adding `-g 300` to use 3x the estimated gas.
 
 ### Configure Your AI Tools
 
@@ -572,12 +680,12 @@ contract Deploy is BCScript {
 
 > **Tip:** Deploy the **exact same bytecode** you'll use on mainnet. Only change constructor parameters like oracle addresses or chain-specific config. Testing different code defeats the purpose.
 
-> **Warning:** **Required: `--legacy` flag**
+> **Warning:** **Required: `--skip-simulation` flag**
 > 
-> BattleChain Testnet does not support EIP-1559 transactions. All `forge script` calls must include `--legacy` or they will be rejected. Add it to every deployment and interaction script:
+> Forge's local gas estimation doesn't work reliably on BattleChain. All `forge script` calls must include `--skip-simulation` or they may fail. Add it to every deployment and interaction script:
 > 
 > ```bash
-forge script ... --legacy
+forge script ... --skip-simulation
 ```
 
 See the [deploying contracts tutorial](/battlechain/tutorials/deploying-contracts) for details on all deployment methods, including direct `BattleChainDeployer` usage.
@@ -702,14 +810,18 @@ See [How to Promote to Production](/battlechain/how-to/promote-to-production) fo
 
 ### Stuck or pending transactions
 
-Transactions can get stuck if submitted without `--legacy` or with insufficient gas. To replace a stuck transaction, send a no-op at the same nonce with a higher gas price:
+Transactions can get stuck if the fee is too low for the current base fee. To replace a stuck transaction, send a no-op at the same nonce with a higher fee:
 
 ```bash
+# Get current base fee
+cast gas-price --rpc-url https://testnet.battlechain.com
+
+# Send a replacement with a higher max fee (e.g. 2x the current base fee)
 cast send \
   --account <your-keystore-account> \
+  --rpc-url https://testnet.battlechain.com \
   --nonce <stuck-nonce> \
-  --gas-price <higher-price-in-wei> \
-  --legacy \
+  --max-fee-per-gas <2x-current-base-fee> \
   --value 0 \
   0x0000000000000000000000000000000000000000
 ```
@@ -719,10 +831,6 @@ Find the stuck nonce via:
 ```bash
 cast nonce --rpc-url https://testnet.battlechain.com <your-wallet-address>
 ```
-
-### Transaction type not supported
-
-If you see `transaction type not supported` or similar errors, you're missing `--legacy`. BattleChain Testnet only accepts legacy (type 0) transactions — EIP-1559 is not supported.
 
 ### Deploying Contracts to BattleChain
 
@@ -747,6 +855,16 @@ Add the remapping to `foundry.toml`:
 remappings = [
     "battlechain-lib/=lib/battlechain-lib/src/",
 ]
+```
+
+> **Warning:** **Contract size limit: 24,576 bytes**
+> 
+> BattleChain enforces the standard EVM contract size limit (EIP-170). If your compiled bytecode exceeds 24,576 bytes, deployment will fail. Enable the Solidity optimizer in `foundry.toml` to reduce bytecode size:
+> 
+> ```toml
+[profile.default]
+optimizer = true
+optimizer_runs = 200
 ```
 
 ### Deploy with helpers
@@ -884,167 +1002,225 @@ attackRegistry.requestUnderAttackByNonAuthorized(agreementAddress);
   - [Going Attackable](/battlechain/tutorials/going-attackable): Full end-to-end protocol tutorial
   - [Contract API Reference](/battlechain/reference/contracts): Complete BattleChainDeployer API
 
-### Attacking Contracts: Whitehat Tutorial
+### Attack a Contract
 
-*A complete tutorial for whitehats on finding, attacking, and earning bounties on BattleChain*
+*Find the vulnerability in a BattleChain vault, exploit it, collect your bounty, and walk away clean under Safe Harbor.*
 
-This tutorial teaches you the full whitehat workflow on BattleChain — from finding targets to earning bounties — and explains the legal protections that make it possible.
+&#x2694;&#xFE0F;
+  
+    You are the Whitehat
+    There's a vulnerable vault on BattleChain. The DAO approved it. Safe Harbor is in place.
+    Your job is to find the bug, drain the vault, keep your bounty, and return the rest. Everything you're about to do is legal, structured, and profitable.
+  
 
-> **Note:** **Audience**: Security researchers and whitehats.
-> 
-> **Prerequisites**: Familiarity with smart contract security, Solidity, and common vulnerability patterns.
+## Prerequisites
 
-## Why BattleChain for Whitehats?
+You need a deployed, attackable vault to target. If you completed the [Quickstart](/battlechain/quickstart/deploy-your-contract), you already have one — your `.env` has everything you need.
 
-Traditional bug bounties ask you to *report* vulnerabilities. BattleChain lets you *exploit* them:
+If you're attacking someone else's vault, you need their `VAULT_ADDRESS` and `TOKEN_ADDRESS` (find these on the [BattleChain explorer](https://explorer.testnet.battlechain.com/) or by querying the `AttackRegistry`).
 
-- **Legal protection**: Safe Harbor agreements protect you from prosecution
-- **Immediate reward**: Keep your bounty from recovered funds (if retainable)
-- **No coordination required**: Attack first, no need for prior disclosure
-- **Real exploits**: Test against contracts with real liquidity, not toy examples
+> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
 
-## Understanding Safe Harbor
+Your AI coding tool with terminal access (Claude Code, Cursor, Windsurf, etc.). If you completed the quickstart, continue in the same session.
 
-Before attacking, understand what protects you. When a protocol enters attack mode:
+You need [Foundry](https://book.getfoundry.sh/getting-started/installation) and [just](https://just.systems) installed, and the starter repo cloned:
 
-1. They've adopted a **Safe Harbor agreement** committing to not pursue legal action
-2. Their contracts are in `UNDER_ATTACK` or `PROMOTION_REQUESTED` state
-3. You're protected as long as you:
-   - Attack in-scope contracts only
-   - Keep only your bounty entitlement
-   - Meet any identity requirements
+```bash
+git clone https://github.com/Cyfrin/battlechain-starter
+cd battlechain-starter
+forge install
+```
 
-Read the full [Safe Harbor explanation](/battlechain/explanation/safe-harbor) for details on what is and isn't protected.
+Your `.env` should have:
 
-## Step 1: Find Targets
+```bash
+SENDER_ADDRESS=0x...your_wallet_address...
+TOKEN_ADDRESS=0x...
+VAULT_ADDRESS=0x...
+RECOVERY_ADDRESS=0x...
+```
 
-### Check a Specific Contract
+If you haven't imported your key yet:
+
+```bash
+cast wallet import battlechain --interactive
+```
+
+---
+
+## Step 1 — Verify the Vault is Attackable
+
+Before doing anything, confirm the vault is in `UNDER_ATTACK` state.
+
+> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
+
+```
+Run `just check-state` and tell me the result. I need it to be 3 (UNDER_ATTACK).
+```
+
+```bash
+just check-state
+```
+
+You need to see `3`. If you see `2`, the DAO hasn't approved yet. Anything else and the vault isn't eligible.
+
+---
+
+## Step 2 — Understand the Exploit
+
+Open `src/Attacker.sol`. The attack exploits two things working together: the CEI violation in `VulnerableVault` and the hook system in `MockToken`.
+
+**MockToken's hook system:** Any address can register a hook contract via `setTransferHook(address hook)`. When tokens are transferred *to* that address, the token calls `hook.onTokenTransfer()` after the transfer completes.
+
+**The vault's CEI violation:** `withdrawAll()` calls `TOKEN.transfer()` *before* zeroing `balances[msg.sender]`:
+
+```solidity
+function withdrawAll() external {
+    uint256 amount = balances[msg.sender];
+    require(amount > 0, "nothing to withdraw");
+
+    TOKEN.transfer(msg.sender, amount); // external call first
+    balances[msg.sender] = 0;           // balance zeroed too late
+}
+```
+
+Put them together and the reentrancy chain looks like this:
+
+```
+attack()
+  TOKEN.setTransferHook(address(this))    register as our own hook
+  vault.deposit(seedAmount)               establish a balance
+  vault.withdrawAll()
+    TOKEN.transfer(attacker, amount)
+      onTokenTransfer()                   hook fires, balance not yet zeroed
+        vault.withdrawAll()
+          TOKEN.transfer(attacker, amount)
+            onTokenTransfer()             still not zeroed
+              ...                         repeats until vault is empty
+```
+
+Once the vault is drained, the Safe Harbor settlement runs automatically:
+
+```solidity
+uint256 total = TOKEN.balanceOf(address(this));
+uint256 bounty = (total * BOUNTY_BPS) / 10_000; // 10%
+
+TOKEN.transfer(RECOVERY_ADDRESS, total - bounty); // return 90% to protocol
+TOKEN.transfer(OWNER, bounty);                    // keep 10%
+```
+
+You're not stealing. The protocol gets the majority of funds back minus the agreed bounty. Everyone knew the rules when the agreement was signed.
+
+---
+
+## Step 3 — Execute the Attack
+
+> **Note:** **Coming soon.** AI Desktop support is in progress. Use the **AI CLI** or **Manual** tab for now.
+
+```
+Run `just attack` to execute the reentrancy exploit against the vault.
+Use --skip-simulation for all forge script calls.
+```
+
+Enter your keystore password when prompted.
+
+```bash
+just attack
+```
+
+Enter your keystore password when prompted. Watch the output:
+
+```
+Vault balance before: 1000 tokens
+Deploying attacker...
+
+--- Vault drained ---
+Vault before:          1000 tokens
+Vault after:              0 tokens
+Bounty kept:            100 tokens
+Returned to protocol:   900 tokens
+```
+
+> **Check:** You've executed a legal reentrancy exploit on BattleChain. The vault is empty, the protocol has their funds back minus your bounty, and you're protected under Safe Harbor.
+
+---
+
+## Step 4 — Verify on the Explorer
+
+Search your `VAULT_ADDRESS` on the [BattleChain explorer](https://explorer.testnet.battlechain.com/). You should see:
+
+- The attack transaction
+- The vault balance dropping to zero
+- The bounty transfer to your wallet
+- The remaining funds sent to the recovery address
+
+### Check the Math
+
+The agreement set a 10% bounty (`BOUNTY_BPS = 1_000`). The vault had 1,000 seeded tokens plus your 100 seed tokens = 1,100 total.
+
+- **Bounty (yours):** 1,100 x 10% = 110 tokens
+- **Returned to protocol:** 1,100 - 110 = 990 tokens
+
+If the numbers don't look right, check that `RECOVERY_ADDRESS` in your `.env` matches the address in the agreement.
+
+---
+
+## What Just Happened
+
+You played the whitehat side of a BattleChain engagement:
+
+1. **Verified** the vault was in attack mode with a valid Safe Harbor agreement
+2. **Found** the reentrancy vulnerability (CEI violation + token hooks)
+3. **Exploited** it to drain the vault
+4. **Settled** automatically — kept your 10% bounty, returned 90% to the protocol
+
+The protocol now knows their vault has a reentrancy bug. If the same code were deployed on mainnet with real TVL, the loss would have been real. That's the whole point.
+
+---
+
+## Beyond This Tutorial
+
+### Handling Funds in Real Attacks
+
+The starter repo settles funds automatically. In real attacks, you're responsible for correct settlement:
+
+**If retainable = true** (you keep bounty from recovered funds):
+
+```solidity
+uint256 recovered = token.balanceOf(address(this));
+uint256 bounty = (recovered * bountyPercent) / 100;
+// Respect the cap if set
+token.transfer(recoveryAddress, recovered - bounty);
+// Keep your bounty
+```
+
+**If retainable = false** (protocol pays bounty separately):
+
+```solidity
+// Send everything to recovery
+token.transfer(recoveryAddress, token.balanceOf(address(this)));
+```
+
+Mishandling funds can void your Safe Harbor protection. See [Bounty Terms](/battlechain/reference/bounty-terms) for details.
+
+### Finding Real Targets
+
+The starter repo gives you a known vulnerability. In practice, you find targets by querying the `AttackRegistry`:
 
 ```solidity
 bool attackable = attackRegistry.isTopLevelContractUnderAttack(targetContract);
 ```
 
-### Monitor for New Targets
-
-Watch for `AgreementStateChanged` events:
+Or monitor for new targets via events:
 
 ```solidity
 event AgreementStateChanged(address indexed agreementAddress, ContractState newState);
-// newState = 3 (UNDER_ATTACK) → newly attackable
-// newState = 4 (PROMOTION_REQUESTED) → still attackable, 3-day countdown
+// newState = 3 (UNDER_ATTACK) -> newly attackable
 ```
 
-See [How to Find Attackable Contracts](/battlechain/how-to/find-attackable-contracts) for advanced querying techniques.
+See [How to Find Attackable Contracts](/battlechain/how-to/find-attackable-contracts) for advanced techniques.
 
-## Step 2: Evaluate the Target
-
-Before investing time in finding exploits, evaluate the opportunity:
-
-```solidity
-address agreementAddr = attackRegistry.getAgreementForContract(targetContract);
-IAgreement agreement = IAgreement(agreementAddr);
-
-// Get bounty terms
-BountyTerms memory terms = agreement.getBountyTerms();
-uint256 bountyPercent = terms.bountyPercentage;
-uint256 bountyCap = terms.bountyCapUsd;
-bool canRetain = terms.retainable;
-```
-
-### Checklist Before Attacking
-
-  
-    ```solidity
-    bool valid = safeHarborRegistry.isAgreementValid(agreementAddr);
-    ```
-    Only attack contracts with valid agreements from the official factory.
-  
-
-  
-    ```solidity
-    bool inScope = agreement.isContractInScope(targetContract);
-    ```
-    Attacking out-of-scope contracts voids your Safe Harbor protection.
-  
-
-  
-    Check the percentage, cap, retainability, and identity requirements. Make sure the economics work for your effort level.
-  
-
-  
-    ```solidity
-    uint256 cantChangeUntil = agreement.getCantChangeUntil();
-    ```
-    Ensure terms can't change unfavorably before you finish your attack.
-  
-
-## Step 3: Execute Your Attack
-
-There are no restrictions on exploitation methods for in-scope contracts. Common approaches:
-
-- Reentrancy attacks
-- Flash loan exploits
-- Oracle manipulation
-- Access control bypasses
-- Logic errors in state transitions
-
-```solidity
-contract Attacker {
-    function attack(address target) external {
-        // Your exploit logic
-        IVulnerable(target).vulnerableFunction();
-    }
-}
-```
-
-## Step 4: Handle Funds Correctly
-
-This is critical. Mishandling funds can void your Safe Harbor protection.
-
-### If Retainable = true
-
-Calculate your bounty and send the rest to the recovery address:
-
-```solidity
-uint256 recovered = address(this).balance;
-uint256 bounty = (recovered * bountyPercent) / 100;
-
-// Respect the cap
-// Note: Convert bountyCapUsd to token amount using current prices
-
-// Send remainder to recovery
-payable(recoveryAddress).transfer(recovered - bounty);
-// Keep your bounty
-```
-
-### If Retainable = false
-
-Send **everything** to the recovery address. The protocol pays your bounty separately:
-
-```solidity
-payable(recoveryAddress).transfer(address(this).balance);
-```
-
-### Get the Recovery Address
-
-```solidity
-string memory recoveryStr = agreement.getAssetRecoveryAddress("eip155:627");
-```
-
-See [How to Claim Bounties](/battlechain/how-to/claim-bounties) for detailed calculation examples.
-
-## Step 5: Document Everything
-
-Keep records of:
-- Target contract and agreement addresses
-- The vulnerability exploited
-- All transaction hashes
-- Your bounty calculation (show your work)
-- Funds sent to recovery address
-
-This protects you if there's ever a dispute about your compliance with the agreement terms.
-
-## Important: Mainnet Implications
+### Mainnet Implications
 
 > **Warning:** If the vulnerability you found also exists on mainnet:
 > 
@@ -1053,20 +1229,14 @@ This protects you if there's ever a dispute about your compliance with the agree
 > - **Consider traditional bug bounty** for the mainnet instance
 > - Using a BattleChain exploit on mainnet is NOT protected by Safe Harbor
 
-## Summary
-
-| Step | Action | Why |
-|------|--------|-----|
-| 1 | Find attackable contracts | Query AttackRegistry |
-| 2 | Verify agreement and terms | Ensure legal protection |
-| 3 | Execute exploit | No restrictions on method |
-| 4 | Handle funds correctly | Keep bounty, send rest to recovery |
-| 5 | Document everything | Protect yourself in disputes |
+---
 
 ## Next Steps
 
-  - [Execute Your First Attack](/battlechain/quickstart/execute-first-attack): Quick-start guide with code examples
-  - [Bounty Terms Reference](/battlechain/reference/bounty-terms): Understand all bounty configuration options
+  - [Safe Harbor Protection](/battlechain/explanation/safe-harbor): Understand the legal framework protecting whitehats
+  - [Bounty Terms Reference](/battlechain/reference/bounty-terms): All bounty configuration options explained
+  - [Find Attackable Contracts](/battlechain/how-to/find-attackable-contracts): Advanced querying and monitoring techniques
+  - [Claim Bounties](/battlechain/how-to/claim-bounties): Detailed fund handling and calculation examples
 
 ### Approving Requests: DAO Member Tutorial
 
@@ -1911,8 +2081,49 @@ Before requesting:
 
 ## Request Attack Mode
 
+Call `requestUnderAttack` on the `AttackRegistry`:
+
+```bash
+cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
+  "requestUnderAttack(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com
+```
 ```solidity
-attackRegistry.requestUnderAttack(agreementAddress);
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import {Script} from "forge-std/Script.sol";
+
+interface IAttackRegistry {
+    function requestUnderAttack(address) external;
+    function getAgreementState(address) external view returns (uint8);
+}
+
+contract RequestAttackMode is Script {
+    IAttackRegistry constant REGISTRY =
+        IAttackRegistry(0xdD029a6374095EEb4c47a2364Ce1D0f47f007350);
+
+    function run() external {
+        address agreement = vm.envAddress("AGREEMENT_ADDRESS");
+
+        vm.startBroadcast();
+        REGISTRY.requestUnderAttack(agreement);
+        vm.stopBroadcast();
+
+        uint8 state = REGISTRY.getAgreementState(agreement);
+        require(state == 2, "Expected ATTACK_REQUESTED (2)");
+    }
+}
+```
+
+Run the Foundry script with:
+
+```bash
+forge script script/RequestAttackMode.s.sol \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com \
+  --broadcast
 ```
 
 This validates:
@@ -1923,10 +2134,40 @@ This validates:
 
 ## For Non-BattleChainDeployer Contracts
 
-If contracts weren't deployed via BattleChainDeployer:
+If your contracts weren't deployed via `BattleChainDeployer`, call `requestUnderAttackByNonAuthorized` instead. This must be called by the **agreement owner** — the same address that created the agreement via `AgreementFactory`.
 
+```bash
+cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
+  "requestUnderAttackByNonAuthorized(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com
+```
 ```solidity
-attackRegistry.requestUnderAttackByNonAuthorized(agreementAddress);
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import {Script} from "forge-std/Script.sol";
+
+interface IAttackRegistry {
+    function requestUnderAttackByNonAuthorized(address) external;
+    function getAgreementState(address) external view returns (uint8);
+}
+
+contract RequestAttackModeNonAuthorized is Script {
+    IAttackRegistry constant REGISTRY =
+        IAttackRegistry(0xdD029a6374095EEb4c47a2364Ce1D0f47f007350);
+
+    function run() external {
+        address agreement = vm.envAddress("AGREEMENT_ADDRESS");
+
+        vm.startBroadcast();
+        REGISTRY.requestUnderAttackByNonAuthorized(agreement);
+        vm.stopBroadcast();
+
+        uint8 state = REGISTRY.getAgreementState(agreement);
+        require(state == 2, "Expected ATTACK_REQUESTED (2)");
+    }
+}
 ```
 
 > **Warning:** This path requires extra DAO scrutiny since there's no on-chain proof of deployment.
@@ -1935,21 +2176,28 @@ attackRegistry.requestUnderAttackByNonAuthorized(agreementAddress);
 
 To go directly to production without attack testing:
 
-```solidity
-attackRegistry.goToProduction(agreementAddress);
+```bash
+cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
+  "goToProduction(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com
 ```
 
 This immediately sets state to `PRODUCTION` with no Safe Harbor protection.
 
 ## Check Request Status
 
-```solidity
-IAttackRegistry.ContractState state = attackRegistry.getAgreementState(agreementAddress);
-
-// 2 = ATTACK_REQUESTED (waiting for DAO)
-// 3 = UNDER_ATTACK (approved!)
-// 0 = NOT_DEPLOYED (rejected or not requested)
+```bash
+cast call 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
+  "getAgreementState(address)(uint8)" $AGREEMENT_ADDRESS \
+  --rpc-url https://testnet.battlechain.com
 ```
+
+| Output | Meaning |
+|--------|---------|
+| `0` | `NOT_DEPLOYED` — rejected or not requested |
+| `2` | `ATTACK_REQUESTED` — waiting for DAO |
+| `3` | `UNDER_ATTACK` — approved |
 
 ## What Happens Next
 
@@ -1959,7 +2207,7 @@ IAttackRegistry.ContractState state = attackRegistry.getAgreementState(agreement
 | DAO Rejects | Immediate → `NOT_DEPLOYED` |
 | DAO Takes No Action | 14 days → `PRODUCTION` (auto-promote) |
 
-## Testnet: Instant Approval
+## Instant Approval (Testnet Only)
 
 On testnet the registry moderator is a `MockRegistryModerator` — a permissionless contract that forwards any `approveAttack` call straight to the `AttackRegistry`. You can approve your own request immediately:
 
@@ -1967,11 +2215,65 @@ On testnet the registry moderator is a `MockRegistryModerator` — a permissionl
 cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com \
-  --legacy
+  --rpc-url https://testnet.battlechain.com
 ```
 
-> **Warning:** The `MockRegistryModerator` is testnet-only. On mainnet the DAO moderator is a controlled address — approval requires a real governance action.
+> **Warning:** Mainnet is not yet live. Contract addresses and RPC URL will be published here when mainnet launches.
+
+## Request Attack Mode
+
+Call `requestUnderAttack` on the `AttackRegistry`:
+
+```bash
+cast send $ATTACK_REGISTRY \
+  "requestUnderAttack(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url $BATTLECHAIN_RPC_URL
+```
+
+## For Non-BattleChainDeployer Contracts
+
+```bash
+cast send $ATTACK_REGISTRY \
+  "requestUnderAttackByNonAuthorized(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url $BATTLECHAIN_RPC_URL
+```
+
+> **Warning:** This path requires extra DAO scrutiny since there's no on-chain proof of deployment.
+
+## Skip Attack Mode Entirely
+
+```bash
+cast send $ATTACK_REGISTRY \
+  "goToProduction(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url $BATTLECHAIN_RPC_URL
+```
+
+This immediately sets state to `PRODUCTION` with no Safe Harbor protection.
+
+## Check Request Status
+
+```bash
+cast call $ATTACK_REGISTRY \
+  "getAgreementState(address)(uint8)" $AGREEMENT_ADDRESS \
+  --rpc-url $BATTLECHAIN_RPC_URL
+```
+
+| Output | Meaning |
+|--------|---------|
+| `0` | `NOT_DEPLOYED` — rejected or not requested |
+| `2` | `ATTACK_REQUESTED` — waiting for DAO |
+| `3` | `UNDER_ATTACK` — approved |
+
+## What Happens Next
+
+| Outcome | Timeline |
+|---------|----------|
+| DAO Approves | Immediate → `UNDER_ATTACK` |
+| DAO Rejects | Immediate → `NOT_DEPLOYED` |
+| DAO Takes No Action | 14 days → `PRODUCTION` (auto-promote) |
 
 ## Troubleshooting
 
@@ -2068,16 +2370,37 @@ attackRegistry.transferAttackModerator(agreementAddress, newModerator);
 
 The `AttackRegistry` tracks which contracts are in attack mode. This guide shows how to find and verify targets.
 
+You can view agreement statuses and contracts currently under scope on the [Battlechain explorer](https://explorer.testnet.battlechain.com/agreements).
+
 ## Check a Specific Contract
 
-```solidity
-bool attackable = attackRegistry.isTopLevelContractUnderAttack(contractAddress);
+The easiest way to check whether a contract is attackable is with `isAttackable` from `battlechain-lib`. It queries the block explorer API and handles the full scope hierarchy — including child contracts spawned by in-scope factories.
 
-if (attackable) {
-    // Safe Harbor protection applies
-    // Contract is in UNDER_ATTACK or PROMOTION_REQUESTED state
+**Standalone usage** (lightweight, no deploy/agreement overhead):
+
+```solidity
+import { BCQuery } from "battlechain-lib/BCQuery.sol";
+
+contract CheckTarget is BCQuery {
+    function run() external {
+        bool attackable = isAttackable(targetAddress);
+
+        if (attackable) {
+            // Contract is covered by an agreement in UNDER_ATTACK or PROMOTION_REQUESTED state
+        }
+    }
 }
 ```
+
+If you're already using `BCScript` for the full deploy + agreement flow, `isAttackable` is available directly — `BCScript` inherits `BCQuery`.
+
+Run with the `--ffi` flag since the function uses `vm.ffi` to call the explorer API:
+
+```bash
+forge script script/CheckTarget.s.sol --ffi --rpc-url https://testnet.battlechain.com
+```
+
+> **Note:** `isAttackable` requires `--ffi` and `curl` on your PATH. For on-chain-only contexts where `vm.ffi` isn't available, you can use `attackRegistry.isTopLevelContractUnderAttack(address)` — but this only checks top-level contracts and will miss child contracts spawned by in-scope factories.
 
 ## Monitor for New Targets
 
@@ -2171,7 +2494,7 @@ require(attackRegistry.isTopLevelContractUnderAttack(target), "Not attackable");
 require(agreement.isContractInScope(target), "Not in scope");
 
 // Get recovery address
-string memory recoveryStr = agreement.getAssetRecoveryAddress("eip155:325");
+string memory recoveryStr = agreement.getAssetRecoveryAddress("eip155:627");
 address recovery = parseAddress(recoveryStr);
 
 // Get bounty terms
@@ -2891,8 +3214,7 @@ To set ETH/USD to $2,000:
 cast send 0xAA72F0168eE17aA93098eC6ECf2EEe72B46aca19 \
   "updateAnswer(int256)" 200000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY \
-  --legacy
+  --private-key $PRIVATE_KEY
 ```
 
 The value `200000000000` is `2000 * 1e8` (8 decimals).
@@ -2959,8 +3281,7 @@ To mint 1,000,000 USDC to yourself:
 cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
   "mint()" \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY \
-  --legacy
+  --private-key $PRIVATE_KEY
 ```
 
 To mint a specific amount to any address:
@@ -2969,8 +3290,7 @@ To mint a specific amount to any address:
 cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
   "mint(address,uint256)" 0xYOUR_ADDRESS 5000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY \
-  --legacy
+  --private-key $PRIVATE_KEY
 ```
 
 The value `5000000000` is `5000 * 1e6` (USDC has 6 decimals).
@@ -2979,7 +3299,7 @@ The value `5000000000` is `5000 * 1e6` (USDC has 6 decimals).
 
 ## Mock Venus Protocol
 
-A mock [Venus](https://venus.io/) lending protocol deployment with a Comptroller and five vToken markets. Implements the same Compound-style interface (supply, borrow, redeem, repay) so contracts that integrate with Venus on mainnet work on testnet without code changes.
+A mock [Venus](https://venus.io/) lending protocol deployment with a Comptroller and six vToken markets. Implements the same Compound-style interface (supply, borrow, redeem, repay) so contracts that integrate with Venus on mainnet work on testnet without code changes.
 
 All markets are listed with a **0.75 collateral factor**. The mock Comptroller always reports accounts as healthy with 1M liquidity — it does not enforce real collateral checks.
 
@@ -2987,12 +3307,13 @@ All markets are listed with a **0.75 collateral factor**. The mock Comptroller a
 
 | Contract | Address |
 |----------|---------|
-| Comptroller | 0xc75734fFd650286269EE8bC049424Cb08F9175ee |
-| vUSDC | 0x5982EC7f7B42F5490695EE14991aA35E6F6258bD |
-| vWETH | 0xB6694A4678F4a548486376Ed8C4e51C83Ce35d8a |
-| vWBTC | 0xcA867A99a2a7586209C662F4060f27c3E734f947 |
-| vDAI | 0xb1E00Ef2B0BBb2d3d4A899A4f31F0F6853359737 |
-| vBNB | 0x96360B56BC70B09eb6F3870B3f48AFeA32e60EeE |
+| Comptroller | 0xAE582334FCf2f932ea1B4D0B484aC34A8184B2e8 |
+| vUSDC | 0x91442C344c069e9B62f068C6F7075E9B403840E0 |
+| vWETH | 0x2A7b8d39e8544517F0Ce0ff4ac895580c79ff692 |
+| vWBTC | 0x9F01733b6B26404495b38fe69f20D5A8252EFd14 |
+| vDAI | 0x7ea22541B90794ADa16E5b42A5FF2bf7489e587c |
+| vBNB | 0x11e4B3Bbe7Fc26514b8D13383a3FB30E3Ced1F62 |
+| vUSDT | 0x2D9680c4cEfe5E36bFB0B78c48dd1d8A06090e8d |
 
 The vToken markets use the [test tokens](#test-tokens) as their underlying assets. vBNB uses native ETH.
 
@@ -3047,27 +3368,24 @@ To supply 1,000 USDC to vUSDC (approve first, then mint):
 ```bash
 cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
   "approve(address,uint256)" \
-  0x5982EC7f7B42F5490695EE14991aA35E6F6258bD 1000000000 \
+  0x91442C344c069e9B62f068C6F7075E9B403840E0 1000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY \
-  --legacy
+  --private-key $PRIVATE_KEY
 
-cast send 0x5982EC7f7B42F5490695EE14991aA35E6F6258bD \
+cast send 0x91442C344c069e9B62f068C6F7075E9B403840E0 \
   "mint(uint256)" 1000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY \
-  --legacy
+  --private-key $PRIVATE_KEY
 ```
 
 To supply native ETH to vBNB:
 
 ```bash
-cast send 0x96360B56BC70B09eb6F3870B3f48AFeA32e60EeE \
+cast send 0x11e4B3Bbe7Fc26514b8D13383a3FB30E3Ced1F62 \
   "mint()" \
   --value 1ether \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY \
-  --legacy
+  --private-key $PRIVATE_KEY
 ```
 
 ---
@@ -3081,8 +3399,8 @@ A mock [Uniswap V3](https://docs.uniswap.org/contracts/v3/overview) deployment w
 | Contract | Address |
 |----------|---------|
 | UniswapV3Factory | 0xd5DCFCab1B60C70F45D61597b351674b4b3C8CDc |
-| SwapRouter | 0xCD1D61957236565679b27e14d7c7A5198b052edb |
-| NonfungiblePositionManager | 0xE357f3D536b2c0a21c0256cAB027CE962D0483bF |
+| SwapRouter | 0x4FC93149e329C15BfF627E967aaA487079D89d2F |
+| NonfungiblePositionManager | 0x43d314e63223041C61460c9A2F5e597Ff7D1cd30 |
 
 Use with the [test tokens](#test-tokens) above (WETH, USDC, DAI, etc.) to create pools and test swap logic.
 
@@ -3097,6 +3415,62 @@ A mock [Uniswap V4](https://docs.uniswap.org/contracts/v4/overview) PoolManager 
 | Contract | Address |
 |----------|---------|
 | PoolManager | 0xB4CB4B877FcF85Db498B81EEa8F3A1136797F7 |
+
+---
+
+## Mock KyberSwap Router
+
+A mock [KyberSwap](https://kyberswap.com/) aggregator router with admin-configurable exchange rates. Implements the same `swap` and `swapSimpleMode` interface so contracts that integrate with KyberSwap on mainnet work on testnet without code changes.
+
+**Simplifications:**
+- No actual DEX aggregation or routing
+- Exchange rates are admin-set, not market-driven
+- No multi-hop routing (single pair swaps only)
+
+### Deployed Addresses
+
+| Contract | Address |
+|----------|---------|
+| MockKyberSwapRouter | 0x5A8Eec040E6CDD11cf78A154a5485677aEeb4d0b |
+
+### Interface
+
+  
+    ```solidity
+    function swap(
+        SwapExecutionParams calldata execution
+    ) external payable returns (uint256 returnAmount, uint256 gasUsed);
+
+    function swapSimpleMode(
+        address caller,
+        SwapDescription calldata desc,
+        bytes calldata executorData,
+        bytes calldata clientData
+    ) external returns (uint256 returnAmount);
+    ```
+  
+
+  
+    ```solidity
+    struct SwapDescription {
+        address srcToken;
+        address dstToken;
+        address srcReceiver;
+        address dstReceiver;
+        uint256 amount;
+        uint256 minReturnAmount;
+        uint256 flags;
+    }
+
+    struct SwapExecutionParams {
+        address callTarget;
+        address approveTarget;
+        bytes targetData;
+        SwapDescription desc;
+        bytes clientData;
+    }
+    ```
+  
 
 ---
 
@@ -3116,6 +3490,132 @@ The vaults use the [test tokens](#test-tokens) as their underlying assets (USDC 
 
 ---
 
+## Mock Morpho Blue
+
+A mock [Morpho Blue](https://docs.morpho.org/) lending protocol deployment. Implements the core supply, borrow, collateral, and liquidation interface so contracts that integrate with Morpho on mainnet work on testnet without code changes.
+
+**Simplifications:**
+- No interest accrual (rates always zero)
+- No oracle price validation (liquidation is admin-gated)
+- 1:1 share-to-asset ratio (no share price divergence)
+
+### Deployed Addresses
+
+| Contract | Address |
+|----------|---------|
+| MockMorpho | 0x102CdAF4B7097752f2Bb336c6cDf39f0aBBbb58c |
+
+### Markets
+
+Three markets are pre-configured with an 80% liquidation LTV. Markets are identified by their `Id` (keccak256 of the market parameters).
+
+| Market | Id |
+|--------|----|
+| USDC/WETH | 0x9c975e07b7926e2fc62ff54950968875656e5a416cedeb289bd55e3f83c422a2 |
+| USDC/WBTC | 0x222fa6bbdaa780faeb791457ebe4cbae616e488a622fba3d5d191bd93151a5b8 |
+| WETH/WBTC | 0xf3d5303bd0352a06c05b2c8903aa4f076b87e0d0c9e375487c59205d41e0e647 |
+
+Market names are formatted as **loanToken/collateralToken** — e.g., USDC/WETH means borrow USDC against WETH collateral. All markets use the [test tokens](#test-tokens).
+
+### Interface
+
+  
+    ```solidity
+    function supply(
+        MarketParams calldata marketParams,
+        uint256 assets,
+        uint256 shares,
+        address onBehalf,
+        bytes calldata data
+    ) external returns (uint256 assetsSupplied, uint256 sharesSupplied);
+
+    function withdraw(
+        MarketParams calldata marketParams,
+        uint256 assets,
+        uint256 shares,
+        address onBehalf,
+        address receiver
+    ) external returns (uint256 assetsWithdrawn, uint256 sharesWithdrawn);
+
+    function borrow(
+        MarketParams calldata marketParams,
+        uint256 assets,
+        uint256 shares,
+        address onBehalf,
+        address receiver
+    ) external returns (uint256 assetsBorrowed, uint256 sharesBorrowed);
+
+    function repay(
+        MarketParams calldata marketParams,
+        uint256 assets,
+        uint256 shares,
+        address onBehalf,
+        bytes calldata data
+    ) external returns (uint256 assetsRepaid, uint256 sharesRepaid);
+
+    function supplyCollateral(
+        MarketParams calldata marketParams,
+        uint256 assets,
+        address onBehalf,
+        bytes calldata data
+    ) external;
+
+    function withdrawCollateral(
+        MarketParams calldata marketParams,
+        uint256 assets,
+        address onBehalf,
+        address receiver
+    ) external;
+    ```
+  
+
+  
+    ```solidity
+    function position(Id id, address user)
+        external view returns (
+            uint256 supplyShares,
+            uint128 borrowShares,
+            uint128 collateral
+        );
+
+    function market(Id id)
+        external view returns (
+            uint128 totalSupplyAssets,
+            uint128 totalSupplyShares,
+            uint128 totalBorrowAssets,
+            uint128 totalBorrowShares,
+            uint128 lastUpdate,
+            uint128 fee
+        );
+
+    function idToMarketParams(Id id)
+        external view returns (MarketParams memory);
+    ```
+  
+
+### Supplying and Borrowing
+
+To supply 1,000 USDC to the USDC/WETH market (approve first, then supply):
+
+```bash
+cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
+  "approve(address,uint256)" \
+  0x102CdAF4B7097752f2Bb336c6cDf39f0aBBbb58c 1000000000 \
+  --rpc-url $BATTLECHAIN_RPC_URL \
+  --private-key $PRIVATE_KEY
+
+cast send 0x102CdAF4B7097752f2Bb336c6cDf39f0aBBbb58c \
+  "supply((address,address,address,address,uint256),uint256,uint256,address,bytes)" \
+  "(0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE,0x4CAc28Fc96bb8fa0e6F94ef0E579384902142f42,0x0000000000000000000000000000000000000001,0x0000000000000000000000000000000000000002,800000000000000000)" \
+  1000000000 0 $YOUR_ADDRESS 0x \
+  --rpc-url $BATTLECHAIN_RPC_URL \
+  --private-key $PRIVATE_KEY
+```
+
+The value `1000000000` is `1000 * 1e6` (USDC has 6 decimals).
+
+---
+
 ## Mock Chainlink CCIP
 
 A mock [Chainlink CCIP](https://docs.chain.link/ccip) router for testing cross-chain messaging and token transfers.
@@ -3125,6 +3625,68 @@ A mock [Chainlink CCIP](https://docs.chain.link/ccip) router for testing cross-c
 | Contract | Address |
 |----------|---------|
 | MockCCIPRouter | 0xFA553888e385ECd9ab294e295C206b912a0F402E |
+
+---
+
+## Mock Teleporter Messenger
+
+A mock [Avalanche Teleporter](https://github.com/ava-labs/teleporter) messenger for testing cross-chain message encoding and dispatch. Implements the full `ITeleporterMessenger` interface so contracts that use Teleporter on Avalanche mainnet work on testnet without code changes.
+
+**Limitations:**
+- No actual cross-chain delivery (requires Avalanche Warp Messaging)
+- `receiveCrossChainMessage` is admin-only (no Warp precompile on BattleChain)
+- Fee collection accepts tokens but doesn't route to relayers
+
+### Deployed Addresses
+
+| Contract | Address |
+|----------|---------|
+| MockTeleporterMessenger | 0x43C6D810Cf80b8642741fe907302f69619ee1491 |
+
+### Interface
+
+  
+    ```solidity
+    function sendCrossChainMessage(
+        TeleporterMessageInput calldata messageInput
+    ) external returns (bytes32 messageID);
+
+    function retrySendCrossChainMessage(
+        TeleporterMessage calldata message
+    ) external;
+
+    function addFeeAmount(
+        bytes32 messageID,
+        address feeTokenAddress,
+        uint256 additionalFeeAmount
+    ) external;
+    ```
+  
+
+  
+    ```solidity
+    function getMessageHash(bytes32 messageID)
+        external view returns (bytes32);
+    function messageReceived(bytes32 messageID)
+        external view returns (bool);
+    function getRelayerRewardAddress(bytes32 messageID)
+        external view returns (address);
+    function getFeeInfo(bytes32 messageID)
+        external view returns (address, uint256);
+    function getNextMessageID(bytes32 destinationBlockchainID)
+        external view returns (bytes32);
+    ```
+  
+
+### Sending a Cross-Chain Message
+
+```bash
+cast send 0x43C6D810Cf80b8642741fe907302f69619ee1491 \
+  "sendCrossChainMessage((bytes32,address,address,(address,uint256),uint256,address[],bytes))" \
+  "(0x0000000000000000000000000000000000000000000000000000000000000001,0xYOUR_DESTINATION_ADDRESS,0xYOUR_DESTINATION_ADDRESS,(0x0000000000000000000000000000000000000000,0),200000,\[\],0x1234)" \
+  --rpc-url $BATTLECHAIN_RPC_URL \
+  --private-key $PRIVATE_KEY
+```
 
 ---
 
@@ -3546,6 +4108,82 @@ function _authorizeUpgrade(address newImplementation) internal override onlyOwne
 ---
 
 ## Concepts
+
+### FAQ & Troubleshooting
+
+*Common issues and questions when working with BattleChain.*
+
+## Transactions
+
+### Stuck or pending transactions
+
+Transactions can get stuck if the fee is too low for the current base fee. Send a no-op replacement at the same nonce with a higher fee:
+
+```bash
+# Get current base fee
+cast gas-price --rpc-url https://testnet.battlechain.com
+
+# Send a replacement with a higher max fee (e.g. 2x the current base fee)
+cast send \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com \
+  --nonce <stuck-nonce> \
+  --max-fee-per-gas <2x-current-base-fee> \
+  --value 0 \
+  0x0000000000000000000000000000000000000000
+```
+
+Find the stuck nonce:
+
+```bash
+cast nonce --rpc-url https://testnet.battlechain.com <your-wallet-address>
+```
+
+You can also reset your MetaMask account (Settings → Advanced → Reset Account) to clear pending transactions.
+
+## Deploying Contracts
+
+### Forge scripts failing
+
+Add `--skip-simulation` to any failing `forge script` command. Forge's local gas estimation doesn't work reliably on BattleChain. The [battlechain-starter](https://github.com/Cyfrin/battlechain-starter) justfile already includes this flag.
+
+### Out-of-gas failures
+
+If a `forge script` command fails with a vague error even with `--skip-simulation`, try adding `-g 300` to use 3x the estimated gas.
+
+### `transaction's gas limit exceeds block's gas limit`
+
+BattleChain has a 100M block gas limit. The `-g` flag in forge script multiplies the estimated gas — if the estimate is high (e.g., large contract deployments), the multiplied value can exceed the block limit. Lower `-g` from 300 to 200 or 150. If a single contract deployment still exceeds 100M gas, the contract is too large and needs to be split.
+
+### Contract too large
+
+If you see:
+
+```
+Failed to build transaction: AnyTxType(2) transaction can't be built due to missing keys: ["gas_limit"]
+```
+
+This usually means your contract exceeds the size limit. Try splitting it into smaller contracts or reducing the contract size.
+
+## Requesting Attack Mode
+
+| Error | Solution |
+|-------|----------|
+| `InvalidAgreement` | Agreement not from official factory |
+| `NotAgreementOwner` | Only the agreement owner can request |
+| `AgreementOwnerNotAuthorized` | Call `authorizeAgreementOwner()` for each contract |
+| `InsufficientCommitment` | Extend commitment window to 7+ days |
+| `EmptyContractArray` | Add contracts to agreement's BattleChain scope |
+
+## Network & Wallet
+
+### Cannot connect to RPC
+
+Ensure the RPC URL is entered exactly as `https://testnet.battlechain.com`.
+
+### Wrong chain ID
+
+Remove the BattleChain network from your wallet and re-add it with Chain ID `627`. See [Add BattleChain to MetaMask](/battlechain/how-to/add-battlechain-to-metamask).
 
 ### The Contract Lifecycle
 

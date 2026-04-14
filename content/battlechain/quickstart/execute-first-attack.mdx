@@ -1,63 +1,220 @@
 ---
-title: "Execute Your First Attack"
-description: "Exploit the CEI violation in a live BattleChain vault, collect your bounty, and walk away clean under Safe Harbor."
+title: "Attack a Contract"
+description: "Find an attackable contract on BattleChain, exploit it, collect your bounty, and walk away clean under Safe Harbor."
 ---
 
 <div className="flex items-start gap-4 mb-10 p-5 rounded-xl border border-red-200 bg-red-50 dark:border-red-600/40 dark:bg-red-950/20">
   <div className="text-4xl mt-1">⚔️</div>
   <div>
     <div className="text-xs font-bold uppercase tracking-widest text-red-700 dark:text-red-400 mb-1">You are the Whitehat</div>
-    <div className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1">The vault is live. The DAO approved it. You know exactly what's wrong with it.</div>
-    <div className="text-sm text-gray-600 dark:text-gray-400">You spotted a CEI violation and you have a contract that exploits it. The Safe Harbor agreement is in place — what you're about to do is legal, structured, and profitable.</div>
+    <div className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1">Find a vulnerable contract. Exploit it. Get paid.</div>
+    <div className="text-sm text-gray-600 dark:text-gray-400">BattleChain contracts in attack mode are fair game. Safe Harbor agreements define the rules — bounty percentage, recovery address, and scope. You attack legally, return the majority of funds, and keep your bounty.</div>
   </div>
 </div>
 
-## Prerequisites
+<Warning>
+**Review what your AI runs.** AI coding tools execute real commands on your machine. Always read the commands before approving them, and never allow anything you don't understand. If in doubt, use the **Manual** tab and run each command yourself.
+</Warning>
 
-You'll need [Foundry](https://book.getfoundry.sh/getting-started/installation) and [just](https://just.systems) installed, and the starter repo cloned:
+<Tabs labels="AI CLI (foundry), Manual (foundry)">
 
+## What You'll Need
+
+<Tab title="AI CLI (foundry)">
+
+- An **AI coding tool** with terminal access — [Claude Code](https://docs.anthropic.com/en/docs/claude-code/getting-started), Cursor, Windsurf, or any agent that can run terminal commands
+- A **test wallet with BattleChain Testnet ETH**
+
+**Windows users:** Use [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and run your AI tool inside the WSL terminal.
+
+</Tab>
+
+<Tab title="Manual (foundry)">
+
+- [Git](https://git-scm.com/)
+- [Foundry](https://book.getfoundry.sh/getting-started/installation): `curl -L https://foundry.paradigm.xyz | bash && foundryup`
+- [just](https://just.systems):
+
+<CodeGroup labels="macOS, Linux/WSL, Cargo">
 ```bash
-git clone https://github.com/Cyfrin/battlechain-starter
-cd battlechain-starter
-forge install
+brew install just
+```
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/.local/bin
+```
+```bash
+cargo install just
+```
+</CodeGroup>
+
+- A **test wallet with BattleChain Testnet ETH**
+
+**Windows users:** Use [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and install everything inside the WSL terminal.
+
+</Tab>
+
+<Accordion title="Wallet setup — get a test wallet with BattleChain ETH" icon="wallet">
+
+You need a dedicated wallet for BattleChain testing — **do not use a wallet that holds real funds.**
+
+<Accordion title="Create a test wallet in MetaMask" icon="user">
+
+If you've never set up a wallet before, watch the [Cyfrin Updraft wallet setup walkthrough](https://updraft.cyfrin.io/courses/blockchain-basics/sending-transactions/setting-up-a-wallet) first.
+
+**1.** Click the account selector at the top of MetaMask.
+
+<img src="/images/metamask-flow/click-account.png" alt="Click the account selector" className="max-w-xs rounded-lg" />
+
+**2.** Click **Add account** to create a new account.
+
+<img src="/images/metamask-flow/add-account.png" alt="Add a new account" className="max-w-xs rounded-lg" />
+
+**3.** Click the three-dot menu on the new account and select **Rename**.
+
+<img src="/images/metamask-flow/rename.png" alt="Rename the account" className="max-w-xs rounded-lg" />
+
+**4.** Name it something obvious like **BATTLECHAIN TEST WALLET** so you never confuse it with a real wallet.
+
+<img src="/images/metamask-flow/rename-account.png" alt="Rename to BATTLECHAIN TEST WALLET" className="max-w-xs rounded-lg" />
+
+</Accordion>
+
+### Fund Your Test Wallet
+
+**1. Add BattleChain to your wallet**
+
+<NetworkInfo network="testnet" />
+
+**2. Get free Sepolia ETH** from the [Google Cloud faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia) — 0.05 ETH is plenty.
+
+**3. Bridge to BattleChain** at [portal.battlechain.com/bridge](https://portal.battlechain.com/bridge) — select Sepolia to BattleChain Testnet and bridge your ETH.
+
+Once your BattleChain balance shows ETH, you're ready.
+
+</Accordion>
+
+---
+
+## Step 1 — Find an Attackable Contract
+
+On BattleChain, any contract in **attack mode** (state `3` — `UNDER_ATTACK`) is a legitimate target under Safe Harbor.
+
+**For this quickstart**, you'll attack a pre-built vulnerable vault from the starter repo. In the real world, you'd find targets through the explorer or on-chain queries.
+
+<Tip>
+**Finding real targets:** Browse all currently attackable agreements on the [BattleChain explorer](https://explorer.testnet.battlechain.com/agreements?page=1&state=UNDER_ATTACK). To check a specific contract programmatically, use `isAttackable(address)` from `battlechain-lib` — it handles the full scope hierarchy including child contracts. See [How to Find Attackable Contracts](/battlechain/how-to/find-attackable-contracts) for details and usage examples.
+</Tip>
+
+If you just completed [Deploy and Battle-Test Your Contract](/battlechain/quickstart/deploy-your-contract), your vault is already set up — skip to Step 2.
+
+Otherwise, you need to deploy a vault first. The quickest way is to follow the [deploy quickstart](/battlechain/quickstart/deploy-your-contract) and come back here when your vault is in attack mode (state `3`).
+
+<Accordion title="Quick setup from scratch" icon="rocket">
+
+<Tab title="AI CLI (foundry)">
+
+Open Claude Code in a new empty folder. Replace `YOUR_WALLET_ADDRESS` with your actual address and paste:
+
+```
+Read https://docs.battlechain.com/llms-full.txt to understand BattleChain, then:
+
+1. Install Foundry if not already installed (https://getfoundry.sh)
+2. Install just if not already installed (https://just.systems)
+3. Clone https://github.com/Cyfrin/battlechain-starter-foundry into the current directory
+4. cd into it and run forge install
+5. Copy .env.example to .env and set SENDER_ADDRESS to YOUR_WALLET_ADDRESS
 ```
 
-If you haven't already, import your key into Foundry's encrypted keystore:
+Then run these yourself in your terminal (each prompts for your keystore password):
 
 ```bash
 cast wallet import battlechain --interactive
+just setup
 ```
 
-You'll also need a `VAULT_ADDRESS` and `TOKEN_ADDRESS` to target. If you're attacking your own vault from [Deploy Your First Contract](/battlechain/quickstart/deploy-first-contract), those are already in your `.env`. If you're targeting someone else's vault, get those addresses from them or by querying the `AttackRegistry`.
-
-Your `.env` should have:
+Tell your AI to add `TOKEN_ADDRESS` and `VAULT_ADDRESS` from the output to `.env`, then continue:
 
 ```bash
-SENDER_ADDRESS=0x...your_wallet_address...
-TOKEN_ADDRESS=0x...
-VAULT_ADDRESS=0x...
-RECOVERY_ADDRESS=0x...
+just create-agreement
 ```
 
-No private key — your keystore handles signing when prompted.
-
----
-
-## Verify the Vault is Attackable
-
-Before doing anything, confirm the vault is in `UNDER_ATTACK` state:
+Tell your AI to add `AGREEMENT_ADDRESS` to `.env` and set `RECOVERY_ADDRESS` to your wallet address, then:
 
 ```bash
+just request-attack-mode
+cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
+  "approveAttack(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com
 just check-state
 ```
 
-You need to see `3`. If you see `2`, the DAO hasn't approved yet. Anything else and the vault isn't eligible.
+You need to see `3` (`UNDER_ATTACK`).
+
+</Tab>
+
+<Tab title="Manual (foundry)">
+
+```bash
+git clone https://github.com/Cyfrin/battlechain-starter-foundry
+cd battlechain-starter-foundry
+forge install
+cp .env.example .env
+```
+
+Set `SENDER_ADDRESS` in `.env` to your wallet address, then:
+
+```bash
+cast wallet import battlechain --interactive
+just setup
+```
+
+Copy `TOKEN_ADDRESS` and `VAULT_ADDRESS` into `.env`, then:
+
+```bash
+just create-agreement
+```
+
+Copy `AGREEMENT_ADDRESS` into `.env` and set `RECOVERY_ADDRESS` to your wallet address. Then:
+
+```bash
+just request-attack-mode
+cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
+  "approveAttack(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com
+just check-state
+```
+
+You need to see `3` (`UNDER_ATTACK`). If you see `2`, the approval hasn't been processed yet.
+
+</Tab>
+
+</Accordion>
 
 ---
 
-## Understand the Exploit
+## Step 2 — Check the Terms
 
-Open `src/Attacker.sol`. The attack exploits two things working together: the CEI violation in `VulnerableVault` and the hook system in `MockToken`.
+Before attacking any contract, read the agreement terms. For the starter vault the terms are straightforward — but on real targets, this step is critical.
+
+Key things to check:
+
+- **Bounty percentage** — how much you keep (starter vault: 10%)
+- **Recovery address** — where you send the remaining funds
+- **Retainability** — whether you keep the bounty from drained funds directly, or return everything and get paid separately
+- **Identity requirements** — whether the protocol requires you to identify yourself
+- **Scope** — which contracts are covered by the agreement
+
+<Tip>
+You can view all agreement details on the [BattleChain explorer](https://explorer.testnet.battlechain.com/agreements?page=1&state=UNDER_ATTACK) — click any agreement to see its terms, covered contracts, and recovery address. The [explorer API](https://block-explorer-api.testnet.battlechain.com/docs) also exposes these details via `GET /battlechain/agreement/:agreementAddress`. For a full reference, see [Bounty Terms](/battlechain/reference/bounty-terms).
+</Tip>
+
+---
+
+## Step 3 — Understand the Exploit
+
+Open `src/Attacker.sol` in the starter repo. The attack exploits two things working together: the CEI violation in `VulnerableVault` and the hook system in `MockToken`.
 
 **MockToken's hook system:** Any address can register a hook contract via `setTransferHook(address hook)`. When tokens are transferred *to* that address, the token calls `hook.onTokenTransfer()` after the transfer completes.
 
@@ -92,13 +249,15 @@ You're not stealing. The protocol gets the majority of funds back minus the agre
 
 ---
 
-## Run the Attack
+## Step 4 — Execute the Attack
+
+Run this yourself in your terminal (you'll be prompted for your keystore password):
 
 ```bash
 just attack
 ```
 
-Watch the output:
+Expected output:
 
 ```
 Vault balance before: 1000 tokens
@@ -111,13 +270,15 @@ Bounty kept:            100 tokens
 Returned to protocol:   900 tokens
 ```
 
-<Check>
-You've executed a legal reentrancy exploit on BattleChain. The vault is empty, the protocol has their funds back minus your bounty, and you're protected under Safe Harbor.
-</Check>
-
 ---
 
-## Verify the Math
+## Step 5 — Verify and Settle
+
+<Check>
+Search your `VAULT_ADDRESS` on the [BattleChain explorer](https://explorer.testnet.battlechain.com/) — you'll see the attack transaction, the vault balance drop to zero, and the bounty transfer to your wallet.
+</Check>
+
+### Verify the math
 
 The agreement set a 10% bounty (`BOUNTY_BPS = 1_000`). The vault had 1,000 seeded tokens plus your 100 seed tokens = 1,100 total.
 
@@ -128,8 +289,78 @@ If the numbers don't look right, check that `RECOVERY_ADDRESS` in your `.env` ma
 
 ---
 
-## What Happens on the Protocol Side
+## What Just Happened
 
-The protocol sees their recovery address receive 900 tokens. They now know their vault has a reentrancy vulnerability. If the same code were deployed on mainnet with real TVL, the loss would have been real.
+You found a vulnerable contract on BattleChain, verified it was in attack mode, exploited it, and collected a bounty — all under Safe Harbor protection.
 
-That's the whole point. See [Deploy Your First Contract](/battlechain/quickstart/deploy-first-contract) if you want to experience the other side of this.
+- **Found** a contract open for attack
+- **Checked** the agreement terms and bounty structure
+- **Exploited** a reentrancy vulnerability
+- **Settled** automatically — bounty kept, remaining funds returned to the protocol
+
+The same workflow applies to real contracts. Whitehats on BattleChain earn bounties by finding vulnerabilities before they reach mainnet, and protocols get battle-tested code they can deploy with confidence.
+
+<CardGroup cols={2}>
+  <Card title="Find Attackable Contracts" icon="crosshairs" href="/battlechain/how-to/find-attackable-contracts">
+    Discover real targets beyond the starter vault using on-chain queries
+  </Card>
+  <Card title="Claim Bounties" icon="trophy" href="/battlechain/how-to/claim-bounties">
+    Detailed bounty calculations, caps, retainability, and settlement mechanics
+  </Card>
+</CardGroup>
+
+---
+
+## Troubleshooting
+
+### Forge scripts failing
+
+Add `--skip-simulation` to any failing `forge script` command. Forge's local gas estimation doesn't work reliably on BattleChain.
+
+<Tab title="AI CLI (foundry)">
+
+Tell your AI: *"All forge script commands need the --skip-simulation flag."*
+
+</Tab>
+
+<Tab title="Manual (foundry)">
+
+Add `--skip-simulation` to every `forge script` call.
+
+</Tab>
+
+### Stuck pending transaction
+
+<Tab title="AI CLI (foundry)">
+
+Tell your AI: *"I have a stuck transaction at nonce [N]. Send a replacement with a higher gas price using cast send with --value 0 to clear it."*
+
+</Tab>
+
+<Tab title="Manual (foundry)">
+
+Send a replacement transaction to clear the stuck nonce:
+
+```bash
+# Get current base fee
+cast gas-price --rpc-url https://testnet.battlechain.com
+
+# Send a replacement with a higher max fee (e.g. 2x the current base fee)
+cast send \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com \
+  --nonce <stuck-nonce> \
+  --max-fee-per-gas <2x-current-base-fee> \
+  --value 0 \
+  0x0000000000000000000000000000000000000000
+```
+
+Find your pending nonce: `cast nonce --rpc-url https://testnet.battlechain.com <your-wallet-address>`
+
+</Tab>
+
+### Out-of-gas failures
+
+If a `forge script` command fails with a vague error even with `--skip-simulation`, try adding `-g 300` to use 3x the estimated gas.
+
+</Tabs>

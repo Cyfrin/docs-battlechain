@@ -8,6 +8,7 @@
 
 ## Quickstart
 
+- [Demo with Claude Desktop](/battlechain/quickstart/claude-desktop-demo): Install the BattleChain MCP server and run the full security demo through Claude Desktop — no coding required.
 - [Quickstart](/battlechain/quickstart/deploy-your-contract): Deploy a vulnerable contract to BattleChain and open it for whitehat attack.
 - [Configure Your AI Tools](/battlechain/quickstart/configure-ai-tools): Add BattleChain context to your AI coding tools so they deploy to BattleChain and set up Safe Harbor by default
 
@@ -15,7 +16,7 @@
 
 - [Going Attackable: End-to-End Protocol Tutorial](/battlechain/tutorials/going-attackable): A complete tutorial for protocols to deploy, configure, and enter attack mode on BattleChain
 - [Deploying Contracts to BattleChain](/battlechain/tutorials/deploying-contracts): Learn how to deploy smart contracts using BattleChainDeployer and understand deployment options
-- [Attacking Contracts: Whitehat Tutorial](/battlechain/tutorials/attacking-contracts): A complete tutorial for whitehats on finding, attacking, and earning bounties on BattleChain
+- [Attack a Contract](/battlechain/tutorials/attacking-contracts): Find the vulnerability in a BattleChain vault, exploit it, collect your bounty, and walk away clean under Safe Harbor.
 - [Approving Requests: DAO Member Tutorial](/battlechain/tutorials/approving-requests): A complete tutorial for DAO members on reviewing, approving, and managing attack requests
 - [Prediction Market](/battlechain/tutorials/prediction-market): Bet on the outcome of BattleChain attack periods
 
@@ -47,6 +48,7 @@
 
 ## Concepts
 
+- [FAQ & Troubleshooting](/battlechain/faq): Common issues and questions when working with BattleChain.
 - [The Contract Lifecycle](/battlechain/explanation/contract-lifecycle): Understanding how contracts move through BattleChain states
 - [Safe Harbor Protection](/battlechain/explanation/safe-harbor): Understanding the legal protections for whitehats on BattleChain
 - [Best Practices](/battlechain/explanation/best-practices): Guidelines for getting the most out of BattleChain

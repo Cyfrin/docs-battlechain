@@ -11,14 +11,35 @@ You can view agreement statuses and contracts currently under scope on the [Batt
 
 ## Check a Specific Contract
 
-```solidity
-bool attackable = attackRegistry.isTopLevelContractUnderAttack(contractAddress);
+The easiest way to check whether a contract is attackable is with `isAttackable` from `battlechain-lib`. It queries the block explorer API and handles the full scope hierarchy — including child contracts spawned by in-scope factories.
 
-if (attackable) {
-    // Safe Harbor protection applies
-    // Contract is in UNDER_ATTACK or PROMOTION_REQUESTED state
+**Standalone usage** (lightweight, no deploy/agreement overhead):
+
+```solidity
+import { BCQuery } from "battlechain-lib/BCQuery.sol";
+
+contract CheckTarget is BCQuery {
+    function run() external {
+        bool attackable = isAttackable(targetAddress);
+
+        if (attackable) {
+            // Contract is covered by an agreement in UNDER_ATTACK or PROMOTION_REQUESTED state
+        }
+    }
 }
 ```
+
+If you're already using `BCScript` for the full deploy + agreement flow, `isAttackable` is available directly — `BCScript` inherits `BCQuery`.
+
+Run with the `--ffi` flag since the function uses `vm.ffi` to call the explorer API:
+
+```bash
+forge script script/CheckTarget.s.sol --ffi --rpc-url https://testnet.battlechain.com
+```
+
+<Note>
+`isAttackable` requires `--ffi` and `curl` on your PATH. For on-chain-only contexts where `vm.ffi` isn't available, you can use `attackRegistry.isTopLevelContractUnderAttack(address)` — but this only checks top-level contracts and will miss child contracts spawned by in-scope factories.
+</Note>
 
 ## Monitor for New Targets
 
