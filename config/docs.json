@@ -44,6 +44,7 @@
               {
                 "group": "Quickstart",
                 "pages": [
+                  "battlechain/quickstart/claude-desktop-demo",
                   "battlechain/quickstart/deploy-your-contract",
                   "battlechain/quickstart/execute-first-attack"
                 ]
