@@ -143,8 +143,9 @@ export function Sidebar() {
         const href = `/${item}`
         const isActive = pathname === href
         const ACRONYMS = new Set(['ai', 'api', 'dao', 'eth', 'evm', 'faq', 'nft', 'rpc', 'uri', 'url'])
+        const SPECIAL: Record<string, string> = { 'battlechain': 'BattleChain', 'metamask': 'MetaMask' }
         const title = item.split('/').pop()?.split('-').map(w =>
-          ACRONYMS.has(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1)
+          SPECIAL[w] ?? (ACRONYMS.has(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1))
         ).join(' ') || item
 
         result.push(
