@@ -142,9 +142,10 @@ export function Sidebar() {
       if (typeof item === 'string') {
         const href = `/${item}`
         const isActive = pathname === href
-        const ACRONYMS = new Set(['ai', 'api', 'dao', 'eth', 'evm', 'nft', 'rpc', 'uri', 'url'])
+        const ACRONYMS = new Set(['ai', 'api', 'dao', 'eth', 'evm', 'faq', 'nft', 'rpc', 'uri', 'url'])
+        const SPECIAL: Record<string, string> = { 'battlechain': 'BattleChain', 'metamask': 'MetaMask' }
         const title = item.split('/').pop()?.split('-').map(w =>
-          ACRONYMS.has(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1)
+          SPECIAL[w] ?? (ACRONYMS.has(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1))
         ).join(' ') || item
 
         result.push(
@@ -223,8 +224,8 @@ export function Sidebar() {
       return null
     }
 
-    // Render Battlechain dropdown directly without header
-    if (dropdown.dropdown === 'Battlechain') {
+    // Render BattleChain dropdown directly without header
+    if (dropdown.dropdown === 'BattleChain') {
       return (
         <div key={`battlechain-${index}`} className="mb-2">
           <ul className="space-y-1">

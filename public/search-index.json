@@ -56,9 +56,23 @@
     ]
   },
   {
+    "id": "/battlechain/faq",
+    "title": "FAQ & Troubleshooting",
+    "content": "Transactions Stuck or pending transactions Transactions can get stuck if the fee is too low for the current base fee. Send a no-op replacement at the same nonce with a higher fee: Find the stuck nonce: You can also reset your MetaMask account (Settings → Advanced → Reset Account) to clear pending transactions. Deploying Contracts Forge scripts failing Add --skip-simulation to any failing forge script command. Forge's local gas estimation doesn't work reliably on BattleChain. The battlechain-starter justfile already includes this flag. Out-of-gas failures If a forge script command fails with a vague error even with --skip-simulation, try adding -g 300 to use 3x the estimated gas. transaction's gas limit exceeds block's gas limit BattleChain has a 100M block gas limit. The -g flag in forge script multiplies the estimated gas — if the estimate is high (e.g., large contract deployments), the multiplied value can exceed the block limit. Lower -g from 300 to 200 or 150. If a single contract ",
+    "url": "/battlechain/faq",
+    "category": "battlechain",
+    "headings": [
+      "Transactions",
+      "Stuck or pending transactions",
+      "Get current base fee",
+      "Send a replacement with a higher max fee (e.g. 2x the current base fee)",
+      "Deploying Contracts"
+    ]
+  },
+  {
     "id": "/battlechain/how-to/add-battlechain-to-metamask",
     "title": "How to Add BattleChain to MetaMask",
-    "content": "Overview To interact with contracts on BattleChain, you need to add the network to your wallet. This guide covers MetaMask, but the same details work for any EVM-compatible wallet. One-Click Setup Click the button below to add BattleChain Testnet to MetaMask automatically: Manual Setup If you prefer to add the network manually: 1. Open MetaMask and click the network selector at the top 2. Click Add Network → Add a network manually 3. Enter the following details: - Network Name: BattleChain Testnet - RPC URL: https://testnet.battlechain.com - Chain ID: 627 - Currency Symbol: ETH - Block Explorer URL: https://explorer.testnet.battlechain.com/ 4. Click Save BattleChain Testnet is now available in your MetaMask network list. Mainnet BattleChain Mainnet details will be announced when the network launches. Check back here for updates. Troubleshooting | Issue | Solution | |-------|----------| | Cannot connect to RPC | Ensure the RPC URL is entered exactly as shown above | | Wrong chain I",
+    "content": "Overview To interact with contracts on BattleChain, you need to add the network to your wallet. This guide covers MetaMask, but the same details work for any EVM-compatible wallet. One-Click Setup Click the button below to add BattleChain Testnet to MetaMask automatically: Manual Setup If you prefer to add the network manually: 1. Open MetaMask and click the network selector at the top 2. Click Add Network → Add a network manually 3. Enter the following details: - Network Name: BattleChain Testnet - RPC URL: https://testnet.battlechain.com - Chain ID: 627 - Currency Symbol: ETH - Block Explorer URL: https://explorer.testnet.battlechain.com/ 4. Click Save BattleChain Testnet is now available in your MetaMask network list. Mainnet BattleChain Mainnet details will be announced when the network launches. Check back here for updates. Troubleshooting | Issue | Solution | |-------|----------| | Cannot connect to RPC | Ensure the RPC URL is entered exactly as shown above | | Wrong chain ID | R",
     "url": "/battlechain/how-to/add-battlechain-to-metamask",
     "category": "battlechain",
     "headings": [
@@ -95,6 +109,20 @@
       "Calculate Your Bounty",
       "Examples",
       "Convert USD Cap to Tokens"
+    ]
+  },
+  {
+    "id": "/battlechain/how-to/configure-ai-tools",
+    "title": "Configure Your AI Tools",
+    "content": "Why This Matters AI coding agents write your deploy scripts, scaffold your tests, and set up infrastructure. If they don't know about BattleChain, they'll deploy straight to mainnet — skipping the battle-testing step entirely. Adding a short instruction block to your project tells every AI tool to: - Deploy contracts to BattleChain first, not mainnet directly - Create a Safe Harbor agreement as part of project setup - Follow the full BattleChain workflow before promoting to production The Prompt Add the following to your AI tool's configuration file. It works with any tool that reads project-level instructions: Quickstart: Install the Skills (Recommended) The fastest way to give your AI agent BattleChain context is to install the Cyfrin skills package: This installs three skills: | Skill | What it does | |-------|-------------| | solidity | Production-grade Solidity standards: code quality, testing, security, Foundry workflows | | battlechain | BattleChain reference: deploying, Safe Ha",
+    "url": "/battlechain/how-to/configure-ai-tools",
+    "category": "battlechain",
+    "headings": [
+      "Why This Matters",
+      "The Prompt",
+      "BattleChain",
+      "Deployment workflow",
+      "Requirements"
     ]
   },
   {
@@ -142,7 +170,7 @@
   {
     "id": "/battlechain/how-to/find-attackable-contracts",
     "title": "How to Find Attackable Contracts",
-    "content": "Overview The AttackRegistry tracks which contracts are in attack mode. This guide shows how to find and verify targets. Check a Specific Contract Monitor for New Targets Watch for AgreementStateChanged events: Get Agreement Details Verify Agreement Validity Always verify before attacking: Check Time Remaining For contracts in PROMOTION_REQUESTED: Red Flags Be cautious of: - Suspiciously high bounties - Very new agreements (less community vetting) - Missing contact details - Contracts identical to mainnet protocols Next: Execute your attack properly",
+    "content": "Overview The AttackRegistry tracks which contracts are in attack mode. This guide shows how to find and verify targets. You can view agreement statuses and contracts currently under scope on the Battlechain explorer. Check a Specific Contract Monitor for New Targets Watch for AgreementStateChanged events: Get Agreement Details Verify Agreement Validity Always verify before attacking: Check Time Remaining For contracts in PROMOTION_REQUESTED: Red Flags Be cautious of: - Suspiciously high bounties - Very new agreements (less community vetting) - Missing contact details - Contracts identical to mainnet protocols Next: Execute your attack properly",
     "url": "/battlechain/how-to/find-attackable-contracts",
     "category": "battlechain",
     "headings": [
@@ -198,7 +226,7 @@
   {
     "id": "/battlechain/how-to/request-attack-mode",
     "title": "How to Request Attack Mode",
-    "content": "Overview After deploying contracts and creating an agreement, request attack mode to enable Safe Harbor protection and allow whitehats to test your contracts. Prerequisites Before requesting: 1. Contracts deployed (via BattleChainDeployer or any other method) 2. Agreement created via AgreementFactory 3. Agreement adopted via adoptSafeHarbor() 4. Commitment window extends at least 7 days Request Attack Mode This validates: - Agreement was created by official factory - You're the agreement owner - All contracts were deployed via BattleChainDeployer - Commitment window meets minimum requirements For Non-BattleChainDeployer Contracts If contracts weren't deployed via BattleChainDeployer: This path requires extra DAO scrutiny since there's no on-chain proof of deployment. Skip Attack Mode Entirely To go directly to production without attack testing: This immediately sets state to PRODUCTION with no Safe Harbor protection. Check Request Status What Happens Next | Outcome | Timeline | |------",
+    "content": "Overview After deploying contracts and creating an agreement, request attack mode to enable Safe Harbor protection and allow whitehats to test your contracts. Prerequisites Before requesting: 1. Contracts deployed (via BattleChainDeployer or any other method) 2. Agreement created via AgreementFactory 3. Agreement adopted via adoptSafeHarbor() 4. Commitment window extends at least 7 days Request Attack Mode Call requestUnderAttack on the AttackRegistry: Run the Foundry script with: This validates: - Agreement was created by official factory - You're the agreement owner - All contracts were deployed via BattleChainDeployer - Commitment window meets minimum requirements For Non-BattleChainDeployer Contracts If your contracts weren't deployed via BattleChainDeployer, call requestUnderAttackByNonAuthorized instead. This must be called by the agreement owner — the same address that created the agreement via AgreementFactory. This path requires extra DAO scrutiny since there's no on-chain pro",
     "url": "/battlechain/how-to/request-attack-mode",
     "category": "battlechain",
     "headings": [
@@ -237,79 +265,37 @@
     ]
   },
   {
-    "id": "/battlechain/quickstart/ai-quickstart",
-    "title": "BattleChain in 5 Prompts",
-    "content": "🤖 No coding required Your AI is the developer. You're the protocol owner. You'll deploy a real vulnerable contract to BattleChain, open it under a Safe Harbor agreement, then turn around and exploit it yourself — all by pasting prompts into Claude Code. What You'll Need Before you start, get two things in order: 1. An AI coding tool This guide is written for Claude Code, but the same prompts work with Cursor, Windsurf, or any agent that can run terminal commands. If you don't have one, install Claude Code — it takes about two minutes. 2. A wallet with BattleChain Testnet ETH You need an EVM wallet (MetaMask, Rabby, etc.) with a small amount of ETH on BattleChain Testnet. Here's how to get it: 1. Add BattleChain to your wallet | Field | Value | |-------|-------| | Network Name | BattleChain Testnet | | RPC URL | https://testnet.battlechain.com | | Chain ID | 627 | 2. Get free Sepolia ETH from the Google Cloud faucet — paste your address and request some. 0.05 ETH is plenty. 3. Bri",
-    "url": "/battlechain/quickstart/ai-quickstart",
-    "category": "battlechain",
-    "headings": [
-      "What You'll Need",
-      "How This Works",
-      "Prompt 1 — Setup",
-      "Import Your Key — Manual Step",
-      "Prompt 2 — Deploy"
-    ]
-  },
-  {
-    "id": "/battlechain/quickstart/configure-ai-tools",
-    "title": "Configure Your AI Tools",
-    "content": "Why This Matters AI coding agents write your deploy scripts, scaffold your tests, and set up infrastructure. If they don't know about BattleChain, they'll deploy straight to mainnet — skipping the battle-testing step entirely. Adding a short instruction block to your project tells every AI tool to: - Deploy contracts to BattleChain first, not mainnet directly - Create a Safe Harbor agreement as part of project setup - Follow the full BattleChain workflow before promoting to production The Prompt Add the following to your AI tool's configuration file. It works with any tool that reads project-level instructions: Quickstart: Install the Skills (Recommended) The fastest way to give your AI agent BattleChain context is to install the Cyfrin skills package: This installs three skills: | Skill | What it does | |-------|-------------| | solidity | Production-grade Solidity standards: code quality, testing, security, Foundry workflows | | battlechain | BattleChain reference: deploying, Safe Ha",
-    "url": "/battlechain/quickstart/configure-ai-tools",
-    "category": "battlechain",
-    "headings": [
-      "Why This Matters",
-      "The Prompt",
-      "BattleChain",
-      "Deployment workflow",
-      "Requirements"
-    ]
-  },
-  {
-    "id": "/battlechain/quickstart/deploy-first-contract",
-    "title": "Deploy Your First Contract",
-    "content": "🏛 You are the Protocol Your contract is audited. Time to stress-test it for real. You'll deploy a deliberately vulnerable vault, put it under a Safe Harbor agreement, and open it to whitehat attack — before anything like this can happen on mainnet. Prerequisites Git If not installed: git-scm.com Foundry If you hit issues, see the Foundry installation guide. Just just is a command runner used to execute the repo's scripts cleanly. Install it with: Verify: just --version A Wallet with BattleChain Testnet ETH You'll need an EVM wallet with ETH on BattleChain to pay for gas. Three steps: 1. Add BattleChain to your wallet | Field | Value | |-------|-------| | Network Name | BattleChain Testnet | | RPC URL | https://testnet.battlechain.com | | Chain ID | 627 | See Add BattleChain to MetaMask for a step-by-step guide. 2. Get Sepolia ETH You need Sepolia ETH to bridge to BattleChain. Go to the Google Cloud faucet, paste your wallet address, and request testnet ETH. You only need a small ",
-    "url": "/battlechain/quickstart/deploy-first-contract",
-    "category": "battlechain",
-    "headings": [
-      "Prerequisites",
-      "Git",
-      "Foundry",
-      "Just",
-      "A Wallet with BattleChain Testnet ETH"
-    ]
-  },
-  {
     "id": "/battlechain/quickstart/deploy-your-contract",
-    "title": "Quickstart",
-    "content": "Deploy a vulnerable vault, create a Safe Harbor agreement, and open it for attack — the core BattleChain workflow. Pick your path and follow along. What You'll Need A Wallet with BattleChain Testnet ETH You need an EVM wallet (MetaMask, Rabby, etc.) with a small amount of ETH on BattleChain Testnet: 1. Add BattleChain to your wallet 2. Get free Sepolia ETH from the Google Cloud faucet — 0.05 ETH is plenty. 3. Bridge to BattleChain at portal.battlechain.com/bridge — select Sepolia to BattleChain Testnet and bridge your ETH. Once your BattleChain balance shows ETH, you're ready. Your Tool Claude Desktop (macOS or Linux). Claude Desktop can execute code directly — you paste prompts and it handles the rest. No terminal or IDE needed. Windows users: Claude Desktop runs on Windows, but Foundry tooling works best under WSL2. Install WSL first, then use the AI CLI tab with Claude Code inside WSL instead. An AI coding tool with terminal access. This guide uses Claude Code, but the same prompts ",
+    "title": "Deploy and Battle-Test Your Contract",
+    "content": "Deploy a vulnerable vault, create a Safe Harbor agreement, and open it for whitehat attack — the core BattleChain workflow for protocol teams. Review what your AI runs. AI coding tools execute real commands on your machine. Always read the commands before approving them, and never allow anything you don't understand. If in doubt, use the Manual tab and run each command yourself. What You'll Need - An AI coding tool with terminal access — Claude Code, Cursor, Windsurf, or any agent that can run terminal commands - A test wallet with BattleChain Testnet ETH Windows users: Use WSL2 and run your AI tool inside the WSL terminal. - Git - Foundry: curl -L https://foundry.paradigm.xyz | bash && foundryup - just: - A test wallet with BattleChain Testnet ETH Windows users: Use WSL2 and install everything inside the WSL terminal. You need a dedicated wallet for BattleChain testing — do not use a wallet that holds real funds. If you've never set up a wallet before, watch the Cyfrin Updraft wallet ",
     "url": "/battlechain/quickstart/deploy-your-contract",
     "category": "battlechain",
     "headings": [
       "What You'll Need",
-      "A Wallet with BattleChain Testnet ETH",
-      "Your Tool",
+      "Fund Your Test Wallet",
       "Step 1 — Project Setup",
-      "Step 2 — Import Your Private Key"
+      "Step 2 — Set Up Transaction Signing",
+      "Step 3 — Deploy"
     ]
   },
   {
     "id": "/battlechain/quickstart/execute-first-attack",
-    "title": "Execute Your First Attack",
-    "content": "⚔️ You are the Whitehat The vault is live. The DAO approved it. You know exactly what's wrong with it. You spotted a CEI violation and you have a contract that exploits it. The Safe Harbor agreement is in place — what you're about to do is legal, structured, and profitable. Prerequisites You'll need Foundry and just installed, and the starter repo cloned: If you haven't already, import your key into Foundry's encrypted keystore: You'll also need a VAULTADDRESS and TOKENADDRESS to target. If you're attacking your own vault from Deploy Your First Contract, those are already in your .env. If you're targeting someone else's vault, get those addresses from them or by querying the AttackRegistry. Your .env should have: No private key — your keystore handles signing when prompted. --- Verify the Vault is Attackable Before doing anything, confirm the vault is in UNDER_ATTACK state: You need to see 3. If you see 2, the DAO hasn't approved yet. Anything else and the vault isn't eligible. --- Und",
+    "title": "Attack a Contract",
+    "content": "⚔️ You are the Whitehat Find a vulnerable contract. Exploit it. Get paid. BattleChain contracts in attack mode are fair game. Safe Harbor agreements define the rules — bounty percentage, recovery address, and scope. You attack legally, return the majority of funds, and keep your bounty. Review what your AI runs. AI coding tools execute real commands on your machine. Always read the commands before approving them, and never allow anything you don't understand. If in doubt, use the Manual tab and run each command yourself. What You'll Need - An AI coding tool with terminal access — Claude Code, Cursor, Windsurf, or any agent that can run terminal commands - A test wallet with BattleChain Testnet ETH Windows users: Use WSL2 and run your AI tool inside the WSL terminal. - Git - Foundry: curl -L https://foundry.paradigm.xyz | bash && foundryup - just: - A test wallet with BattleChain Testnet ETH Windows users: Use WSL2 and install everything inside the WSL terminal. You need a dedicated wal",
     "url": "/battlechain/quickstart/execute-first-attack",
     "category": "battlechain",
     "headings": [
-      "Prerequisites",
-      "Verify the Vault is Attackable",
-      "Understand the Exploit",
-      "Run the Attack",
-      "Verify the Math"
+      "What You'll Need",
+      "Fund Your Test Wallet",
+      "Step 1 — Find an Attackable Contract",
+      "Step 2 — Check the Terms",
+      "Step 3 — Understand the Exploit"
     ]
   },
   {
     "id": "/battlechain/quickstart/review-first-request",
     "title": "Review Your First Request",
-    "content": "⚖️ You are the DAO A protocol wants to open their contracts for attack. You decide if they're allowed to. Your job is to prevent abuse — mainly ensuring no one copies a live mainnet protocol onto BattleChain to have it \"attacked\" and drained under Safe Harbor cover. Prerequisites: You must be the registry moderator or part of the DAO multisig to approve or reject requests. --- Find Pending Requests Watch for AgreementStateChanged events where newState = 2 (ATTACK_REQUESTED), or query directly: | Value | State | |-------|-------| | 2 | ATTACK_REQUESTED — needs your review | | 3 | UNDER_ATTACK — already approved | --- Get the Agreement Details Pull the full agreement to review scope and terms: Check which contracts are in scope and how they were deployed: bash cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \\ \"approveAttack(address)\" \\ $AGREEMENT_ADDRESS \\ --rpc-url https://testnet.battlechain.com \\ --account battlechain bash cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350",
+    "content": "⚖️ You are the DAO A protocol wants to open their contracts for attack. You decide if they're allowed to. Your job is to prevent abuse — mainly ensuring no one copies a live mainnet protocol onto BattleChain to have it \"attacked\" and drained under Safe Harbor cover. Prerequisites: You must be the registry moderator or part of the DAO multisig to approve or reject requests. --- Find Pending Requests Watch for AgreementStateChanged events where newState = 2 (ATTACK_REQUESTED), or query directly: | Value | State | |-------|-------| | 2 | ATTACK_REQUESTED — needs your review | | 3 | UNDER_ATTACK — already approved | --- Get the Agreement Details Pull the full agreement to review scope and terms: Check which contracts are in scope and how they were deployed: bash cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \\ \"approveAttack(address)\" \\ $AGREEMENT_ADDRESS \\ --rpc-url https://testnet.battlechain.com \\ --account battlechain bash cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \\ \"r",
     "url": "/battlechain/quickstart/review-first-request",
     "category": "battlechain",
     "headings": [
@@ -420,22 +406,22 @@
   },
   {
     "id": "/battlechain/tutorials/attacking-contracts",
-    "title": "Attacking Contracts: Whitehat Tutorial",
-    "content": "This tutorial teaches you the full whitehat workflow on BattleChain — from finding targets to earning bounties — and explains the legal protections that make it possible. Audience: Security researchers and whitehats. Prerequisites: Familiarity with smart contract security, Solidity, and common vulnerability patterns. Why BattleChain for Whitehats? Traditional bug bounties ask you to report vulnerabilities. BattleChain lets you exploit them: - Legal protection: Safe Harbor agreements protect you from prosecution - Immediate reward: Keep your bounty from recovered funds (if retainable) - No coordination required: Attack first, no need for prior disclosure - Real exploits: Test against contracts with real liquidity, not toy examples Understanding Safe Harbor Before attacking, understand what protects you. When a protocol enters attack mode: 1. They've adopted a Safe Harbor agreement committing to not pursue legal action 2. Their contracts are in UNDERATTACK or PROMOTIONREQUESTED state 3. ",
+    "title": "Attack a Contract",
+    "content": "&#x2694;&#xFE0F; You are the Whitehat There's a vulnerable vault on BattleChain. The DAO approved it. Safe Harbor is in place. Your job is to find the bug, drain the vault, keep your bounty, and return the rest. Everything you're about to do is legal, structured, and profitable. Prerequisites You need a deployed, attackable vault to target. If you completed the Quickstart, you already have one — your .env has everything you need. If you're attacking someone else's vault, you need their VAULTADDRESS and TOKENADDRESS (find these on the BattleChain explorer or by querying the AttackRegistry). Your AI coding tool with terminal access (Claude Code, Cursor, Windsurf, etc.). If you completed the quickstart, continue in the same session. You need Foundry and just installed, and the starter repo cloned: Your .env should have: If you haven't imported your key yet: --- Step 1 — Verify the Vault is Attackable Before doing anything, confirm the vault is in UNDER_ATTACK state. You need to see 3. If ",
     "url": "/battlechain/tutorials/attacking-contracts",
     "category": "battlechain",
     "headings": [
-      "Why BattleChain for Whitehats?",
-      "Understanding Safe Harbor",
-      "Step 1: Find Targets",
-      "Check a Specific Contract",
-      "Monitor for New Targets"
+      "Prerequisites",
+      "Step 1 — Verify the Vault is Attackable",
+      "Step 2 — Understand the Exploit",
+      "Step 3 — Execute the Attack",
+      "Step 4 — Verify on the Explorer"
     ]
   },
   {
     "id": "/battlechain/tutorials/deploying-contracts",
     "title": "Deploying Contracts to BattleChain",
-    "content": "This tutorial teaches you how to deploy contracts to BattleChain and why the deployment method matters for the attack mode workflow. Audience: Developers deploying contracts to BattleChain. Prerequisites: Familiarity with Solidity and smart contract deployment. Using battlechain-lib (Recommended) The easiest way to deploy is with battlechain-lib, which handles address resolution, CreateX routing, and AttackRegistry registration automatically: Add the remapping to foundry.toml: Deploy with helpers Inherit BCDeploy (deploy only) or BCScript (deploy + agreement + attack mode): On BattleChain, bcDeployCreate* calls go through BattleChainDeployer, which wraps CreateX and auto-registers your contracts with the AttackRegistry. On any other supported chain (190+ EVM chains), the same functions route directly through CreateX (0xba5Ed...), giving you deterministic addresses without any code changes. Use bcDeployCreate2 when you need the same contract address across BattleChain and mainnet. The s",
+    "content": "This tutorial teaches you how to deploy contracts to BattleChain and why the deployment method matters for the attack mode workflow. Audience: Developers deploying contracts to BattleChain. Prerequisites: Familiarity with Solidity and smart contract deployment. Using battlechain-lib (Recommended) The easiest way to deploy is with battlechain-lib, which handles address resolution, CreateX routing, and AttackRegistry registration automatically: Add the remapping to foundry.toml: Contract size limit: 24,576 bytes BattleChain enforces the standard EVM contract size limit (EIP-170). If your compiled bytecode exceeds 24,576 bytes, deployment will fail. Enable the Solidity optimizer in foundry.toml to reduce bytecode size: Deploy with helpers Inherit BCDeploy (deploy only) or BCScript (deploy + agreement + attack mode): On BattleChain, bcDeployCreate* calls go through BattleChainDeployer, which wraps CreateX and auto-registers your contracts with the AttackRegistry. On any other supported cha",
     "url": "/battlechain/tutorials/deploying-contracts",
     "category": "battlechain",
     "headings": [
@@ -489,13 +475,14 @@
   {
     "id": "/overview",
     "title": "Battlechain",
-    "content": "Get Started The Problem Web3 has a fundamental gap in its development lifecycle. Code goes from audit to mainnet with nothing in between — and the industry pays for it. Projects go from $0 to $5M TVL overnight after an audit. Bug bounties don't attract serious testing. The industry loses billions to preventable exploits. Dev → Staging → Production Staging uses real-like data. Issues are found before users are affected. Dev → Testnet → Mainnet Testnet uses fake money. Issues are found after millions are at risk. Dev → Testnet → BattleChain → Mainnet Real funds, controlled risk. Issues found before they matter. How It Works BattleChain is a pre-mainnet, post-testnet environment with real funds. Protocols deploy audited contracts, whitehats legally attack them for bounties, and battle-tested contracts promote to mainnet with confidence. Every contract on BattleChain exists in one of two modes: Open season for ethical hacking. Whitehats can legally exploit vulnerabilities, earn bounties, a",
+    "content": "Get Started The Problem Web3 has a fundamental gap in its development lifecycle. Code goes from audit to mainnet with nothing in between — and the industry pays for it. Projects go from $0 to $5M TVL overnight after an audit. Bug bounties don't attract serious testing. The industry loses billions to preventable exploits. Web3 Today Dev → Testnet → Mainnet Testnet uses fake money. Bugs are discovered after millions are at risk. With BattleChain Dev → Testnet → BattleChain → Mainnet Real funds, controlled risk. Bugs are found before they matter. How It Works BattleChain is a pre-mainnet, post-testnet environment with real funds. Protocols deploy audited contracts, whitehats legally attack them for bounties, and battle-tested contracts promote to mainnet with confidence. Every contract on BattleChain exists in one of two modes: Open season for ethical hacking. Whitehats can legally exploit vulnerabilities, earn bounties, and operate under Safe Harbor protection. Protocols learn about weak",
     "url": "/overview",
     "category": "overview.mdx",
     "headings": [
       "How It Works",
       "Why an L2?",
-      "Learn More"
+      "Learn More",
+      "Build with AI"
     ]
   }
 ]

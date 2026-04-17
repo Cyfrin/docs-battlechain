@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
-import { getMDXContent, getAllMDXFiles } from '@/lib/mdx'
+import { getMDXContent, getAllMDXFiles, getPageTitleFromFrontmatter } from '@/lib/mdx'
 import { getAdjacentPages, getPageTitle } from '@/lib/navigation'
+import { stripMdxToMarkdown } from '@/lib/strip-mdx'
 import { PageNav } from '@/components/layout/PageNav'
 import { PageActions } from '@/components/layout/PageActions'
 import { Card } from '@/components/mdx/Card'
@@ -108,25 +109,28 @@ export default async function Page({ params }: PageProps) {
   }
 
   const { content, frontmatter } = mdxContent
+  const cleanMarkdown = stripMdxToMarkdown(content)
   const auto = getAdjacentPages(fullPath)
   const editUrl = `https://github.com/Cyfrin/docs-battlechain/edit/main/content/${fullPath}.mdx`
+
+  const resolveTitle = (p: string) => getPageTitleFromFrontmatter(p) ?? getPageTitle(p)
 
   const prev = frontmatter.prev === false
     ? null
     : typeof frontmatter.prev === 'string'
-      ? { path: frontmatter.prev, title: getPageTitle(frontmatter.prev) }
-      : auto.prev
+      ? { path: frontmatter.prev, title: resolveTitle(frontmatter.prev) }
+      : auto.prev ? { ...auto.prev, title: resolveTitle(auto.prev.path) } : null
 
   const next = frontmatter.next === false
     ? null
     : typeof frontmatter.next === 'string'
-      ? { path: frontmatter.next, title: getPageTitle(frontmatter.next) }
-      : auto.next
+      ? { path: frontmatter.next, title: resolveTitle(frontmatter.next) }
+      : auto.next ? { ...auto.next, title: resolveTitle(auto.next.path) } : null
 
   return (
     <>
     <PageActions
-      markdownContent={content}
+      markdownContent={cleanMarkdown}
       title={frontmatter.title}
       description={frontmatter.description}
       editUrl={editUrl}
@@ -174,9 +178,27 @@ export async function generateMetadata({ params }: PageProps) {
   }
 
   const { frontmatter } = mdxContent
+  const title = frontmatter.title || 'BattleChain Docs'
+  const description = frontmatter.description || 'BattleChain Documentation'
+  const pageUrl = `https://docs.battlechain.com/${product}/${path}`
 
   return {
-    title: frontmatter.title || 'BattleChain Docs',
-    description: frontmatter.description || 'BattleChain Documentation',
+    title,
+    description,
+    alternates: {
+      canonical: pageUrl,
+    },
+    openGraph: {
+      title,
+      description,
+      url: pageUrl,
+      siteName: 'BattleChain Docs',
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+    },
   }
 }

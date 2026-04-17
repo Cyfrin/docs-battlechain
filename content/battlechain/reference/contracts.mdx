@@ -152,3 +152,21 @@ Supports all CreateX methods:
 - `deployCreate3()`, `deployCreate3AndInit()`
 
 All deployments automatically call `AttackRegistry.registerDeployment()`.
+
+---
+
+## Contract ABIs
+
+Typed ABIs for all BattleChain contracts are available in [`battlechain-lib`](https://github.com/Cyfrin/battlechain-lib/blob/main/ts/abi.ts) as TypeScript constants compatible with [viem](https://viem.sh):
+
+| Export | Contract |
+|--------|----------|
+| `attackRegistryAbi` | AttackRegistry |
+| `registryAbi` | BattleChainSafeHarborRegistry |
+| `agreementFactoryAbi` | AgreementFactory |
+| `agreementAbi` | Agreement |
+| `deployerAbi` | BattleChainDeployer |
+
+```typescript
+import { attackRegistryAbi, registryAbi } from 'battlechain-lib/ts/abi'
+```

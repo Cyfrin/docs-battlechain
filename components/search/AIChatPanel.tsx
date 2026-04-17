@@ -262,9 +262,9 @@ export function AIChatPanel({ onClose }: { onClose?: () => void }) {
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
             <Sparkles className="w-12 h-12 mb-3 opacity-30" />
-            <p className="text-sm">Ask me anything about Cyfrin documentation</p>
+            <p className="text-sm">Ask me anything about BattleChain</p>
             <p className="text-xs mt-2 max-w-xs">
-              I can help you find information about CodeHawks, Updraft, Solodit, Profiles, and Battlechain.
+              I can help you find information about deploying contracts, Safe Harbor agreements, whitehat attacks, and more.
             </p>
           </div>
         ) : (

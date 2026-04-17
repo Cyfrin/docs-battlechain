@@ -33,7 +33,7 @@ export const PRODUCT_THEMES: Record<string, ProductTheme> = {
     className: 'product-solodit',
   },
   battlechain: {
-    name: 'Battlechain',
+    name: 'BattleChain',
     primary: '#FFFFFF',
     light: '#F5F5F5',
     dark: '#E8E8E8',

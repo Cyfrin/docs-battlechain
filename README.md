@@ -1,6 +1,6 @@
-# Battlechain Docs
+# BattleChain Docs
 
-Documentation site for [Battlechain](https://cyfrin.io) — Cyfrin's PvP security-focused blockchain where smart contracts face open exploitation in a live arena before production deployment.
+Documentation site for [BattleChain](https://cyfrin.io) — Cyfrin's PvP security-focused blockchain where smart contracts face open exploitation in a live arena before production deployment.
 
 ## Getting Started
 
