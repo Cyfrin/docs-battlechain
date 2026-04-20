@@ -26,6 +26,27 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.svg",
   },
+  openGraph: {
+    title: "BattleChain Docs",
+    description: "BattleChain is a pre-mainnet L2 where protocols deploy contracts under Safe Harbor and whitehats legally attack them for bounties.",
+    url: "https://docs.battlechain.com",
+    siteName: "BattleChain Docs",
+    images: [
+      {
+        url: "https://docs.battlechain.com/images/og.png",
+        width: 1800,
+        height: 945,
+        alt: "BattleChain Docs",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BattleChain Docs",
+    description: "BattleChain is a pre-mainnet L2 where protocols deploy contracts under Safe Harbor and whitehats legally attack them for bounties.",
+    images: ["https://docs.battlechain.com/images/og.png"],
+  },
 };
 
 export default function RootLayout({
