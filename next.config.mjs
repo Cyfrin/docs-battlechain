@@ -21,6 +21,11 @@ const nextConfig = {
         destination: '/battlechain/how-to/configure-ai-tools',
         permanent: true,
       },
+      {
+        source: '/battlechain/how-to/use-ai-with-docs',
+        destination: '/battlechain/using-battlechain-with-ai',
+        permanent: true,
+      },
     ]
   },
 }

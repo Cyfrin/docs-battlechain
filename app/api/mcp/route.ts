@@ -8,7 +8,11 @@ import { stripMdxToMarkdown } from '@/lib/strip-mdx'
 import type { SearchDocument } from '@/lib/search'
 
 const CONTENT_DIR = path.join(process.cwd(), 'content')
-const BASE_URL = 'https://docs.battlechain.com'
+
+const docsConfig = JSON.parse(
+  fs.readFileSync(path.join(process.cwd(), '.docs-config.json'), 'utf-8'),
+)
+const BASE_URL = `https://${docsConfig.production_url}`
 
 // ── Search index (cached across hot requests) ──────────────────
 

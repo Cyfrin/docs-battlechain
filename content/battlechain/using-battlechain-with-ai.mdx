@@ -1,9 +1,31 @@
 ---
-title: "How to Use AI with BattleChain Docs"
-description: "Give your AI agent full context on BattleChain by pointing it at our machine-readable docs"
+title: "Using BattleChain with AI"
+description: "Give your AI coding agent full BattleChain context — skills, machine-readable docs, and MCP server"
 ---
 
-## Overview
+BattleChain is built for AI-native development. Whether you're using Claude Code, Cursor, or any tool with a built-in chat, you can give your agent full BattleChain context in seconds.
+
+## The BattleChain Skill
+
+The fastest way to give your AI agent BattleChain context is to install the Cyfrin skills package:
+
+```bash
+npx skills add cyfrin/solskill
+```
+
+This installs three skills:
+
+| Skill | What it does |
+|-------|-------------|
+| `solidity` | Production-grade Solidity standards: code quality, testing, security, Foundry workflows |
+| `battlechain` | BattleChain reference: deploying, Safe Harbor, whitehat attacks, contract lifecycle |
+| `battlechain-tutorial` | Interactive wizard: scans your project, asks guided questions, generates all scripts |
+
+Once installed, tell your agent "Deploy my contracts to BattleChain" and `battlechain-tutorial` will walk you through the full process.
+
+The skills are open source at [github.com/Cyfrin/solskill](https://github.com/Cyfrin/solskill).
+
+## Read the Docs as Markdown
 
 BattleChain publishes machine-readable versions of these docs so AI agents can ingest them directly:
 
@@ -13,8 +35,6 @@ BattleChain publishes machine-readable versions of these docs so AI agents can i
 | [`/llms-full.txt`](/llms-full.txt) | Complete text of every page as clean markdown | ~100 KB |
 
 Both files follow the [llms.txt](https://llmstxt.org/) convention and are regenerated on every deploy.
-
-## Open in Your AI
 
 Start a conversation with full BattleChain docs loaded as context:
 
@@ -75,8 +95,6 @@ Add to your Claude Desktop config (`claude_desktop_config.json`):
 }
 ```
 
-### Other MCP Clients
-
 Any MCP-compatible client can connect using the server URL above. The server exposes three tools:
 
 | Tool | Description |
@@ -102,3 +120,7 @@ messages = [
     {"role": "user", "content": user_question},
 ]
 ```
+
+## Going Further
+
+Want your AI agent to deploy to BattleChain by default and set up Safe Harbor automatically? See [Configure Your AI Tools](/battlechain/how-to/configure-ai-tools) for the deployment prompt block and per-tool config file paths (`CLAUDE.md`, `.cursor/rules`, `AGENTS.md`, and others).
