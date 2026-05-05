@@ -25,6 +25,35 @@ Once installed, tell your agent "Deploy my contracts to BattleChain" and `battle
 
 The skills are open source at [github.com/Cyfrin/solskill](https://github.com/Cyfrin/solskill).
 
+## Claude Code Plugin
+
+If you use Claude Code, the same skills are also published as a [plugin marketplace](https://docs.claude.com/en/docs/claude-code/plugins). This is the most native install path for Claude Code — plugins are managed with `/plugin` and update in place.
+
+Inside a Claude Code session, add the marketplace:
+
+```
+/plugin marketplace add Cyfrin/solskill
+```
+
+Then install whichever plugins you want:
+
+```
+/plugin install solidity@solskill
+/plugin install battlechain@solskill
+/plugin install battlechain-tutorial@solskill
+```
+
+Restart Claude Code so the new plugins load:
+
+```bash
+/exit
+claude --continue
+```
+
+<Warning>
+Claude Code may suggest `/reload-plugins` after install. That command does not pick up newly installed plugins — exit the session and run `claude --continue` instead.
+</Warning>
+
 ## Read the Docs as Markdown
 
 BattleChain publishes machine-readable versions of these docs so AI agents can ingest them directly:
