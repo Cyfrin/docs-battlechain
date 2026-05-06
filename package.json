@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint .",
     "check-links": "tsx scripts/check-links.ts",
+    "test:mcp": "tsx scripts/build-search-index.ts && tsx scripts/test-mcp.ts",
     "update-claude": "curl -fsSL https://raw.githubusercontent.com/Cyfrin/claude-docs-prompts/main/install.sh | bash"
   },
   "dependencies": {

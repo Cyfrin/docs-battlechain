@@ -126,11 +126,20 @@ Add to your Claude Desktop config (`claude_desktop_config.json`):
 
 Any MCP-compatible client can connect using the server URL above. The server exposes three tools:
 
-| Tool | Description |
-|------|-------------|
-| `search_docs` | Search documentation by keyword or topic |
-| `read_page` | Read the full content of a specific page as clean markdown |
-| `list_pages` | List all available documentation pages |
+| Tool | Args | Description |
+|------|------|-------------|
+| `search_docs` | `query: string` | Search documentation by keyword or topic |
+| `read_page` | `path: string` | Read the full content of a specific page as clean markdown |
+| `list_pages` | _(none)_ | List all available documentation pages |
+
+### Example prompts
+
+Once connected, just ask your agent a docs question — it picks the right tool automatically:
+
+- *"How do I deploy a contract to BattleChain testnet?"*
+- *"What is Safe Harbor and how do I enable it on my contracts?"*
+- *"Walk me through the going-attackable tutorial step by step."*
+- *"List every page under quickstart."*
 
 ## Custom Agents
 
