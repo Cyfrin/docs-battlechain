@@ -5,6 +5,7 @@
 ## Overview
 
 - [BattleChain](https://docs.battlechain.com/overview): PvP Security Blockchain - Trial by Fire
+- [Using BattleChain with AI](https://docs.battlechain.com/battlechain/using-battlechain-with-ai): Give your AI coding agent full BattleChain context — skills, machine-readable docs, and MCP server
 
 ## Quickstart
 
@@ -23,7 +24,6 @@
 ## How-to Guides
 
 - [Configure Your AI Tools](https://docs.battlechain.com/battlechain/how-to/configure-ai-tools): Add BattleChain context to your AI coding tools so they deploy to BattleChain and set up Safe Harbor by default
-- [How to Use AI with BattleChain Docs](https://docs.battlechain.com/battlechain/how-to/use-ai-with-docs): Give your AI agent full context on BattleChain by pointing it at our machine-readable docs
 - [How to Add BattleChain to MetaMask](https://docs.battlechain.com/battlechain/how-to/add-battlechain-to-metamask): Connect your wallet to the BattleChain network
 - [Exploring Agreements](https://docs.battlechain.com/battlechain/how-to/exploring-agreements): Browse Safe Harbor Agreements, filter by state, and inspect bounty terms and contract coverage
 - [Managing Agreements in the Explorer](https://docs.battlechain.com/battlechain/how-to/managing-agreements-in-explorer): Create, edit, and manage Safe Harbor Agreements and the attack lifecycle through the block explorer UI

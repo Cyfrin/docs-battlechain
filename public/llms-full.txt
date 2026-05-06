@@ -71,6 +71,167 @@ BattleChain is designed for AI-assisted development. Deploy contracts, create ag
 
 > **Note:** BattleChain Testnet is live. Mainnet details will be announced soon.
 
+### Using BattleChain with AI
+Source: https://docs.battlechain.com/battlechain/using-battlechain-with-ai
+
+*Give your AI coding agent full BattleChain context — skills, machine-readable docs, and MCP server*
+
+BattleChain is built for AI-native development. Whether you're using Claude Code, Cursor, or any tool with a built-in chat, you can give your agent full BattleChain context in seconds.
+
+## The BattleChain Skill
+
+The fastest way to give your AI agent BattleChain context is to install the Cyfrin skills package:
+
+```bash
+npx skills add cyfrin/solskill
+```
+
+This installs three skills:
+
+| Skill | What it does |
+|-------|-------------|
+| `solidity` | Production-grade Solidity standards: code quality, testing, security, Foundry workflows |
+| `battlechain` | BattleChain reference: deploying, Safe Harbor, whitehat attacks, contract lifecycle |
+| `battlechain-tutorial` | Interactive wizard: scans your project, asks guided questions, generates all scripts |
+
+Once installed, tell your agent "Deploy my contracts to BattleChain" and `battlechain-tutorial` will walk you through the full process.
+
+The skills are open source at [github.com/Cyfrin/solskill](https://github.com/Cyfrin/solskill).
+
+## Claude Code Plugin
+
+If you use Claude Code, the same skills are also published as a [plugin marketplace](https://docs.claude.com/en/docs/claude-code/plugins). This is the most native install path for Claude Code — plugins are managed with `/plugin` and update in place.
+
+Inside a Claude Code session, add the marketplace:
+
+```
+/plugin marketplace add Cyfrin/solskill
+```
+
+Then install whichever plugins you want:
+
+```
+/plugin install solidity@solskill
+/plugin install battlechain@solskill
+/plugin install battlechain-tutorial@solskill
+```
+
+Restart Claude Code so the new plugins load:
+
+```bash
+/exit
+claude --continue
+```
+
+> **Warning:** Claude Code may suggest `/reload-plugins` after install. That command does not pick up newly installed plugins — exit the session and run `claude --continue` instead.
+
+## Read the Docs as Markdown
+
+BattleChain publishes machine-readable versions of these docs so AI agents can ingest them directly:
+
+| File | Contents | Size |
+|------|----------|------|
+| [`/llms.txt`](https://docs.battlechain.com/llms.txt) | Table of contents with page titles, descriptions, and links | ~4 KB |
+| [`/llms-full.txt`](https://docs.battlechain.com/llms-full.txt) | Complete text of every page as clean markdown | ~100 KB |
+
+Both files follow the [llms.txt](https://llmstxt.org/) convention and are regenerated on every deploy.
+
+Start a conversation with full BattleChain docs loaded as context:
+
+  
+    
+    Open in Claude
+  
+  
+    
+    Open in ChatGPT
+  
+
+Or paste this prompt into any AI:
+
+```
+Read https://docs.battlechain.com/llms-full.txt and use it to answer my questions about BattleChain.
+```
+
+## Cursor
+
+Add BattleChain as a doc source so Cursor indexes it automatically. Go to **Cursor Settings → Features → Docs**, click **Add**, and enter:
+
+```
+https://docs.battlechain.com/llms-full.txt
+```
+
+Once indexed, Cursor's AI will have full BattleChain context when you reference `@docs` in chat.
+
+## MCP Server
+
+BattleChain publishes an [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server that gives AI tools programmatic access to search and read these docs.
+
+**Server URL:**
+
+```
+https://docs.battlechain.com/api/mcp
+```
+
+### Claude Code
+
+```bash
+claude mcp add --transport http battlechain-docs https://docs.battlechain.com/api/mcp
+```
+
+### Claude Desktop
+
+Add to your Claude Desktop config (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "battlechain-docs": {
+      "url": "https://docs.battlechain.com/api/mcp"
+    }
+  }
+}
+```
+
+Any MCP-compatible client can connect using the server URL above. The server exposes three tools:
+
+| Tool | Args | Description |
+|------|------|-------------|
+| `search_docs` | `query: string` | Search documentation by keyword or topic |
+| `read_page` | `path: string` | Read the full content of a specific page as clean markdown |
+| `list_pages` | _(none)_ | List all available documentation pages |
+
+### Example prompts
+
+Once connected, just ask your agent a docs question — it picks the right tool automatically:
+
+- *"How do I deploy a contract to BattleChain testnet?"*
+- *"What is Safe Harbor and how do I enable it on my contracts?"*
+- *"Walk me through the going-attackable tutorial step by step."*
+- *"List every page under quickstart."*
+
+## Custom Agents
+
+If you're building an agent that interacts with BattleChain, fetch the docs at startup and include them as context:
+
+- **Full context** — fetch `/llms-full.txt` and add it to the system prompt (~100 KB, fits in most context windows)
+- **Selective context** — fetch `/llms.txt` to build a page index, then retrieve individual pages on demand for RAG pipelines
+
+```python
+import httpx
+
+docs = httpx.get("https://docs.battlechain.com/llms-full.txt").text
+
+messages = [
+    {"role": "system", "content": f"BattleChain documentation:\n\n{docs}"},
+    {"role": "user", "content": user_question},
+]
+```
+
+## Going Further
+
+Want your AI agent to deploy to BattleChain by default and set up Safe Harbor automatically? See [Configure Your AI Tools](https://docs.battlechain.com/battlechain/how-to/configure-ai-tools) for the deployment prompt block and per-tool config file paths (`CLAUDE.md`, `.cursor/rules`, `AGENTS.md`, and others).
+
 ---
 
 ## Quickstart
@@ -1722,69 +1883,6 @@ The same prompt works with any AI tool that reads project-level instruction file
 | Aider | `.aider.conf.yml` |
 
 > **Tip:** The docs URL `https://docs.battlechain.com/llms-full.txt` is the key piece. Any AI that can fetch a URL will get the full BattleChain documentation in one request (~100 KB, fits in most context windows).
-
-### How to Use AI with BattleChain Docs
-Source: https://docs.battlechain.com/battlechain/how-to/use-ai-with-docs
-
-*Give your AI agent full context on BattleChain by pointing it at our machine-readable docs*
-
-## Overview
-
-BattleChain publishes machine-readable versions of these docs so AI agents can ingest them directly:
-
-| File | Contents | Size |
-|------|----------|------|
-| [`/llms.txt`](https://docs.battlechain.com/llms.txt) | Table of contents with page titles, descriptions, and links | ~4 KB |
-| [`/llms-full.txt`](https://docs.battlechain.com/llms-full.txt) | Complete text of every page as clean markdown | ~100 KB |
-
-Both files follow the [llms.txt](https://llmstxt.org/) convention and are regenerated on every deploy.
-
-## Open in Your AI
-
-Start a conversation with full BattleChain docs loaded as context:
-
-  
-    
-    Open in Claude
-  
-  
-    
-    Open in ChatGPT
-  
-
-Or paste this prompt into any AI:
-
-```
-Read https://docs.battlechain.com/llms-full.txt and use it to answer my questions about BattleChain.
-```
-
-## Cursor
-
-Add BattleChain as a doc source so Cursor indexes it automatically. Go to **Cursor Settings → Features → Docs**, click **Add**, and enter:
-
-```
-https://docs.battlechain.com/llms-full.txt
-```
-
-Once indexed, Cursor's AI will have full BattleChain context when you reference `@docs` in chat.
-
-## Custom Agents
-
-If you're building an agent that interacts with BattleChain, fetch the docs at startup and include them as context:
-
-- **Full context** — fetch `/llms-full.txt` and add it to the system prompt (~100 KB, fits in most context windows)
-- **Selective context** — fetch `/llms.txt` to build a page index, then retrieve individual pages on demand for RAG pipelines
-
-```python
-import httpx
-
-docs = httpx.get("https://docs.battlechain.com/llms-full.txt").text
-
-messages = [
-    {"role": "system", "content": f"BattleChain documentation:\n\n{docs}"},
-    {"role": "user", "content": user_question},
-]
-```
 
 ### How to Add BattleChain to MetaMask
 Source: https://docs.battlechain.com/battlechain/how-to/add-battlechain-to-metamask
@@ -3468,10 +3566,10 @@ All feeds use **8 decimals**, matching Chainlink's standard for USD pairs.
 
 ### Deployed Addresses
 
-| Pair | Address |
-|------|---------|
-| ETH/USD | 0xAA72F0168eE17aA93098eC6ECf2EEe72B46aca19 |
-| BTC/USD | 0xd87f56De7Fe8d2913B3B8e45C5fd983185286b66 |
+| Pair     | Address                                                 |
+| -------- | ------------------------------------------------------- |
+| ETH/USD  | 0xAA72F0168eE17aA93098eC6ECf2EEe72B46aca19 |
+| BTC/USD  | 0xd87f56De7Fe8d2913B3B8e45C5fd983185286b66 |
 | LINK/USD | 0xEa8789e4f6a1d101AfF3093543FC8133c27987FD |
 | USDC/USD | 0x469be0Db9E0E884a2D9E64a186008C684423B79C |
 
@@ -3506,6 +3604,7 @@ All feeds use **8 decimals**, matching Chainlink's standard for USD pairs.
     function latestRound() external view returns (uint256);
     function latestTimestamp() external view returns (uint256);
     ```
+
   
 
   
@@ -3520,6 +3619,7 @@ All feeds use **8 decimals**, matching Chainlink's standard for USD pairs.
         uint256 _startedAt
     ) public;
     ```
+
   
 
 ### Updating Prices
@@ -3543,15 +3643,15 @@ Mintable ERC-20 tokens for protocols that need token dependencies (stablecoins, 
 
 ### Deployed Addresses
 
-| Token | Symbol | Decimals | Address |
-|-------|--------|----------|---------|
-| Wrapped Ether | WETH | 18 | 0x4CAc28Fc96bb8fa0e6F94ef0E579384902142f42 |
-| USD Coin | USDC | 6 | 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE |
-| Tether USD | USDT | 6 | 0x0d414B0CCef51a25cd32c93b869A9fF2e883a27E |
-| Dai Stablecoin | DAI | 18 | 0x393cBd865554a543D992218d190EA9dcE47d9bC2 |
-| Wrapped BTC | WBTC | 8 | 0xB90cb0F537F2E7D11b165a8C5C79B7a593aBE4f0 |
-| Chainlink Token | LINK | 18 | 0xDBCaD9c8f2757f1b7Fe7fC394bEB035018aEA9DC |
-| My Token | MTK | 18 | 0xA55C81615ea60e870d7a4Dff8C662B4C39c56C80 |
+| Token           | Symbol | Decimals | Address                                                 |
+| --------------- | ------ | -------- | ------------------------------------------------------- |
+| Wrapped Ether   | WETH   | 18       | 0x4CAc28Fc96bb8fa0e6F94ef0E579384902142f42 |
+| USD Coin        | USDC   | 6        | 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE |
+| Tether USD      | USDT   | 6        | 0x0d414B0CCef51a25cd32c93b869A9fF2e883a27E |
+| Dai Stablecoin  | DAI    | 18       | 0x393cBd865554a543D992218d190EA9dcE47d9bC2 |
+| Wrapped BTC     | WBTC   | 8        | 0xB90cb0F537F2E7D11b165a8C5C79B7a593aBE4f0 |
+| Chainlink Token | LINK   | 18       | 0xDBCaD9c8f2757f1b7Fe7fC394bEB035018aEA9DC |
+| My Token        | MTK    | 18       | 0xA55C81615ea60e870d7a4Dff8C662B4C39c56C80 |
 
 ### Interface
 
@@ -3567,6 +3667,7 @@ Mintable ERC-20 tokens for protocols that need token dependencies (stablecoins, 
 
     function decimals() public view returns (uint8);
     ```
+
   
 
   
@@ -3579,6 +3680,7 @@ Mintable ERC-20 tokens for protocols that need token dependencies (stablecoins, 
     // Unwrap WETH back to ETH
     function withdraw(uint256 amount) external;
     ```
+
   
 
   
@@ -3587,6 +3689,7 @@ Mintable ERC-20 tokens for protocols that need token dependencies (stablecoins, 
     ```solidity
     function mint() external;
     ```
+
   
 
 ### Minting Tokens
@@ -3621,15 +3724,15 @@ All markets are listed with a **0.75 collateral factor**. The mock Comptroller a
 
 ### Deployed Addresses
 
-| Contract | Address |
-|----------|---------|
+| Contract    | Address                                                 |
+| ----------- | ------------------------------------------------------- |
 | Comptroller | 0xAE582334FCf2f932ea1B4D0B484aC34A8184B2e8 |
-| vUSDC | 0x91442C344c069e9B62f068C6F7075E9B403840E0 |
-| vWETH | 0x2A7b8d39e8544517F0Ce0ff4ac895580c79ff692 |
-| vWBTC | 0x9F01733b6B26404495b38fe69f20D5A8252EFd14 |
-| vDAI | 0x7ea22541B90794ADa16E5b42A5FF2bf7489e587c |
-| vBNB | 0x11e4B3Bbe7Fc26514b8D13383a3FB30E3Ced1F62 |
-| vUSDT | 0x2D9680c4cEfe5E36bFB0B78c48dd1d8A06090e8d |
+| vUSDC       | 0x91442C344c069e9B62f068C6F7075E9B403840E0 |
+| vWETH       | 0x2A7b8d39e8544517F0Ce0ff4ac895580c79ff692 |
+| vWBTC       | 0x9F01733b6B26404495b38fe69f20D5A8252EFd14 |
+| vDAI        | 0x7ea22541B90794ADa16E5b42A5FF2bf7489e587c |
+| vBNB        | 0x11e4B3Bbe7Fc26514b8D13383a3FB30E3Ced1F62 |
+| vUSDT       | 0x2D9680c4cEfe5E36bFB0B78c48dd1d8A06090e8d |
 
 The vToken markets use the [test tokens](#test-tokens) as their underlying assets. vBNB uses native ETH.
 
@@ -3663,6 +3766,7 @@ The vToken markets use the [test tokens](#test-tokens) as their underlying asset
     function exchangeRateCurrent() external view returns (uint256);
     function underlying() external view returns (address);
     ```
+
   
 
   
@@ -3675,6 +3779,7 @@ The vToken markets use the [test tokens](#test-tokens) as their underlying asset
     function borrow(uint256 borrowAmount) external returns (uint256);
     function repayBorrow() external payable;
     ```
+
   
 
 ### Supplying and Borrowing
@@ -3712,10 +3817,10 @@ A mock [Uniswap V3](https://docs.uniswap.org/contracts/v3/overview) deployment w
 
 ### Deployed Addresses
 
-| Contract | Address |
-|----------|---------|
-| UniswapV3Factory | 0xd5DCFCab1B60C70F45D61597b351674b4b3C8CDc |
-| SwapRouter | 0x4FC93149e329C15BfF627E967aaA487079D89d2F |
+| Contract                   | Address                                                 |
+| -------------------------- | ------------------------------------------------------- |
+| UniswapV3Factory           | 0xd5DCFCab1B60C70F45D61597b351674b4b3C8CDc |
+| SwapRouter                 | 0x4FC93149e329C15BfF627E967aaA487079D89d2F |
 | NonfungiblePositionManager | 0x43d314e63223041C61460c9A2F5e597Ff7D1cd30 |
 
 Use with the [test tokens](#test-tokens) above (WETH, USDC, DAI, etc.) to create pools and test swap logic.
@@ -3728,8 +3833,8 @@ A mock [Uniswap V4](https://docs.uniswap.org/contracts/v4/overview) PoolManager 
 
 ### Deployed Addresses
 
-| Contract | Address |
-|----------|---------|
+| Contract    | Address                                               |
+| ----------- | ----------------------------------------------------- |
 | PoolManager | 0xB4CB4B877FcF85Db498B81EEa8F3A1136797F7 |
 
 ---
@@ -3739,14 +3844,15 @@ A mock [Uniswap V4](https://docs.uniswap.org/contracts/v4/overview) PoolManager 
 A mock [KyberSwap](https://kyberswap.com/) aggregator router with admin-configurable exchange rates. Implements the same `swap` and `swapSimpleMode` interface so contracts that integrate with KyberSwap on mainnet work on testnet without code changes.
 
 **Simplifications:**
+
 - No actual DEX aggregation or routing
 - Exchange rates are admin-set, not market-driven
 - No multi-hop routing (single pair swaps only)
 
 ### Deployed Addresses
 
-| Contract | Address |
-|----------|---------|
+| Contract            | Address                                                 |
+| ------------------- | ------------------------------------------------------- |
 | MockKyberSwapRouter | 0x5A8Eec040E6CDD11cf78A154a5485677aEeb4d0b |
 
 ### Interface
@@ -3764,6 +3870,7 @@ A mock [KyberSwap](https://kyberswap.com/) aggregator router with admin-configur
         bytes calldata clientData
     ) external returns (uint256 returnAmount);
     ```
+
   
 
   
@@ -3786,6 +3893,7 @@ A mock [KyberSwap](https://kyberswap.com/) aggregator router with admin-configur
         bytes clientData;
     }
     ```
+
   
 
 ---
@@ -3796,9 +3904,9 @@ A mock [Euler V2](https://docs.euler.finance/) deployment with the Ethereum Vaul
 
 ### Deployed Addresses
 
-| Contract | Address |
-|----------|---------|
-| EVC | 0xB5D56dECA76e65cC9332Af01971bC8ad018a1Fc1 |
+| Contract    | Address                                                 |
+| ----------- | ------------------------------------------------------- |
+| EVC         | 0xB5D56dECA76e65cC9332Af01971bC8ad018a1Fc1 |
 | eUSDC Vault | 0x9a6fb480a74e6BAEE31EAbe297384ceA1EBb4d81 |
 | eWETH Vault | 0x38aF9d1C638C43d4340a700A854721dD5cdCf974 |
 
@@ -3811,22 +3919,23 @@ The vaults use the [test tokens](#test-tokens) as their underlying assets (USDC 
 A mock [Morpho Blue](https://docs.morpho.org/) lending protocol deployment. Implements the core supply, borrow, collateral, and liquidation interface so contracts that integrate with Morpho on mainnet work on testnet without code changes.
 
 **Simplifications:**
+
 - No interest accrual (rates always zero)
 - No oracle price validation (liquidation is admin-gated)
 - 1:1 share-to-asset ratio (no share price divergence)
 
 ### Deployed Addresses
 
-| Contract | Address |
-|----------|---------|
+| Contract   | Address                                                 |
+| ---------- | ------------------------------------------------------- |
 | MockMorpho | 0x102CdAF4B7097752f2Bb336c6cDf39f0aBBbb58c |
 
 ### Markets
 
 Three markets are pre-configured with an 80% liquidation LTV. Markets are identified by their `Id` (keccak256 of the market parameters).
 
-| Market | Id |
-|--------|----|
+| Market    | Id                                                                              |
+| --------- | ------------------------------------------------------------------------------- |
 | USDC/WETH | 0x9c975e07b7926e2fc62ff54950968875656e5a416cedeb289bd55e3f83c422a2 |
 | USDC/WBTC | 0x222fa6bbdaa780faeb791457ebe4cbae616e488a622fba3d5d191bd93151a5b8 |
 | WETH/WBTC | 0xf3d5303bd0352a06c05b2c8903aa4f076b87e0d0c9e375487c59205d41e0e647 |
@@ -3883,6 +3992,7 @@ Market names are formatted as **loanToken/collateralToken** — e.g., USDC/WETH 
         address receiver
     ) external;
     ```
+
   
 
   
@@ -3907,6 +4017,7 @@ Market names are formatted as **loanToken/collateralToken** — e.g., USDC/WETH 
     function idToMarketParams(Id id)
         external view returns (MarketParams memory);
     ```
+
   
 
 ### Supplying and Borrowing
@@ -3938,26 +4049,29 @@ A mock [Chainlink CCIP](https://docs.chain.link/ccip) router for testing cross-c
 
 ### Deployed Addresses
 
-| Contract | Address |
-|----------|---------|
+| Contract       | Address                                                 |
+| -------------- | ------------------------------------------------------- |
 | MockCCIPRouter | 0xFA553888e385ECd9ab294e295C206b912a0F402E |
 
 ---
 
 ## Mock Teleporter Messenger
 
-A mock [Avalanche Teleporter](https://github.com/ava-labs/teleporter) messenger for testing cross-chain message encoding and dispatch. Implements the full `ITeleporterMessenger` interface so contracts that use Teleporter on Avalanche mainnet work on testnet without code changes.
+A mock [Avalanche Teleporter](https://github.com/ava-labs/teleporter) messenger for BattleChain cross-chain dispatch and explicit delivery flows. Implements the full `ITeleporterMessenger` interface so contracts that use Teleporter on Avalanche mainnet work on BattleChain without code changes.
+
+Sent messages are queued as pending and can be delivered to the destination contract via `deliverMessage()`, which calls `receiveTeleporterMessage` on the target. This lets you simulate the full send → deliver lifecycle without Avalanche Warp Messaging.
 
 **Limitations:**
-- No actual cross-chain delivery (requires Avalanche Warp Messaging)
+
+- No Avalanche Warp Messaging or canonical Teleporter verification — delivery must be triggered explicitly through the mock's `deliverMessage` helpers
 - `receiveCrossChainMessage` is admin-only (no Warp precompile on BattleChain)
-- Fee collection accepts tokens but doesn't route to relayers
+- Fee collection accepts tokens but does not route to relayers automatically
 
 ### Deployed Addresses
 
-| Contract | Address |
-|----------|---------|
-| MockTeleporterMessenger | 0x43C6D810Cf80b8642741fe907302f69619ee1491 |
+| Contract                | Address                                                 |
+| ----------------------- | ------------------------------------------------------- |
+| MockTeleporterMessenger | 0x6f3C17caA459F8012669f24D294AF72c2F8d9CBF |
 
 ### Interface
 
@@ -3977,10 +4091,62 @@ A mock [Avalanche Teleporter](https://github.com/ava-labs/teleporter) messenger 
         uint256 additionalFeeAmount
     ) external;
     ```
+
   
 
   
     ```solidity
+    // Deliver a pending message to its destination contract.
+    // Calls receiveTeleporterMessage on the destination.
+    function deliverMessage(
+        bytes32 messageID,
+        bytes32 sourceBlockchainID
+    ) external;
+
+    // Same as above, but assigns a relayer reward redeemer.
+    function deliverMessage(
+        bytes32 messageID,
+        bytes32 sourceBlockchainID,
+        address rewardRedeemer
+    ) external;
+
+    // Retry delivery of a message that previously failed execution.
+    // Only works on messages where the initial delivery reverted.
+    function retryMessageExecution(
+        bytes32 sourceBlockchainID,
+        TeleporterMessage calldata message
+    ) external;
+
+    // Admin-only. Simulates receiving a cross-chain message via
+    // Warp (not available on BattleChain).
+    function receiveCrossChainMessage(
+        uint32 messageIndex,
+        address relayerRewardAddress
+    ) external;
+    ```
+
+  
+
+  
+    ```solidity
+    function pendingMessage(
+        bytes32 messageID
+    ) external view returns (PendingMessage memory);
+
+    function pendingQueue()
+        external view returns (bytes32[] memory);
+
+    function pendingQueueForChain(
+        bytes32 destinationChainID
+    ) external view returns (bytes32[] memory);
+    ```
+
+  
+
+  
+    ```solidity
+    function blockchainID() external view returns (bytes32);
+    function admin() external view returns (address);
     function getMessageHash(bytes32 messageID)
         external view returns (bytes32);
     function messageReceived(bytes32 messageID)
@@ -3991,17 +4157,47 @@ A mock [Avalanche Teleporter](https://github.com/ava-labs/teleporter) messenger 
         external view returns (address, uint256);
     function getNextMessageID(bytes32 destinationBlockchainID)
         external view returns (bytes32);
+    function getReceiptQueueSize(bytes32 sourceBlockchainID)
+        external view returns (uint256);
+    function getReceiptAtIndex(bytes32 sourceBlockchainID, uint256 index)
+        external view returns (TeleporterMessageReceipt memory);
     ```
   
 
 ### Sending a Cross-Chain Message
 
 ```bash
-cast send 0x43C6D810Cf80b8642741fe907302f69619ee1491 \
+# 1. Send a message (queues it as pending)
+cast send 0x6f3C17caA459F8012669f24D294AF72c2F8d9CBF \
   "sendCrossChainMessage((bytes32,address,address,(address,uint256),uint256,address[],bytes))" \
   "(0x0000000000000000000000000000000000000000000000000000000000000001,0xYOUR_DESTINATION_ADDRESS,0xYOUR_DESTINATION_ADDRESS,(0x0000000000000000000000000000000000000000,0),200000,\[\],0x1234)" \
   --rpc-url $BATTLECHAIN_RPC_URL \
   --private-key $PRIVATE_KEY
+```
+
+### Delivering a Message
+
+Once a message has been sent, deliver it to the destination contract. This calls `receiveTeleporterMessage` on the destination address.
+
+The `sourceBlockchainID` parameter must match what the receiving contract expects as the source chain — this is protocol-specific and may be a `keccak256` hash rather than the raw chain ID.
+
+```bash
+# 2. Deliver the pending message (use the messageID returned from step 1)
+cast send 0x6f3C17caA459F8012669f24D294AF72c2F8d9CBF \
+  "deliverMessage(bytes32,bytes32)" \
+  <MESSAGE_ID> \
+  <SOURCE_BLOCKCHAIN_ID> \
+  --rpc-url $BATTLECHAIN_RPC_URL \
+  --private-key $PRIVATE_KEY
+```
+
+You can inspect the pending queue at any time:
+
+```bash
+# View all pending message IDs
+cast call 0x6f3C17caA459F8012669f24D294AF72c2F8d9CBF \
+  "pendingQueue()(bytes32[])" \
+  --rpc-url $BATTLECHAIN_RPC_URL
 ```
 
 ---
@@ -4012,19 +4208,19 @@ The full [Safe](https://docs.safe.global/) smart account infrastructure is deplo
 
 ### Deployed Addresses
 
-| Contract | Address |
-|----------|---------|
-| Safe | 0x52AbFB25E19C3625178D885D5C75EFB9a99203EB |
-| SafeL2 | 0x71314F3E6B1D9386A1de784B644Cf5D0Dde3bB97 |
-| SafeProxyFactory | 0x80DbD037C59521F393fDfE15504c6b6b7969F1a1 |
-| CreateCall | 0x670D1c4c5cc72193b352562Ed75B9ae8224E98b3 |
-| MultiSend | 0x69BEaBc6824ba1461F53800d9C3F29FFeC7cf408 |
-| MultiSendCallOnly | 0xa6a3C9103C062429e459D263bF5EcCd31Effd56C |
-| SignMessageLib | 0x930833004d88b8bF3208a216323aFfdf9D40C14C |
-| SafeToL2Setup | 0xeCd943c75D2344Fb0AC29D781EFE602E7d87f82B |
-| TokenCallbackHandler | 0x232898253fABB3a1EB585bdEE4bE2a36f6D6fd64 |
+| Contract                     | Address                                                 |
+| ---------------------------- | ------------------------------------------------------- |
+| Safe                         | 0x52AbFB25E19C3625178D885D5C75EFB9a99203EB |
+| SafeL2                       | 0x71314F3E6B1D9386A1de784B644Cf5D0Dde3bB97 |
+| SafeProxyFactory             | 0x80DbD037C59521F393fDfE15504c6b6b7969F1a1 |
+| CreateCall                   | 0x670D1c4c5cc72193b352562Ed75B9ae8224E98b3 |
+| MultiSend                    | 0x69BEaBc6824ba1461F53800d9C3F29FFeC7cf408 |
+| MultiSendCallOnly            | 0xa6a3C9103C062429e459D263bF5EcCd31Effd56C |
+| SignMessageLib               | 0x930833004d88b8bF3208a216323aFfdf9D40C14C |
+| SafeToL2Setup                | 0xeCd943c75D2344Fb0AC29D781EFE602E7d87f82B |
+| TokenCallbackHandler         | 0x232898253fABB3a1EB585bdEE4bE2a36f6D6fd64 |
 | CompatibilityFallbackHandler | 0xc6B2C6982A5643b7702894D4A0901b9371dd1283 |
-| ExtensibleFallbackHandler | 0x745c41Ae7AC9C23f173B45f5B47E692dC57c2ae2 |
+| ExtensibleFallbackHandler    | 0x745c41Ae7AC9C23f173B45f5B47E692dC57c2ae2 |
 
 ### Contract States
 Source: https://docs.battlechain.com/battlechain/reference/contract-states
@@ -4637,22 +4833,22 @@ Safe Harbor is a legal framework that protects whitehats who attack contracts on
 
 ## What's Protected
 
-When attacking contracts in `UNDER_ATTACK` or `PROMOTION_REQUESTED` state:
+When attacking contracts in `UNDER_ATTACK` or `PROMOTION_REQUESTED` state, **and the contract is in scope under its Binding Agreement** (see below):
 
 - Exploiting vulnerabilities in in-scope contracts
 - Extracting funds from vulnerable contracts
 - Keeping your bounty percentage (up to the cap)
 - Acting without prior coordination
-- Remaining anonymous (if allowed by terms)
+- Remaining anonymous (if allowed by the Binding Agreement's terms)
 
 ## What's NOT Protected
 
 Safe Harbor does NOT cover:
 
 - Attacking `PRODUCTION` contracts
-- Attacking contracts outside the agreement's scope
-- Keeping more than your bounty entitlement
-- Ignoring identity requirements
+- Attacking contracts outside the Binding Agreement's scope
+- Keeping more than your bounty entitlement under the Binding Agreement
+- Ignoring identity requirements set by the Binding Agreement
 - Causing harm beyond the exploit itself
 
 ## The Agreement Structure
@@ -4669,61 +4865,108 @@ struct AgreementDetails {
 }
 ```
 
+A protocol can deploy more than one of these. Which one binds you depends on resolution rules described in the next section — **do not assume the agreement returned by `BattleChainSafeHarborRegistry.getAgreement` is the one you'll be paid under.**
+
+## The Binding Agreement
+
+The **Binding Agreement** for a contract is the agreement that governs your eligibility, bounty terms, and identity requirements when attacking that contract. It is determined as follows:
+
+1. **Top-level contract:** the agreement returned by `AttackRegistry.getAgreementForContract(contractAddress)`. This is the contract's directly-registered agreement.
+2. **Child contract:** if `getAgreementForContract` returns the zero address, walk to the immediate deployer (the contract whose `CREATE`/`CREATE2` operation deployed the target). The Binding Agreement is the deployer's registered agreement, *if* its `ChildContractScope` permits inclusion of the child given the parent's link timestamp (the "Cutoff Time").
+
+You don't have to walk this manually — the BattleChain block explorer API and the `BCQuery` Foundry helper do it for you (see below).
+
+> **Warning:** **`BattleChainSafeHarborRegistry.getAgreement(adopter)` is not the Binding Agreement.**
+> 
+> A protocol can deploy multiple factory-validated agreements and register different ones with each registry. The agreement adopted via `adoptSafeHarbor` records the protocol's Safe Harbor adoption (relevant for off-chain Urgent Blackhat Exploits), but for on-chain Stress Test Exploits the **Binding Agreement** in `AttackRegistry` controls. If you read bounty terms from the wrong agreement, you may forfeit your bounty or face stricter identity requirements than expected.
+
 ## Commitment Window
 
-Protocols commit to not changing terms unfavorably during a commitment window:
+The Binding Agreement has a commitment window during which terms cannot change unfavorably:
 
 ```solidity
-uint256 cantChangeUntil = agreement.getCantChangeUntil();
+uint256 cantChangeUntil = bindingAgreement.getCantChangeUntil();
 ```
 
-During this window, they cannot:
+During this window, the protocol cannot:
 - Reduce bounty percentage or caps
 - Remove contracts from scope
 - Make identity requirements stricter
 - Change from retainable to return-all
 
-This protects you from "bait and switch" tactics.
+This protects you from "bait and switch" tactics — but only on the Binding Agreement, so confirm you've identified the right one.
 
 ## Verifying Protection
 
-Before attacking, always verify:
+Before attacking, resolve the Binding Agreement and verify the contract is attackable.
+
+### Option 1: Block explorer API
+
+```
+GET https://block-explorer-api.battlechain.com/battlechain/agreement/by-contract/{contractAddress}
+GET https://block-explorer-api.testnet.battlechain.com/battlechain/agreement/by-contract/{contractAddress}
+```
+
+The response contains the agreement(s) covering the contract along with their state. The contract is attackable if any covering agreement is in `UNDER_ATTACK` or `PROMOTION_REQUESTED`. Read the bounty terms and identity requirements from that agreement.
+
+### Option 2: `BCQuery` Foundry helper
+
+From [`battlechain-lib`](https://github.com/Cyfrin/battlechain-lib), inheriting `BCQuery` (or `BCScript`) gives you:
 
 ```solidity
-// 1. Agreement is valid
-bool valid = safeHarborRegistry.isAgreementValid(agreementAddress);
-
-// 2. Contract is attackable
-bool attackable = attackRegistry.isTopLevelContractUnderAttack(contractAddress);
-
-// 3. Contract is in scope
-bool inScope = agreement.isContractInScope(contractAddress);
+// Returns true if any agreement covering the contract is in
+// UNDER_ATTACK or PROMOTION_REQUESTED. Requires --ffi.
+bool attackable = isAttackable(contractAddress);
 ```
+
+### Option 3: On-chain primitives (top-level contracts only)
+
+For top-level contracts, you can resolve directly from the AttackRegistry:
+
+```solidity
+address binding = attackRegistry.getAgreementForContract(contractAddress);
+require(binding != address(0), "not a registered top-level contract");
+
+require(attackRegistry.isTopLevelContractUnderAttack(contractAddress), "not attackable");
+
+BountyTerms memory terms = IAgreement(binding).getBountyTerms();
+```
+
+For child contracts, this returns the zero address — you must use Option 1 or 2.
+
+> **Warning:** The legacy three-step check shown in older versions of these docs —
+> `safeHarborRegistry.isAgreementValid(...)`,
+> `attackRegistry.isTopLevelContractUnderAttack(...)`,
+> `agreement.isContractInScope(...)` — is **not safe** if `agreement` was retrieved from `BattleChainSafeHarborRegistry`. All three checks can return `true` for an agreement that isn't the Binding Agreement, exposing you to different terms than you read. Always resolve via the API or `BCQuery`.
 
 ## The Agreement Document
 
-The `agreementURI` points to the full legal document:
+The `agreementURI` on the **Binding Agreement** points to the full legal document:
 
 ```solidity
-string memory uri = agreement.getAgreementURI();
+string memory uri = IAgreement(bindingAgreement).getAgreementURI();
 // e.g., "ipfs://QmXXXXXX"
 ```
 
-On-chain data is a summary; the URI document is authoritative.
+On-chain data is a summary; the URI document is authoritative. Read the URI from the Binding Agreement, not from any other agreement the protocol may have deployed.
 
 ## If Something Goes Wrong
 
 ### Protocol Claims Violation
 
-1. Document your compliance (transactions, calculations)
-2. Show you met all requirements
+1. Document your compliance (transactions, calculations) against the Binding Agreement's terms — not any other agreement
+2. Archive the AttackRegistry state at attack time, including the Binding Agreement address and its `getAgreementState`
 3. Involve neutral parties if needed
 
 ### Terms Changed Unfavorably
 
-1. Check if changes were during commitment window
-2. Archive evidence of state at attack time
+1. Check if changes were during the Binding Agreement's commitment window
+2. Archive evidence of state at attack time (the Binding Agreement address, its bounty terms, the `ContractRegistered` event linking the target)
 3. Escalate to DAO for arbitration
+
+### Registry Mismatch
+
+If `BattleChainSafeHarborRegistry.getAgreement(protocol)` returns a different agreement than the Binding Agreement for the contract you're targeting, **trust the Binding Agreement**. The legal text makes the AttackRegistry resolution dispositive for Stress Test Exploits. Report the mismatch — it may indicate a misconfigured protocol or a bad-faith setup.
 
 ## Due Diligence
 
