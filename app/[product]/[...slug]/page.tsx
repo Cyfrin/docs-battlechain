@@ -193,12 +193,21 @@ export async function generateMetadata({ params }: PageProps) {
       description,
       url: pageUrl,
       siteName: 'BattleChain Docs',
+      images: [
+        {
+          url: 'https://docs.battlechain.com/images/og.png',
+          width: 1800,
+          height: 945,
+          alt: title,
+        },
+      ],
       type: 'article',
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title,
       description,
+      images: ['https://docs.battlechain.com/images/og.png'],
     },
   }
 }

@@ -30,7 +30,7 @@
   {
     "id": "/battlechain/explanation/safe-harbor",
     "title": "Safe Harbor Protection",
-    "content": "What is Safe Harbor? Safe Harbor is a legal framework that protects whitehats who attack contracts on BattleChain. When a protocol adopts a Safe Harbor agreement and their contracts enter attack mode, they commit to not pursuing legal action against whitehats who follow the rules. What's Protected When attacking contracts in UNDERATTACK or PROMOTIONREQUESTED state: - Exploiting vulnerabilities in in-scope contracts - Extracting funds from vulnerable contracts - Keeping your bounty percentage (up to the cap) - Acting without prior coordination - Remaining anonymous (if allowed by terms) What's NOT Protected Safe Harbor does NOT cover: - Attacking PRODUCTION contracts - Attacking contracts outside the agreement's scope - Keeping more than your bounty entitlement - Ignoring identity requirements - Causing harm beyond the exploit itself The Agreement Structure Every Safe Harbor agreement includes: Commitment Window Protocols commit to not changing terms unfavorably during a commitment wind",
+    "content": "What is Safe Harbor? Safe Harbor is a legal framework that protects whitehats who attack contracts on BattleChain. When a protocol adopts a Safe Harbor agreement and their contracts enter attack mode, they commit to not pursuing legal action against whitehats who follow the rules. What's Protected When attacking contracts in UNDERATTACK or PROMOTIONREQUESTED state, and the contract is in scope under its Binding Agreement (see below): - Exploiting vulnerabilities in in-scope contracts - Extracting funds from vulnerable contracts - Keeping your bounty percentage (up to the cap) - Acting without prior coordination - Remaining anonymous (if allowed by the Binding Agreement's terms) What's NOT Protected Safe Harbor does NOT cover: - Attacking PRODUCTION contracts - Attacking contracts outside the Binding Agreement's scope - Keeping more than your bounty entitlement under the Binding Agreement - Ignoring identity requirements set by the Binding Agreement - Causing harm beyond the exploit its",
     "url": "/battlechain/explanation/safe-harbor",
     "category": "battlechain",
     "headings": [
@@ -38,7 +38,7 @@
       "What's Protected",
       "What's NOT Protected",
       "The Agreement Structure",
-      "Commitment Window"
+      "The Binding Agreement"
     ]
   },
   {
@@ -238,19 +238,6 @@
     ]
   },
   {
-    "id": "/battlechain/how-to/use-ai-with-docs",
-    "title": "How to Use AI with BattleChain Docs",
-    "content": "Overview BattleChain publishes machine-readable versions of these docs so AI agents can ingest them directly: | File | Contents | Size | |------|----------|------| | /llms.txt | Table of contents with page titles, descriptions, and links | ~4 KB | | /llms-full.txt | Complete text of every page as clean markdown | ~100 KB | Both files follow the llms.txt convention and are regenerated on every deploy. Open in Your AI Start a conversation with full BattleChain docs loaded as context: Open in Claude Open in ChatGPT Or paste this prompt into any AI: Cursor Add BattleChain as a doc source so Cursor indexes it automatically. Go to Cursor Settings → Features → Docs, click Add, and enter: Once indexed, Cursor's AI will have full BattleChain context when you reference @docs in chat. Custom Agents If you're building an agent that interacts with BattleChain, fetch the docs at startup and include them as context: - Full context — fetch /llms-full.txt and add it to the system prompt (~100 KB, fits ",
-    "url": "/battlechain/how-to/use-ai-with-docs",
-    "category": "battlechain",
-    "headings": [
-      "Overview",
-      "Open in Your AI",
-      "Cursor",
-      "Custom Agents"
-    ]
-  },
-  {
     "id": "/battlechain/how-to/verifying-contracts",
     "title": "Verifying Contracts",
     "content": "Overview Verifying a contract publishes its source code on the block explorer so anyone can read, audit, and interact with it. Verified contracts display a checkmark badge and expose a Contract tab with the full source, ABI, and constructor arguments. Why Verify - Transparency — whitehats and the community can review your code directly on the explorer - Trust — verified source proves the deployed bytecode matches your published code - Debugging — the explorer's zkEVM debugger can map execution traces back to source lines for verified contracts Quick Start with battlechain-lib If you use battlechain-lib, it ships a reusable justfile module with verification targets built in. Add this to your justfile: Then verify contracts with: The bc-verify-broadcast target automatically parses your broadcast JSON, matches deployed bytecode against your compiled artifacts, and verifies each contract — including contracts deployed through CreateX or BattleChainDeployer factories. --- Verify with Forge ",
@@ -393,7 +380,7 @@
   {
     "id": "/battlechain/reference/mock-contracts",
     "title": "Mock & Dependency Contracts",
-    "content": "BattleChain testnet includes mock versions of common mainnet dependencies and real infrastructure contracts so you can deploy your exact production bytecode — only swapping constructor parameters like oracle addresses. Mock Chainlink Price Feeds These MockV3Aggregator contracts implement the same interface as Chainlink price feeds. Contracts that consume latestRoundData() or getRoundData() on mainnet can point at these addresses on testnet without code changes. All feeds use 8 decimals, matching Chainlink's standard for USD pairs. Deployed Addresses | Pair | Address | |------|---------| | ETH/USD | 0xAA72F0168eE17aA93098eC6ECf2EEe72B46aca19 | | BTC/USD | 0xd87f56De7Fe8d2913B3B8e45C5fd983185286b66 | | LINK/USD | 0xEa8789e4f6a1d101AfF3093543FC8133c27987FD | | USDC/USD | 0x469be0Db9E0E884a2D9E64a186008C684423B79C | Interface Unlike real Chainlink feeds, anyone can update the answer on a mock aggregator. This is useful for testing oracle-dependent logic like liquidations or price-based acc",
+    "content": "BattleChain testnet includes mock versions of common mainnet dependencies and real infrastructure contracts so you can deploy your exact production bytecode — only swapping constructor parameters like oracle addresses. Mock Chainlink Price Feeds These MockV3Aggregator contracts implement the same interface as Chainlink price feeds. Contracts that consume latestRoundData() or getRoundData() on mainnet can point at these addresses on testnet without code changes. All feeds use 8 decimals, matching Chainlink's standard for USD pairs. Deployed Addresses | Pair | Address | | -------- | ------------------------------------------------------- | | ETH/USD | 0xAA72F0168eE17aA93098eC6ECf2EEe72B46aca19 | | BTC/USD | 0xd87f56De7Fe8d2913B3B8e45C5fd983185286b66 | | LINK/USD | 0xEa8789e4f6a1d101AfF3093543FC8133c27987FD | | USDC/USD | 0x469be0Db9E0E884a2D9E64a186008C684423B79C | Interface Unlike real Chainlink feeds, anyone can update the answer on a mock aggregator. This is useful for testing oracle-",
     "url": "/battlechain/reference/mock-contracts",
     "category": "battlechain",
     "headings": [
@@ -474,6 +461,20 @@
     ]
   },
   {
+    "id": "/battlechain/using-battlechain-with-ai",
+    "title": "Using BattleChain with AI",
+    "content": "BattleChain is built for AI-native development. Whether you're using Claude Code, Cursor, or any tool with a built-in chat, you can give your agent full BattleChain context in seconds. The BattleChain Skill The fastest way to give your AI agent BattleChain context is to install the Cyfrin skills package: This installs three skills: | Skill | What it does | |-------|-------------| | solidity | Production-grade Solidity standards: code quality, testing, security, Foundry workflows | | battlechain | BattleChain reference: deploying, Safe Harbor, whitehat attacks, contract lifecycle | | battlechain-tutorial | Interactive wizard: scans your project, asks guided questions, generates all scripts | Once installed, tell your agent \"Deploy my contracts to BattleChain\" and battlechain-tutorial will walk you through the full process. The skills are open source at github.com/Cyfrin/solskill. Claude Code Plugin If you use Claude Code, the same skills are also published as a plugin marketplace. This ",
+    "url": "/battlechain/using-battlechain-with-ai",
+    "category": "battlechain",
+    "headings": [
+      "The BattleChain Skill",
+      "Claude Code Plugin",
+      "Read the Docs as Markdown",
+      "Cursor",
+      "MCP Server"
+    ]
+  },
+  {
     "id": "/index",
     "title": "Welcome to Cyfrin",
     "content": "Powering the future of smart contract security Cyfrin is: The complete platform for Web3 security researchers, developers, and learners. From competitive audits to professional certifications, Cyfrin powers the future of smart contract security. Competitive Security Audits Compete to find vulnerabilities in smart contracts. Earn rewards, build your reputation, and protect Web3. Web3 Education Platform Learn smart contract development and security. Get certified and advance your career in blockchain. Vulnerability Research Navigate 20,000+ security findings. Research, learn, and contribute to the community knowledge base. Security-First Blockchain Coming soon - Revolutionary blockchain infrastructure for decentralized security and audit coordination. Unified Accounts One profile across the entire ecosystem. Manage your settings, wallets, and credentials in one place. Quick Start Sign up for a free Cyfrin account to access all platforms Create account → - Security Researcher? Join CodeHa",
@@ -492,11 +493,6 @@
     "content": "Get Started The Problem Web3 has a fundamental gap in its development lifecycle. Code goes from audit to mainnet with nothing in between — and the industry pays for it. Projects go from $0 to $5M TVL overnight after an audit. Bug bounties don't attract serious testing. The industry loses billions to preventable exploits. Web3 Today Dev → Testnet → Mainnet Testnet uses fake money. Bugs are discovered after millions are at risk. With BattleChain Dev → Testnet → BattleChain → Mainnet Real funds, controlled risk. Bugs are found before they matter. How It Works BattleChain is a pre-mainnet, post-testnet environment with real funds. Protocols deploy audited contracts, whitehats legally attack them for bounties, and battle-tested contracts promote to mainnet with confidence. 1 Audit Get your contracts reviewed 2 Deploy Deploy contracts to BattleChain 3 Stress Test Whitehats attack under Safe Harbor 4 Promote DAO approves battle-tested contracts 5 Mainnet Ship with confidence Every contract on",
     "url": "/overview",
     "category": "overview.mdx",
-    "headings": [
-      "How It Works",
-      "Why an L2?",
-      "Learn More",
-      "Build with AI"
-    ]
+    "headings": ["How It Works", "Why an L2?", "Learn More", "Build with AI"]
   }
 ]

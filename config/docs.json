@@ -38,6 +38,7 @@
             "icon": "/images/product-logos/battlechain.svg",
             "pages": [
               "overview",
+              "battlechain/using-battlechain-with-ai",
               {
                 "divider": true
               },
@@ -63,7 +64,6 @@
                 "group": "How-to Guides",
                 "pages": [
                   "battlechain/how-to/configure-ai-tools",
-                  "battlechain/how-to/use-ai-with-docs",
                   "battlechain/how-to/add-battlechain-to-metamask",
                   {
                     "group": "Block Explorer",

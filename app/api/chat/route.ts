@@ -4,10 +4,20 @@ import { checkRateLimit } from '@/lib/rate-limit'
 import { validateChatInput } from '@/lib/chat-validation'
 import { getRelevantContext } from '@/lib/doc-context'
 
-const client = new OpenAI({
-  baseURL: 'https://openrouter.ai/api/v1',
-  apiKey: process.env.OPENROUTER_API_KEY,
-})
+let cachedClient: OpenAI | null = null
+
+function getClient(): OpenAI {
+  if (cachedClient) return cachedClient
+  const apiKey = process.env.OPENROUTER_API_KEY
+  if (!apiKey) {
+    throw new Error('OPENROUTER_API_KEY is not set')
+  }
+  cachedClient = new OpenAI({
+    baseURL: 'https://openrouter.ai/api/v1',
+    apiKey,
+  })
+  return cachedClient
+}
 
 function jsonResponse(
   body: Record<string, unknown>,
@@ -74,7 +84,7 @@ Be conversational and helpful, like a knowledgeable colleague. When you referenc
       { role: 'user', content: message },
     ]
 
-    const stream = await client.chat.completions.create({
+    const stream = await getClient().chat.completions.create({
       model: 'google/gemini-3-flash-preview',
       messages,
       stream: true,

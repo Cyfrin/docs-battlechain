@@ -233,6 +233,13 @@ code:not(pre code) {
   border: 1px solid rgba(var(--product-rgb), 0.25);
 }
 
+/* @tailwindcss/typography wraps inline <code> with literal backticks via
+   ::before/::after pseudo-elements. Strip them so MDX backticks don't render. */
+.prose code::before,
+.prose code::after {
+  content: none;
+}
+
 /* ========================================
    PRISM SYNTAX HIGHLIGHTING (github-dark-dimmed)
    ======================================== */

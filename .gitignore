@@ -44,3 +44,4 @@ gen-lang-client-*.json
 # Cyfrin
 battlechain-safe-harbor/
 mintlify-docs/
+.claude/

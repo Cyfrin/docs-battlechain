@@ -110,7 +110,7 @@ remappings = [
 | `defaultAgreementDetails(name, contacts, contracts, recovery)` | Builds agreement with correct scope and URI per chain                       |
 | `createAndAdoptAgreement(details, owner, salt)`                | Create + 14-day commitment + adopt in one call                              |
 | `requestAttackMode(agreement)`                                 | Enter attack mode (BattleChain only — reverts on other chains)              |
-| `_isBattleChain()`                                             | Runtime check: `true` on chain IDs 626, 627, 624                            |
+| `_isBattleChain()`                                             | Runtime check: `true` on chain IDs 626, 627                                 |
 | `getDeployedContracts()`                                       | All addresses deployed this session via `bcDeploy*`                         |
 | `isAttackable(address)`                                        | Check if a contract is covered by an attackable Safe Harbor agreement (requires `--ffi`) |
 
@@ -153,7 +153,7 @@ contract Deploy is BCScript {
 
 ### Cross-chain behavior
 
-|                           | BattleChain (626/627/624)                         | Other EVM chains (190+)                           |
+|                           | BattleChain (626/627)                             | Other EVM chains (190+)                           |
 | ------------------------- | ------------------------------------------------- | ------------------------------------------------- |
 | `bcDeployCreate*`         | BattleChainDeployer (CreateX + AttackRegistry)    | CreateX (`0xba5Ed...`) directly                   |
 | `defaultAgreementDetails` | BattleChain scope + `BATTLECHAIN_SAFE_HARBOR_URI` | Current chain CAIP-2 scope + `SAFE_HARBOR_V3_URI` |

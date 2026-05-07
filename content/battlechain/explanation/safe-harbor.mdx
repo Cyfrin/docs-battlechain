@@ -9,22 +9,22 @@ Safe Harbor is a legal framework that protects whitehats who attack contracts on
 
 ## What's Protected
 
-When attacking contracts in `UNDER_ATTACK` or `PROMOTION_REQUESTED` state:
+When attacking contracts in `UNDER_ATTACK` or `PROMOTION_REQUESTED` state, **and the contract is in scope under its Binding Agreement** (see below):
 
 - Exploiting vulnerabilities in in-scope contracts
 - Extracting funds from vulnerable contracts
 - Keeping your bounty percentage (up to the cap)
 - Acting without prior coordination
-- Remaining anonymous (if allowed by terms)
+- Remaining anonymous (if allowed by the Binding Agreement's terms)
 
 ## What's NOT Protected
 
 Safe Harbor does NOT cover:
 
 - Attacking `PRODUCTION` contracts
-- Attacking contracts outside the agreement's scope
-- Keeping more than your bounty entitlement
-- Ignoring identity requirements
+- Attacking contracts outside the Binding Agreement's scope
+- Keeping more than your bounty entitlement under the Binding Agreement
+- Ignoring identity requirements set by the Binding Agreement
 - Causing harm beyond the exploit itself
 
 ## The Agreement Structure
@@ -41,61 +41,112 @@ struct AgreementDetails {
 }
 ```
 
+A protocol can deploy more than one of these. Which one binds you depends on resolution rules described in the next section — **do not assume the agreement returned by `BattleChainSafeHarborRegistry.getAgreement` is the one you'll be paid under.**
+
+## The Binding Agreement
+
+The **Binding Agreement** for a contract is the agreement that governs your eligibility, bounty terms, and identity requirements when attacking that contract. It is determined as follows:
+
+1. **Top-level contract:** the agreement returned by `AttackRegistry.getAgreementForContract(contractAddress)`. This is the contract's directly-registered agreement.
+2. **Child contract:** if `getAgreementForContract` returns the zero address, walk to the immediate deployer (the contract whose `CREATE`/`CREATE2` operation deployed the target). The Binding Agreement is the deployer's registered agreement, *if* its `ChildContractScope` permits inclusion of the child given the parent's link timestamp (the "Cutoff Time").
+
+You don't have to walk this manually — the BattleChain block explorer API and the `BCQuery` Foundry helper do it for you (see below).
+
+<Warning>
+**`BattleChainSafeHarborRegistry.getAgreement(adopter)` is not the Binding Agreement.**
+
+A protocol can deploy multiple factory-validated agreements and register different ones with each registry. The agreement adopted via `adoptSafeHarbor` records the protocol's Safe Harbor adoption (relevant for off-chain Urgent Blackhat Exploits), but for on-chain Stress Test Exploits the **Binding Agreement** in `AttackRegistry` controls. If you read bounty terms from the wrong agreement, you may forfeit your bounty or face stricter identity requirements than expected.
+</Warning>
+
 ## Commitment Window
 
-Protocols commit to not changing terms unfavorably during a commitment window:
+The Binding Agreement has a commitment window during which terms cannot change unfavorably:
 
 ```solidity
-uint256 cantChangeUntil = agreement.getCantChangeUntil();
+uint256 cantChangeUntil = bindingAgreement.getCantChangeUntil();
 ```
 
-During this window, they cannot:
+During this window, the protocol cannot:
 - Reduce bounty percentage or caps
 - Remove contracts from scope
 - Make identity requirements stricter
 - Change from retainable to return-all
 
-This protects you from "bait and switch" tactics.
+This protects you from "bait and switch" tactics — but only on the Binding Agreement, so confirm you've identified the right one.
 
 ## Verifying Protection
 
-Before attacking, always verify:
+Before attacking, resolve the Binding Agreement and verify the contract is attackable.
+
+### Option 1: Block explorer API
+
+```
+GET https://block-explorer-api.battlechain.com/battlechain/agreement/by-contract/{contractAddress}
+GET https://block-explorer-api.testnet.battlechain.com/battlechain/agreement/by-contract/{contractAddress}
+```
+
+The response contains the agreement(s) covering the contract along with their state. The contract is attackable if any covering agreement is in `UNDER_ATTACK` or `PROMOTION_REQUESTED`. Read the bounty terms and identity requirements from that agreement.
+
+### Option 2: `BCQuery` Foundry helper
+
+From [`battlechain-lib`](https://github.com/Cyfrin/battlechain-lib), inheriting `BCQuery` (or `BCScript`) gives you:
 
 ```solidity
-// 1. Agreement is valid
-bool valid = safeHarborRegistry.isAgreementValid(agreementAddress);
-
-// 2. Contract is attackable
-bool attackable = attackRegistry.isTopLevelContractUnderAttack(contractAddress);
-
-// 3. Contract is in scope
-bool inScope = agreement.isContractInScope(contractAddress);
+// Returns true if any agreement covering the contract is in
+// UNDER_ATTACK or PROMOTION_REQUESTED. Requires --ffi.
+bool attackable = isAttackable(contractAddress);
 ```
+
+### Option 3: On-chain primitives (top-level contracts only)
+
+For top-level contracts, you can resolve directly from the AttackRegistry:
+
+```solidity
+address binding = attackRegistry.getAgreementForContract(contractAddress);
+require(binding != address(0), "not a registered top-level contract");
+
+require(attackRegistry.isTopLevelContractUnderAttack(contractAddress), "not attackable");
+
+BountyTerms memory terms = IAgreement(binding).getBountyTerms();
+```
+
+For child contracts, this returns the zero address — you must use Option 1 or 2.
+
+<Warning>
+The legacy three-step check shown in older versions of these docs —
+`safeHarborRegistry.isAgreementValid(...)`,
+`attackRegistry.isTopLevelContractUnderAttack(...)`,
+`agreement.isContractInScope(...)` — is **not safe** if `agreement` was retrieved from `BattleChainSafeHarborRegistry`. All three checks can return `true` for an agreement that isn't the Binding Agreement, exposing you to different terms than you read. Always resolve via the API or `BCQuery`.
+</Warning>
 
 ## The Agreement Document
 
-The `agreementURI` points to the full legal document:
+The `agreementURI` on the **Binding Agreement** points to the full legal document:
 
 ```solidity
-string memory uri = agreement.getAgreementURI();
+string memory uri = IAgreement(bindingAgreement).getAgreementURI();
 // e.g., "ipfs://QmXXXXXX"
 ```
 
-On-chain data is a summary; the URI document is authoritative.
+On-chain data is a summary; the URI document is authoritative. Read the URI from the Binding Agreement, not from any other agreement the protocol may have deployed.
 
 ## If Something Goes Wrong
 
 ### Protocol Claims Violation
 
-1. Document your compliance (transactions, calculations)
-2. Show you met all requirements
+1. Document your compliance (transactions, calculations) against the Binding Agreement's terms — not any other agreement
+2. Archive the AttackRegistry state at attack time, including the Binding Agreement address and its `getAgreementState`
 3. Involve neutral parties if needed
 
 ### Terms Changed Unfavorably
 
-1. Check if changes were during commitment window
-2. Archive evidence of state at attack time
+1. Check if changes were during the Binding Agreement's commitment window
+2. Archive evidence of state at attack time (the Binding Agreement address, its bounty terms, the `ContractRegistered` event linking the target)
 3. Escalate to DAO for arbitration
+
+### Registry Mismatch
+
+If `BattleChainSafeHarborRegistry.getAgreement(protocol)` returns a different agreement than the Binding Agreement for the contract you're targeting, **trust the Binding Agreement**. The legal text makes the AttackRegistry resolution dispositive for Stress Test Exploits. Report the mismatch — it may indicate a misconfigured protocol or a bad-faith setup.
 
 ## Due Diligence
 
