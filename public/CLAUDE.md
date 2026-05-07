@@ -95,9 +95,10 @@ remappings = [
 
 | Contract       | Use when you need                                                 |
 | -------------- | ----------------------------------------------------------------- |
-| `BCScript`     | Full lifecycle: deploy + agreement + attack mode                  |
+| `BCScript`     | Full lifecycle: deploy + agreement + attack mode + query           |
 | `BCDeploy`     | Deploy only (via CreateX on any chain, BattleChainDeployer on BC) |
 | `BCSafeHarbor` | Agreement creation only                                           |
+| `BCQuery`      | Query helpers only (`isAttackable` via explorer API, requires `--ffi`) |
 
 ### Key helpers
 
@@ -111,6 +112,7 @@ remappings = [
 | `requestAttackMode(agreement)`                                 | Enter attack mode (BattleChain only — reverts on other chains)              |
 | `_isBattleChain()`                                             | Runtime check: `true` on chain IDs 626, 627                                 |
 | `getDeployedContracts()`                                       | All addresses deployed this session via `bcDeploy*`                         |
+| `isAttackable(address)`                                        | Check if a contract is covered by an attackable Safe Harbor agreement (requires `--ffi`) |
 
 ### Example script (works on any chain)
 

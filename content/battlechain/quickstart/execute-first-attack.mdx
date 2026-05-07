@@ -102,7 +102,7 @@ On BattleChain, any contract in **attack mode** (state `3` — `UNDER_ATTACK`) i
 **For this quickstart**, you'll attack a pre-built vulnerable vault from the starter repo. In the real world, you'd find targets through the explorer or on-chain queries.
 
 <Tip>
-**Finding real targets:** Browse all currently attackable agreements on the [BattleChain explorer](https://explorer.testnet.battlechain.com/agreements?page=1&state=UNDER_ATTACK). You can also query the [explorer API](https://block-explorer-api.testnet.battlechain.com/docs) programmatically — use `GET /battlechain/agreement/by-contract/:address` to check if a specific contract is in scope, or `GET /battlechain/agreement/:address` to see all covered contracts for an agreement. For on-chain querying via the `AttackRegistry`, see [How to Find Attackable Contracts](/battlechain/how-to/find-attackable-contracts).
+**Finding real targets:** Browse all currently attackable agreements on the [BattleChain explorer](https://explorer.testnet.battlechain.com/agreements?page=1&state=UNDER_ATTACK). To check a specific contract programmatically, use `isAttackable(address)` from `battlechain-lib` — it handles the full scope hierarchy including child contracts. See [How to Find Attackable Contracts](/battlechain/how-to/find-attackable-contracts) for details and usage examples.
 </Tip>
 
 If you just completed [Deploy and Battle-Test Your Contract](/battlechain/quickstart/deploy-your-contract), your vault is already set up — skip to Step 2.

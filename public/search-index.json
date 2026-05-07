@@ -170,7 +170,7 @@
   {
     "id": "/battlechain/how-to/find-attackable-contracts",
     "title": "How to Find Attackable Contracts",
-    "content": "Overview The AttackRegistry tracks which contracts are in attack mode. This guide shows how to find and verify targets. You can view agreement statuses and contracts currently under scope on the BattleChain explorer. Check a Specific Contract Monitor for New Targets Watch for AgreementStateChanged events: Get Agreement Details Verify Agreement Validity Always verify before attacking: Check Time Remaining For contracts in PROMOTION_REQUESTED: Red Flags Be cautious of: - Suspiciously high bounties - Very new agreements (less community vetting) - Missing contact details - Contracts identical to mainnet protocols Next: Execute your attack properly",
+    "content": "Overview The AttackRegistry tracks which contracts are in attack mode. This guide shows how to find and verify targets. You can view agreement statuses and contracts currently under scope on the BattleChain explorer. Check a Specific Contract The easiest way to check whether a contract is attackable is with isAttackable from battlechain-lib. It queries the block explorer API and handles the full scope hierarchy — including child contracts spawned by in-scope factories. Standalone usage (lightweight, no deploy/agreement overhead): If you're already using BCScript for the full deploy + agreement flow, isAttackable is available directly — BCScript inherits BCQuery. Run with the --ffi flag since the function uses vm.ffi to call the explorer API: isAttackable requires --ffi and curl on your PATH. For on-chain-only contexts where vm.ffi isn't available, you can use attackRegistry.isTopLevelContractUnderAttack(address) — but this only checks top-level contracts and will miss child contracts s",
     "url": "/battlechain/how-to/find-attackable-contracts",
     "category": "battlechain",
     "headings": [
@@ -493,11 +493,6 @@
     "content": "Get Started The Problem Web3 has a fundamental gap in its development lifecycle. Code goes from audit to mainnet with nothing in between — and the industry pays for it. Projects go from $0 to $5M TVL overnight after an audit. Bug bounties don't attract serious testing. The industry loses billions to preventable exploits. Web3 Today Dev → Testnet → Mainnet Testnet uses fake money. Bugs are discovered after millions are at risk. With BattleChain Dev → Testnet → BattleChain → Mainnet Real funds, controlled risk. Bugs are found before they matter. How It Works BattleChain is a pre-mainnet, post-testnet environment with real funds. Protocols deploy audited contracts, whitehats legally attack them for bounties, and battle-tested contracts promote to mainnet with confidence. 1 Audit Get your contracts reviewed 2 Deploy Deploy contracts to BattleChain 3 Stress Test Whitehats attack under Safe Harbor 4 Promote DAO approves battle-tested contracts 5 Mainnet Ship with confidence Every contract on",
     "url": "/overview",
     "category": "overview.mdx",
-    "headings": [
-      "How It Works",
-      "Why an L2?",
-      "Learn More",
-      "Build with AI"
-    ]
+    "headings": ["How It Works", "Why an L2?", "Learn More", "Build with AI"]
   }
 ]
