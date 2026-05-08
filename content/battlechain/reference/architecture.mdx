@@ -1,0 +1,139 @@
+---
+title: "Chain Architecture"
+description: "Sequencer model, precompiles, WETH, and the L1↔L2 bridge for BattleChain"
+---
+
+BattleChain is a ZK rollup built on [ZKsync OS](https://github.com/matter-labs/zksync-os) that settles to Ethereum. Testnet is chain ID `627` and settles to **Sepolia**. The L2 is EVM-equivalent at the bytecode level, with a small set of differences in precompiles and finality semantics that this page documents.
+
+For deployed contract addresses (L1 Bridgehub, ZK Chain proxy, etc.), see [Contracts](/battlechain/reference/contracts).
+
+## Sequencer & Block Building
+
+BattleChain runs a **single-sequencer model**. One main node (the sequencer) orders transactions, executes them, and produces blocks; external nodes replay those blocks but never propose their own. There is no L2 consensus or proposer election — finality comes entirely from L1 once batches are committed and proven.
+
+| Stage | What it means | Block tag |
+|-------|---------------|-----------|
+| Produced | Sequencer has executed the block | `latest`, `pending` |
+| Committed | Batch containing the block is committed to L1 | `safe` |
+| Executed | L1 has verified the ZK proof and applied state | `finalized` |
+
+`latest` and `pending` return the same block — there is no separate mempool view. `earliest` and `finalized` are not yet implemented; `finalized` returns the latest L1-executed block when available.
+
+External nodes (ENs) sync via a `zks/<version>` devp2p subprotocol. ENs configured as **verifiers** can independently re-execute and check batch proofs as a 2FA layer over the main node.
+
+### Block Limits
+
+| Parameter | Value |
+|-----------|-------|
+| Block gas limit | 100,000,000 |
+| Base fee bounds | ±12.5% per block (EIP-1559 style) |
+| Pubdata price | Up to +50% per block |
+
+The fee model tracks three resources — EVM gas, **native** (proving cost), and **pubdata** (L1 data bytes) — and charges the maximum of the EVM cost and the native+pubdata cost. See the upstream [fees design doc](https://matter-labs.github.io/zksync-os-server/latest/design/fees.html) for the full model.
+
+## Precompiles
+
+BattleChain inherits ZKsync OS's precompile set. Standard EVM precompiles live at the same addresses as on Ethereum, with two omissions and one addition.
+
+| Address | Name | Status | Notes |
+|---------|------|--------|-------|
+| `0x01` | `ecRecover` | Supported | secp256k1 signature recovery |
+| `0x02` | `SHA2-256` | Supported | |
+| `0x03` | `RIPEMD-160` | Supported | |
+| `0x04` | `identity` | Supported | |
+| `0x05` | `modexp` | Supported | High native cost — see fee model |
+| `0x06` | `ecAdd` | Supported | alt_bn128 |
+| `0x07` | `ecMul` | Supported | alt_bn128 |
+| `0x08` | `ecPairing` | Supported | alt_bn128 |
+| `0x09` | `BLAKE2F` | **Not supported** | EIP-152 |
+| `0x0a` | `point_evaluation` | **Not supported** | EIP-4844 KZG |
+| `0x100` | `p256Verify` | Supported | RIP-7212 — secp256r1 (P-256) signature verification, useful for passkeys / WebAuthn |
+
+<Note>
+Contracts that depend on `BLAKE2F` (rare) or `point_evaluation` (EIP-4844 blob verification) should treat those code paths as unavailable on BattleChain.
+</Note>
+
+Gas costs for supported precompiles match Ethereum's schedule, but the **native** dimension can dominate the effective fee for proving-heavy precompiles like `modexp`. Avoid running large `modexp` inputs in hot paths.
+
+## Wrapped Ether (WETH)
+
+The canonical L2 wrapped base token is deployed by the protocol at genesis and used by the ZKsync ecosystem bridges when ETH must be represented as an ERC-20 (e.g., when bridging out to a chain whose native asset is not ETH).
+
+For protocols that need a mintable test WETH while developing on the testnet, use the mock listed under [Mock Contracts](/battlechain/reference/mock-contracts). The mock and the canonical WETH are independent contracts.
+
+## Bridge & Cross-Chain Messaging
+
+BattleChain uses the standard ZK Stack bridging stack: a Bridgehub on each layer routes priority transactions and asset transfers, and a Message Root tracks proven L2→L1 messages. L1 contract addresses are listed on the [Contracts](/battlechain/reference/contracts) page.
+
+### L1 → L2
+
+L1-originated calls flow through the Sepolia Bridgehub and surface on BattleChain as **priority transactions** (the `from` address is L1-aliased). This is the path used for:
+
+- **Deposits** — ETH and ERC-20s, via `requestL2TransactionDirect` / `requestL2TransactionTwoBridges` on the Bridgehub. The user-facing UI is at [portal.battlechain.com/bridge](https://portal.battlechain.com/bridge).
+- **Cross-chain governance** — the L1 governance contract sends a priority transaction whose target is the L2 contract being administered. The same path delivers chain-admin parameter changes.
+- **Protocol-driven L2 calls** — anything that needs to be invoked from L1 with L2 execution semantics, including fee parameter updates and similar policy actions, can be expressed as a priority transaction.
+
+Priority transactions are L1-finality-bound: once included on Ethereum and pulled by the sequencer's L1 watcher, the L2 must execute them in order; they cannot be censored at the L2 level.
+
+#### Sending an L1 → L2 message
+
+Call `requestL2TransactionDirect` on the Sepolia Bridgehub. `chainId` is BattleChain's `627`; `l2Contract` is the contract you want to invoke on BattleChain; `l2Calldata` is the ABI-encoded call.
+
+```solidity
+// L1 (Sepolia)
+import {IBridgehub, L2TransactionRequestDirect} from "@matterlabs/zksync-contracts/contracts/bridgehub/IBridgehub.sol";
+
+IBridgehub bridgehub = IBridgehub(0xcea5c0ade89389dd5fc461f69ccbd812cfb7fbd8);
+
+uint256 l2GasLimit = 1_000_000;
+uint256 l2GasPerPubdataByteLimit = 800;
+
+// Quote the ETH that has to be forwarded to L2 to cover gas.
+uint256 baseCost = bridgehub.l2TransactionBaseCost(
+    627,                          // BattleChain chain ID
+    tx.gasprice,
+    l2GasLimit,
+    l2GasPerPubdataByteLimit
+);
+
+bytes32 l2TxHash = bridgehub.requestL2TransactionDirect{value: baseCost + valueToSendOnL2}(
+    L2TransactionRequestDirect({
+        chainId: 627,
+        mintValue: baseCost + valueToSendOnL2, // ETH minted on L2 to the refund recipient + msg.value
+        l2Contract: address(0xYourBattleChainContract),
+        l2Value: valueToSendOnL2,              // msg.value on the L2 call
+        l2Calldata: abi.encodeCall(IYourContract.doThing, (arg1, arg2)),
+        l2GasLimit: l2GasLimit,
+        l2GasPerPubdataByteLimit: l2GasPerPubdataByteLimit,
+        factoryDeps: new bytes[](0),
+        refundRecipient: msg.sender            // gets unspent gas on L2
+    })
+);
+```
+
+Equivalent call from the command line:
+
+```bash
+cast send 0xcea5c0ade89389dd5fc461f69ccbd812cfb7fbd8 \
+  "requestL2TransactionDirect((uint256,uint256,address,uint256,bytes,uint256,uint256,bytes[],address))" \
+  "(627,$BASE_COST,$L2_TARGET,0,$CALLDATA,1000000,800,[],$REFUND_RECIPIENT)" \
+  --value $BASE_COST \
+  --rpc-url $SEPOLIA_RPC_URL \
+  --private-key $PRIVATE_KEY
+```
+
+The L2 transaction hash returned by `requestL2TransactionDirect` is the same hash that appears on BattleChain once the sequencer picks the priority transaction up — usually within a minute. On the L2 side the call arrives with `msg.sender` set to the L1-aliased version of your L1 sender.
+
+### L2 → L1
+
+Withdrawals and arbitrary outbound messages are emitted by L2 contracts and aggregated by the protocol into a Merkle tree, rooted on L1 and verified as part of proof execution. After the proof is executed on L1, anyone can finalize a withdrawal or relay a message by submitting a Merkle proof against the root.
+
+Use the protocol's L2-to-L1 messenger from your L2 contract for arbitrary outbound messages, and the L2 asset router for asset withdrawals.
+
+### Interop (chain ↔ chain)
+
+ZKsync OS exposes interop primitives for sending and verifying messages between BattleChain and other ZK chains that share a settlement layer. Interop is an evolving feature of the underlying protocol; check the upstream [ZKsync OS docs](https://docs.zksync.io/zksync-network/zksync-os) for the current state.
+
+## Versioning
+
+BattleChain testnet currently runs ZKsync OS protocol version **v30.2**. Precompile behavior is stable across patch versions.

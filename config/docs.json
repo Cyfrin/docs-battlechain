@@ -102,6 +102,7 @@
               {
                 "group": "Reference",
                 "pages": [
+                  "battlechain/reference/architecture",
                   "battlechain/reference/contracts",
                   "battlechain/reference/mock-contracts",
                   "battlechain/reference/contract-states",
