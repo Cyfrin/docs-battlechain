@@ -1,0 +1,159 @@
+---
+title: "Confidence Pools"
+description: "How sponsors and stakers bootstrap third-party confidence around an active Safe Harbor agreement"
+---
+
+## What is a Confidence Pool?
+
+A Confidence Pool is a sponsor-deployed escrow tied 1:1 to an active Safe Harbor agreement. Stakers deposit an ERC20 to express belief that the protocol will reach `PRODUCTION` without being corrupted; bonus contributors add upside to reward those stakers. When the agreement resolves — survives to production, gets corrupted, or expires unresolved — the pool pays out according to that outcome.
+
+Pools turn confidence into a measurable, on-chain signal. A well-funded pool tells the market that informed parties are willing to back the protocol with capital; a sweep to the recovery address tells the market that the same capital absorbed real losses.
+
+## How a Pool Comes to Exist
+
+`ConfidencePoolFactory` is a UUPS-upgradeable contract that deploys one immutable clone per agreement. A sponsor calls `createPool` with:
+
+- The agreement address (must already be valid in the Safe Harbor Registry)
+- The ERC20 stake token
+- An expiry timestamp (at least 30 days out)
+- An optional outcome-moderator override
+- A `recoveryAddress` for corrupted sweeps
+
+The factory deterministically clones a pool from the current `poolImplementation`, transfers ownership of the clone to the sponsor, and records the agreement → pool mapping. **One agreement maps to exactly one pool**, forever; the mapping is permanent even if the clone is later paused.
+
+## Roles
+
+### Sponsor
+
+The address that calls `createPool` and becomes the pool's `owner` (via `Ownable2Step`). The sponsor:
+
+- Controls `recoveryAddress` until corrupted funds are swept
+- Can extend or reduce `expiry` only **before the first stake** (after that, expiry is locked)
+- Can `pause`/`unpause` the pool
+
+The sponsor is usually the protocol team itself, but does not have to be — anyone can sponsor a pool around any valid agreement.
+
+<Warning>
+Because the sponsor can change `recoveryAddress` at any time before a corrupted sweep, stakers must verify sponsor identity and recovery-address governance before depositing. The sponsor's address controls where corrupted funds end up.
+</Warning>
+
+### Stakers
+
+Anyone who calls `stake` while the pool is open. Stakers commit principal that is at risk in a `CORRUPTED` outcome and earn a pro-rata share of `totalBonus` in `SURVIVED` or `EXPIRED` outcomes. Stakers can `requestWithdraw` and exit, subject to the [withdrawal rules](#withdrawal-rules) below.
+
+### Bonus Contributors
+
+Anyone who calls `contributeBonus` while the pool is open. Bonus capital is distributed pro-rata to stakers on `SURVIVED` and `EXPIRED` outcomes and is swept along with stake principal on `CORRUPTED`. Bonus contributors have no claim — they are paying for the staker incentive.
+
+### Outcome Moderator
+
+The address that calls `flagOutcome` to finalize the pool's terminal state. In practice this is the BattleChain DAO (or a DAO-controlled account), and the role is highly constrained — see [The Outcome Moderator's Role](#the-outcome-moderators-role) below.
+
+## Outcome Paths
+
+A pool has four outcome states (`PoolStates.Outcome`):
+
+```
+              ┌──────────────┐
+              │  UNRESOLVED  │  (initial state, pool is open)
+              └──────┬───────┘
+                     │
+       ┌─────────────┼─────────────┬───────────────┐
+       │             │             │               │
+       ▼             ▼             ▼               ▼
+  ┌─────────┐  ┌───────────┐  ┌─────────┐    ┌─────────┐
+  │SURVIVED │  │ CORRUPTED │  │ EXPIRED │    │  (still │
+  │         │  │ (bad-faith│  │ (expiry │    │  open)  │
+  │         │  │   or      │  │ backstop│    │         │
+  │         │  │ good-faith│  │  hit)   │    │         │
+  └─────────┘  └───────────┘  └─────────┘    └─────────┘
+```
+
+### SURVIVED
+
+The agreement reached `PRODUCTION` in the AttackRegistry. The moderator flags `SURVIVED` with no extra parameters, and each staker calls `claimSurvived` to receive:
+
+```
+principal + (principal / snapshotTotalStaked) * snapshotTotalBonus + pendingWithdrawAmount
+```
+
+Pending withdraws that were in flight when the outcome was flagged are returned alongside the principal — stakers do not lose them.
+
+### CORRUPTED — bad-faith
+
+The agreement was marked `CORRUPTED` in the AttackRegistry and the moderator flagged the corruption as bad-faith (`goodFaith = false`). `claimCorrupted` sweeps the snapshotted stake + bonus directly to `recoveryAddress`. Anyone can call it; it is a permissionless trigger of the sweep.
+
+### CORRUPTED — good-faith
+
+The agreement was marked `CORRUPTED` but the moderator flagged the exploit as a good-faith whitehat attack, supplying the attacker address and an `attackerBountyBps` (up to 10000). The good-faith path has two steps:
+
+1. The named `attacker` calls `claimAttackerBounty` and receives `bps / 10000` of `snapshotTotalStaked + snapshotTotalBonus`.
+2. Anyone calls `claimCorrupted` to sweep the remainder to `recoveryAddress`.
+
+If the attacker does not claim before the sweep, the bounty is forfeited — `claimCorrupted` sweeps the whole balance.
+
+### EXPIRED
+
+If `block.timestamp >= expiry` and the outcome is still `UNRESOLVED`, any staker can call `claimExpired`. The first call transitions the outcome from `UNRESOLVED` to `EXPIRED`; subsequent callers find the outcome already terminal and proceed straight to their payout.
+
+`EXPIRED` is a backstop that protects stakers from a stuck or unresponsive moderator. The payout formula matches `SURVIVED`, but the bonus pro-rata is computed against `totalStaked` rather than a snapshot (since no `flagOutcome` snapshot exists).
+
+## The Outcome Moderator's Role
+
+`flagOutcome` is the only moderator-gated function on the pool, and it cannot fabricate an outcome. The moderator can only ratify what the AttackRegistry already says is true:
+
+| Outcome the moderator wants to flag | Required AttackRegistry state |
+|-------------------------------------|--------------------------------|
+| `SURVIVED`                          | `PRODUCTION`                   |
+| `CORRUPTED`                         | `CORRUPTED`                    |
+
+The upstream decisions — promoting an agreement to `PRODUCTION` or marking it `CORRUPTED` — are made by DAO governance in the AttackRegistry. By the time the pool's moderator flags an outcome, the substantive call has already been made on-chain. The moderator's only discretionary inputs are on the `CORRUPTED` path: choosing `goodFaith`, naming the `attacker`, and setting `attackerBountyBps`.
+
+This design keeps the pool tightly coupled to BattleChain's existing dispute machinery — the same DAO process that drives the [contract lifecycle](/battlechain/explanation/contract-lifecycle) drives pool resolution.
+
+## Withdrawal Rules
+
+While the pool is `UNRESOLVED`, a staker can call `requestWithdraw` to move principal into a pending bucket (`pendingWithdrawAmount`). Pending principal is excluded from the at-risk pool — it does not contribute to `totalStaked` or to the snapshot that `claimCorrupted` sweeps.
+
+When the staker can finalize the withdrawal depends on the upstream agreement state at the moment they call `withdraw`:
+
+| AttackRegistry state         | Behavior                                            |
+|------------------------------|------------------------------------------------------|
+| `NEW_DEPLOYMENT`, `ATTACK_REQUESTED` | Instant withdrawal once requested            |
+| `UNDER_ATTACK`               | 72-hour delay between request and withdrawal        |
+| `PROMOTION_REQUESTED`        | Withdrawals are disabled until the state changes    |
+| `PRODUCTION`, `CORRUPTED`    | Pool is closed to withdrawals; outcome will resolve |
+
+The 72-hour delay exists so that a staker watching a live attack cannot front-run the moderator's `CORRUPTED` flag and exit with principal that should have been swept.
+
+A pending withdrawal can be cancelled at any time before the outcome is flagged via `cancelWithdrawRequest`, which returns the principal to active stake.
+
+After the outcome becomes terminal, stakers with pending principal still get paid out — see `claimPendingWithdraw` for the path used by users who *only* have pending principal and no active stake.
+
+## Expiry, Staking Window, and Pause
+
+- **Minimum expiry lead**: 30 days from pool creation. The factory and pool both enforce this.
+- **Expiry lock**: once the first `stake` lands, `expiryLocked` becomes true and the sponsor can no longer call `setExpiry`. This prevents sponsors from moving the goalposts on existing stakers.
+- **Staking window**: `stake` and `contributeBonus` are open while the pool is `UNRESOLVED`, before `expiry`, and while the agreement is in a pre-attack state. They close once the AttackRegistry reports `PROMOTION_REQUESTED`, `PRODUCTION`, or `CORRUPTED`.
+- **Pause**: the sponsor can pause the pool, which halts every user-facing flow (stake, bonus, withdraw, claim). Pause is a safety lever, not a way to indefinitely block claims — sponsors are accountable for keeping pools usable.
+
+## Trust Model
+
+Before staking in a pool, a third party should verify:
+
+1. The agreement address resolves to a valid, well-known protocol in the Safe Harbor Registry.
+2. The `recoveryAddress` is governed in a way the staker is comfortable with (multisig, timelock, etc.) — the sponsor can change it before a corrupted sweep.
+3. The `expiry` gives the agreement enough room to actually transition through its lifecycle.
+4. The outcome moderator is the BattleChain DAO (or a moderator address the staker recognizes), not an arbitrary EOA.
+
+The factory is upgradeable, but individual pools are not — once a pool is deployed, its logic is frozen. Upgrades to `ConfidencePoolFactory` only affect future pools.
+
+## Where Pools Fit
+
+Confidence Pools sit alongside [Safe Harbor agreements](/battlechain/explanation/safe-harbor) and the [contract lifecycle](/battlechain/explanation/contract-lifecycle):
+
+- **Safe Harbor** governs the legal/technical rules of attacking a protocol.
+- **The contract lifecycle** governs how an agreement moves between states.
+- **Confidence Pools** monetize confidence in that lifecycle outcome and align bonus capital with stakers who back the protocol.
+
+A protocol does not need a pool to use BattleChain. Pools are an optional layer that turns confidence into a fundable, claimable signal.

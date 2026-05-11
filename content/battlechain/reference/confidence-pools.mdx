@@ -1,0 +1,323 @@
+---
+title: "Confidence Pools API Reference"
+description: "Complete API reference for the ConfidencePoolFactory and ConfidencePool contracts"
+---
+
+For an introduction to what these contracts do, see [Confidence Pools](/battlechain/explanation/confidence-pools).
+
+## Deployed Addresses
+
+| Contract | Testnet | Mainnet |
+|----------|---------|---------|
+| ConfidencePoolFactory (Proxy) | TBD | TBD |
+| ConfidencePool (Implementation) | TBD | TBD |
+
+## Constants
+
+| Constant | Value | Where it lives |
+|----------|-------|----------------|
+| Minimum expiry lead | `30 days` | `ConfidencePoolFactory`, `ConfidencePool` |
+| Withdraw delay during `UNDER_ATTACK` | `72 hours` | `ConfidencePool` |
+| Max `attackerBountyBps` | `10000` (100%) | `ConfidencePool.flagOutcome` |
+
+---
+
+## ConfidencePoolFactory
+
+UUPS-upgradeable factory that deploys one immutable `ConfidencePool` clone per Safe Harbor agreement.
+
+### State-Changing Functions
+
+```solidity
+// Owner-only initializer
+function initialize(
+    address safeHarborRegistry,
+    address poolImplementation,
+    address defaultOutcomeModerator,
+    uint256 defaultMinStake
+) external;
+
+// Anyone (while not paused)
+function createPool(
+    address agreement,
+    address stakeToken,
+    uint256 expiry,
+    address outcomeModeratorOverride,
+    address recoveryAddress
+) external returns (address pool);
+
+// Owner-only
+function setSafeHarborRegistry(address newSafeHarborRegistry) external;
+function setPoolImplementation(address newPoolImplementation) external;
+function setDefaultOutcomeModerator(address newDefaultOutcomeModerator) external;
+function setDefaultMinStake(uint256 newDefaultMinStake) external;
+function pause() external;
+function unpause() external;
+```
+
+`createPool` reverts if the agreement is unknown to `safeHarborRegistry`, if a pool already exists for that agreement, if `expiry` is less than 30 days out, or if any address argument is zero. The clone is deterministic on `keccak256(abi.encode(agreement))`; the resulting address can be precomputed.
+
+Pass `address(0)` for `outcomeModeratorOverride` to use `defaultOutcomeModerator`.
+
+### View Functions
+
+```solidity
+function pools(address agreement) external view returns (address);
+function safeHarborRegistry() external view returns (IBattleChainSafeHarborRegistry);
+function poolImplementation() external view returns (address);
+function defaultOutcomeModerator() external view returns (address);
+function defaultMinStake() external view returns (uint256);
+```
+
+### Events
+
+```solidity
+event PoolCreated(
+    address indexed agreement,
+    address indexed pool,
+    address stakeToken,
+    uint256 expiry,
+    address recoveryAddress
+);
+event SafeHarborRegistryUpdated(address indexed oldRegistry, address indexed newRegistry);
+event PoolImplementationUpdated(address indexed oldImplementation, address indexed newImplementation);
+event DefaultOutcomeModeratorUpdated(address indexed oldModerator, address indexed newModerator);
+event DefaultMinStakeUpdated(uint256 oldMinStake, uint256 newMinStake);
+```
+
+### Errors
+
+```solidity
+error PoolAlreadyExists();
+error InvalidAgreement();
+error ExpiryTooSoon();
+error ZeroAddress();
+```
+
+---
+
+## ConfidencePool
+
+Per-agreement clone holding stake principal and bonus liquidity. Initialized once by the factory and not upgradeable afterward.
+
+### Staker Functions
+
+```solidity
+function stake(uint256 amount) external;
+function contributeBonus(uint256 amount) external;
+function requestWithdraw(uint256 amount) external;
+function cancelWithdrawRequest() external;
+function withdraw() external;
+```
+
+`stake` requires `amount >= minStake`, an `UNRESOLVED` outcome, `block.timestamp < expiry`, and an agreement state that is not `PROMOTION_REQUESTED`, `PRODUCTION`, or `CORRUPTED`. The first successful `stake` locks `expiry` against further sponsor edits.
+
+`requestWithdraw` moves principal from the at-risk bucket (`totalStaked`) into a pending bucket (`pendingWithdrawAmount`). A user can only have one pending request at a time. `withdraw` finalizes the exit and enforces the 72-hour delay only when the agreement is `UNDER_ATTACK`.
+
+### Outcome Resolution
+
+```solidity
+function flagOutcome(
+    PoolStates.Outcome outcome,
+    bool goodFaith,
+    address attacker,
+    uint16 attackerBountyBps
+) external; // onlyModerator
+
+function claimSurvived() external;
+function claimCorrupted() external;        // permissionless trigger; sweeps to recoveryAddress
+function claimAttackerBounty() external;    // only the named attacker
+function claimExpired() external;           // any staker after expiry
+function claimPendingWithdraw() external;   // for users with only pending principal
+```
+
+`flagOutcome` rules:
+
+| `outcome` parameter | Required `goodFaith` / `attacker` / `bps` | Required AttackRegistry state |
+|---------------------|--------------------------------------------|--------------------------------|
+| `SURVIVED`          | `false`, `address(0)`, `0`                 | `PRODUCTION`                   |
+| `CORRUPTED` bad-faith | `false`, `address(0)`, `0`               | `CORRUPTED`                    |
+| `CORRUPTED` good-faith | `true`, non-zero attacker, `1..10000`   | `CORRUPTED`                    |
+| `UNRESOLVED` or `EXPIRED` | — (always reverts)                   | —                              |
+
+`EXPIRED` is not set via `flagOutcome` — it is set lazily by the first `claimExpired` caller after `block.timestamp >= expiry`.
+
+`claimSurvived` and `claimExpired` are one-shot per address (`hasClaimed[user]`) and pay out the user's principal, pro-rata bonus share, and any pending-withdraw principal in a single transfer. `claimPendingWithdraw` is the fallback path for users who only have pending principal and no active stake — calling it while `stakes[user] > 0` reverts with `MustUseFullClaim` to force users into the full-claim path.
+
+### Sponsor / Owner Functions
+
+```solidity
+function setRecoveryAddress(address newRecoveryAddress) external; // onlyOwner
+function setExpiry(uint256 newExpiry) external;                   // onlyOwner, before first stake
+function pause() external;                                         // onlyOwner
+function unpause() external;                                       // onlyOwner
+```
+
+`setExpiry` reverts with `ExpiryLocked` once the first stake has landed. `setRecoveryAddress` has no time lock — see the [trust model](/battlechain/explanation/confidence-pools#trust-model).
+
+### Initialization
+
+```solidity
+function initialize(
+    address agreement,
+    address stakeToken,
+    address safeHarborRegistry,
+    address outcomeModerator,
+    uint256 expiry,
+    uint256 minStake,
+    address recoveryAddress
+) external;
+```
+
+Called once by `ConfidencePoolFactory.createPool`. Ownership is transferred to the sponsor (the factory caller) after initialization.
+
+### View Functions / Public State
+
+```solidity
+// Immutable-after-init configuration
+function agreement() external view returns (address);
+function stakeToken() external view returns (IERC20);
+function safeHarborRegistry() external view returns (IBattleChainSafeHarborRegistry);
+function outcomeModerator() external view returns (address);
+function minStake() external view returns (uint256);
+
+// Sponsor-controlled
+function expiry() external view returns (uint256);
+function expiryLocked() external view returns (bool);
+function recoveryAddress() external view returns (address);
+
+// Pool accounting
+function totalStaked() external view returns (uint256);
+function totalBonus() external view returns (uint256);
+function totalPendingWithdraw() external view returns (uint256);
+function stakes(address staker) external view returns (uint256);
+function withdrawRequestedAt(address staker) external view returns (uint256);
+function pendingWithdrawAmount(address staker) external view returns (uint256);
+function hasClaimed(address staker) external view returns (bool);
+
+// Outcome state
+function outcome() external view returns (PoolStates.Outcome);
+function outcomeFlaggedAt() external view returns (uint256);
+function snapshotTotalStaked() external view returns (uint256);
+function snapshotTotalBonus() external view returns (uint256);
+function goodFaith() external view returns (bool);
+function attacker() external view returns (address);
+function attackerBountyBps() external view returns (uint16);
+function bountyPaid() external view returns (bool);
+```
+
+### Events
+
+```solidity
+event Staked(address indexed staker, uint256 amount);
+event BonusContributed(address indexed contributor, uint256 amount);
+event WithdrawRequested(address indexed staker, uint256 amount, uint256 requestedAt);
+event WithdrawCancelled(address indexed staker, uint256 amount);
+event Withdrawn(address indexed staker, uint256 amount);
+event OutcomeFlagged(
+    address indexed moderator,
+    PoolStates.Outcome outcome,
+    bool goodFaith,
+    address attacker,
+    uint16 attackerBountyBps
+);
+event ClaimSurvived(address indexed staker, uint256 amount);
+event ClaimCorrupted(address indexed caller, address indexed recoveryAddress, uint256 amount);
+event AttackerBountyClaimed(address indexed attacker, uint256 amount);
+event ClaimExpired(address indexed staker, uint256 amount);
+event ClaimPendingWithdraw(address indexed staker, uint256 amount);
+event RecoveryAddressUpdated(address indexed oldAddr, address indexed newAddr);
+event ExpiryUpdated(uint256 oldExpiry, uint256 newExpiry);
+```
+
+### Errors
+
+```solidity
+error PoolPaused();
+error PoolNotPaused();
+error InvalidAmount();
+error BelowMinStake();
+error StakingClosed();
+error OutcomeAlreadySet();
+error OutcomeNotSet();
+error InvalidOutcome();
+error NotModerator();
+error NotAttacker();
+error BountyAlreadyClaimed();
+error InvalidGoodFaithParams();
+error WithdrawAlreadyPending();
+error NoWithdrawPending();
+error WithdrawDelayNotMet();
+error WithdrawsDisabled();
+error ExpiryLocked();
+error ExpiryTooSoon();
+error InvalidRecoveryAddress();
+error PoolNotExpired();
+error InvalidAgreement();
+error ZeroAddress();
+error MustUseFullClaim();
+```
+
+---
+
+## PoolStates
+
+Shared library defining the pool outcome enum.
+
+```solidity
+library PoolStates {
+    enum Outcome {
+        UNRESOLVED, // 0 — pool open, no terminal state set
+        SURVIVED,   // 1 — agreement reached PRODUCTION
+        CORRUPTED,  // 2 — agreement marked CORRUPTED
+        EXPIRED     // 3 — expiry backstop triggered
+    }
+
+    function isTerminal(Outcome outcome) internal pure returns (bool);
+}
+```
+
+`isTerminal` returns `true` for any value other than `UNRESOLVED`.
+
+---
+
+## Payout Formulas
+
+### SURVIVED claim
+
+```
+payout = stakes[user]
+       + (stakes[user] * snapshotTotalBonus) / snapshotTotalStaked
+       + pendingWithdrawAmount[user]
+```
+
+Bonus share is zero when `snapshotTotalStaked == 0` or `snapshotTotalBonus == 0`.
+
+### EXPIRED claim
+
+```
+payout = stakes[user]
+       + (stakes[user] * totalBonus) / totalStaked
+       + pendingWithdrawAmount[user]
+```
+
+Uses live `totalStaked` / `totalBonus` rather than a snapshot, since `flagOutcome` was never called on an expired pool.
+
+### CORRUPTED bad-faith sweep
+
+```
+sweepAmount = snapshotTotalStaked + snapshotTotalBonus
+toSweep     = min(sweepAmount, stakeToken.balanceOf(pool))
+              → safeTransfer to recoveryAddress
+```
+
+### CORRUPTED good-faith attacker bounty
+
+```
+gross       = snapshotTotalStaked + snapshotTotalBonus
+entitlement = (gross * attackerBountyBps) / 10000
+payout      = min(entitlement, stakeToken.balanceOf(pool))
+              → safeTransfer to attacker
+```
+
+Followed by `claimCorrupted`, which sweeps the remaining balance (capped at the unsent portion of `snapshotTotalStaked + snapshotTotalBonus`) to `recoveryAddress`.

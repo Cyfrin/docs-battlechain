@@ -1,0 +1,109 @@
+---
+title: "How to Manage a Confidence Pool"
+description: "Update recovery address, extend expiry before first stake, and pause as the sponsor"
+---
+
+## Overview
+
+Once a pool is created, the sponsor (the address that called `createPool`) keeps a narrow set of admin controls. This guide covers what you can change and when.
+
+## Sponsor Controls at a Glance
+
+| Action | Helper | When it works |
+|--------|--------|---------------|
+| Change recovery address | `setPoolRecoveryAddress(pool, newAddr)` | Anytime before corrupted sweep |
+| Change expiry | `setPoolExpiry(pool, newExpiry)` | Only before the first stake |
+| Pause the pool | `pausePool(pool)` | Anytime |
+| Unpause the pool | `unpausePool(pool)` | Anytime |
+
+Everything else (`flagOutcome`, claims, staking) is either the DAO/moderator's job or a user-facing entrypoint.
+
+## Update the Recovery Address
+
+If you need to migrate to a new multisig or timelock, update the recovery address with a sponsor script:
+
+```solidity
+import { BCScript } from "battlechain-lib/BCScript.sol";
+
+contract UpdateRecovery is BCScript {
+    function _protocolName() internal pure override returns (string memory) { return "MyProtocol"; }
+    function _contacts() internal view override returns (Contact[] memory) { /* ... */ }
+    function _recoveryAddress() internal view override returns (address) { return msg.sender; }
+
+    function run(address pool, address newRecovery) external {
+        vm.startBroadcast();
+        setPoolRecoveryAddress(pool, newRecovery);
+        vm.stopBroadcast();
+    }
+}
+```
+
+<Warning>
+Changing the recovery address mid-flight is a signal to stakers. Communicate the change publicly before broadcasting — unannounced changes will be read as adversarial, especially while the agreement is `UNDER_ATTACK`.
+</Warning>
+
+The pool emits `RecoveryAddressUpdated(oldAddr, newAddr)` on every change. Subscribe to this event in your monitoring stack.
+
+## Extend or Reduce Expiry — Before First Stake Only
+
+```solidity
+function run(address pool, uint256 newExpiry) external {
+    vm.startBroadcast();
+    setPoolExpiry(pool, newExpiry);
+    vm.stopBroadcast();
+}
+```
+
+The pool sets `expiryLocked = true` on the first successful stake. After that, `setExpiry` reverts with `ExpiryLocked`. Use the deterministic pool address to set the expiry between `createPool` and your public announcement if you want a non-default value.
+
+Minimum expiry is still 30 days out — `setPoolExpiry` reverts with `ExpiryTooSoon` otherwise.
+
+## Pause and Unpause
+
+Pausing halts every user-facing flow on the pool: `stake`, `contributeBonus`, `requestWithdraw`, `cancelWithdrawRequest`, `withdraw`, `flagOutcome`, and all `claim*` functions. Use it as an emergency lever, not as a long-term posture.
+
+```solidity
+function run(address pool) external {
+    vm.startBroadcast();
+    pausePool(pool);
+    vm.stopBroadcast();
+}
+```
+
+Common reasons to pause:
+
+- A bug is discovered in the pool implementation and a DAO patch is in flight.
+- The agreement has anomalous activity and you want a freeze while moderators investigate.
+- The stake token itself has paused or is being migrated.
+
+Unpause from a separate transaction once the issue is resolved.
+
+## Monitoring
+
+Subscribe to these events to know what's happening on your pool without polling:
+
+| Event | What it tells you |
+|-------|-------------------|
+| `Staked(staker, amount)` | New principal entered the pool |
+| `BonusContributed(contributor, amount)` | Bonus liquidity added |
+| `WithdrawRequested(staker, amount, requestedAt)` | A staker initiated exit |
+| `Withdrawn(staker, amount)` | Exit completed (subject to 72-hour delay when `UNDER_ATTACK`) |
+| `OutcomeFlagged(moderator, outcome, goodFaith, attacker, bps)` | Pool resolved |
+| `Paused()` / `Unpaused()` | Sponsor toggled the kill switch |
+
+The `OutcomeFlagged` event tells you the pool has resolved and which claim path applies — that is your signal to communicate next steps to stakers.
+
+## What Sponsors Cannot Do
+
+For staker safety, the following are explicitly **not** sponsor-controlled:
+
+- **Flag the outcome.** That belongs to the outcome moderator (the BattleChain DAO in production), and is constrained to mirror AttackRegistry state.
+- **Withdraw stake or bonus.** Sponsors never touch user funds outside the `recoveryAddress` sweep path.
+- **Change the agreement, stake token, moderator, or minimum stake.** These are fixed at initialization.
+- **Cancel or destroy the pool.** One agreement → one pool, permanent.
+
+If you need to deprecate a pool, the only path is to let it expire and rely on `claimExpired` returning principal + bonus to stakers.
+
+<Card title="Confidence Pools Reference" icon="book" href="/battlechain/reference/confidence-pools">
+  Full contract API, events, and errors
+</Card>

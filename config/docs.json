@@ -94,7 +94,27 @@
                     "pages": [
                       "battlechain/how-to/approve-reject-requests",
                       "battlechain/how-to/instant-promotion",
+                      "battlechain/how-to/flag-pool-outcome",
                       "battlechain/quickstart/review-first-request"
+                    ]
+                  },
+                  {
+                    "group": "Confidence Pools",
+                    "pages": [
+                      {
+                        "group": "For Protocols",
+                        "pages": [
+                          "battlechain/how-to/confidence-pools/for-protocols/create-confidence-pool",
+                          "battlechain/how-to/confidence-pools/for-protocols/manage-confidence-pool"
+                        ]
+                      },
+                      {
+                        "group": "For Stakers",
+                        "pages": [
+                          "battlechain/how-to/confidence-pools/for-stakers/stake-in-pool",
+                          "battlechain/how-to/confidence-pools/for-stakers/claim-pool-payout"
+                        ]
+                      }
                     ]
                   }
                 ]
@@ -103,6 +123,7 @@
                 "group": "Reference",
                 "pages": [
                   "battlechain/reference/contracts",
+                  "battlechain/reference/confidence-pools",
                   "battlechain/reference/mock-contracts",
                   "battlechain/reference/contract-states",
                   "battlechain/reference/bounty-terms",
@@ -116,6 +137,7 @@
               "battlechain/faq",
               "battlechain/explanation/contract-lifecycle",
               "battlechain/explanation/safe-harbor",
+              "battlechain/explanation/confidence-pools",
               "battlechain/explanation/best-practices"
             ]
           }

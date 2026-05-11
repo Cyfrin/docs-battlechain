@@ -1,0 +1,176 @@
+---
+title: "How to Claim a Confidence Pool Payout"
+description: "Pick the right claim path for SURVIVED, EXPIRED, or CORRUPTED outcomes"
+---
+
+## Overview
+
+When a [Confidence Pool](/battlechain/explanation/confidence-pools) resolves, the right claim function depends on the outcome and your position. This guide is the decision tree.
+
+## Read the Outcome
+
+Start by checking the pool's outcome:
+
+```solidity
+import { IConfidencePool } from "battlechain-lib/interfaces/IConfidencePool.sol";
+import { PoolStates } from "battlechain-lib/types/PoolStates.sol";
+
+PoolStates.Outcome outcome = IConfidencePool(pool).outcome();
+```
+
+| Outcome | What happened | Your claim |
+|---------|---------------|------------|
+| `UNRESOLVED` | Pool still open | Not claimable yet |
+| `SURVIVED` | Agreement reached `PRODUCTION` | `claimSurvived(pool)` |
+| `CORRUPTED` (bad-faith) | Agreement marked `CORRUPTED`, no whitehat | Funds sweep to `recoveryAddress` (you lose principal) |
+| `CORRUPTED` (good-faith) | Agreement marked `CORRUPTED`, whitehat named | Attacker claims bounty, remainder sweeps |
+| `EXPIRED` | `expiry` reached unresolved | `claimExpired(pool)` |
+
+To distinguish good-faith from bad-faith on `CORRUPTED`, check the `goodFaith` flag:
+
+```solidity
+bool isGoodFaith = IConfidencePool(pool).goodFaith();
+address attacker = IConfidencePool(pool).attacker();
+uint16 bps = IConfidencePool(pool).attackerBountyBps();
+```
+
+## SURVIVED — Stakers Get Principal + Bonus
+
+If you have active stake (with or without a pending withdrawal at the time of flagging):
+
+```solidity
+import { BCScript } from "battlechain-lib/BCScript.sol";
+
+contract Claim is BCScript {
+    function _protocolName() internal pure override returns (string memory) { return "Staker"; }
+    function _contacts() internal view override returns (Contact[] memory) { /* ... */ }
+    function _recoveryAddress() internal view override returns (address) { return msg.sender; }
+
+    function run(address pool) external {
+        vm.startBroadcast();
+        claimSurvived(pool);
+        vm.stopBroadcast();
+    }
+}
+```
+
+Payout:
+
+```
+payout = stakes[you]
+       + (stakes[you] / snapshotTotalStaked) * snapshotTotalBonus
+       + pendingWithdrawAmount[you]
+```
+
+`claimSurvived` is one-shot per address — calling twice reverts.
+
+## EXPIRED — Pool Hit the Backstop
+
+If the `expiry` is reached and the outcome was still `UNRESOLVED`, any staker can trigger the `EXPIRED` transition:
+
+```solidity
+function run(address pool) external {
+    vm.startBroadcast();
+    claimExpired(pool);
+    vm.stopBroadcast();
+}
+```
+
+The first caller flips the outcome from `UNRESOLVED` to `EXPIRED`; subsequent callers proceed straight to their payout. Same one-shot semantics as `claimSurvived`.
+
+Payout uses live totals (no snapshot, since the moderator never flagged):
+
+```
+payout = stakes[you]
+       + (stakes[you] / totalStaked) * totalBonus
+       + pendingWithdrawAmount[you]
+```
+
+## CORRUPTED Bad-Faith — Sweep to Recovery
+
+If the moderator flagged `CORRUPTED` with `goodFaith = false`, there is no staker payout. The sweep happens by anyone calling:
+
+```solidity
+function run(address pool) external {
+    vm.startBroadcast();
+    claimCorrupted(pool);
+    vm.stopBroadcast();
+}
+```
+
+`claimCorrupted` is permissionless — stakers, sponsors, or third parties can all trigger it. Funds go to the pool's `recoveryAddress`.
+
+<Warning>
+Your `pendingWithdrawAmount` is excluded from the `CORRUPTED` sweep. If you had pending principal when the outcome was flagged, claim it with `claimPendingWithdraw` (see below).
+</Warning>
+
+## CORRUPTED Good-Faith — Attacker Bounty + Sweep
+
+If the moderator flagged `CORRUPTED` with `goodFaith = true`, the named attacker is entitled to a bps-capped slice of the snapshotted stake + bonus before the remainder sweeps.
+
+**If you are the named attacker:**
+
+```solidity
+function run(address pool) external {
+    vm.startBroadcast();
+    claimAttackerBounty(pool);
+    vm.stopBroadcast();
+}
+```
+
+Payout:
+
+```
+payout = ((snapshotTotalStaked + snapshotTotalBonus) * attackerBountyBps) / 10000
+```
+
+Reverts with `NotAttacker` if `msg.sender != attacker`, `BountyAlreadyClaimed` if it's a second call.
+
+**If you are anyone else:** trigger the remainder sweep with `claimCorrupted`. If the attacker hasn't claimed yet, they forfeit the bounty — `claimCorrupted` sweeps the whole balance.
+
+## Pending-Only Path
+
+If you only have pending withdrawal principal and no active stake at the time of the outcome, use this path on `SURVIVED`, `EXPIRED`, or `CORRUPTED`:
+
+```solidity
+function run(address pool) external {
+    vm.startBroadcast();
+    claimPendingWithdraw(pool);
+    vm.stopBroadcast();
+}
+```
+
+Returns exactly `pendingWithdrawAmount[you]`. Reverts with `MustUseFullClaim` if you still have active stake — in that case use `claimSurvived` or `claimExpired`, which roll your pending principal into the same payout.
+
+## Decision Tree
+
+```
+Pool outcome is ___?
+
+├─ UNRESOLVED → wait, or check if expiry has passed (then claimExpired)
+├─ SURVIVED   → claimSurvived(pool)
+├─ EXPIRED    → claimExpired(pool)
+└─ CORRUPTED
+    ├─ goodFaith == false → claimCorrupted(pool) sweeps to recovery
+    │                      → if you have pending, claimPendingWithdraw(pool)
+    └─ goodFaith == true
+        ├─ you are the attacker  → claimAttackerBounty(pool)
+        ├─ anyone else           → claimCorrupted(pool) sweeps the remainder
+        └─ if you have pending   → claimPendingWithdraw(pool)
+```
+
+## Common Reverts
+
+| Error | Cause |
+|-------|-------|
+| `OutcomeNotSet` | Pool is still `UNRESOLVED` and not yet expired |
+| `InvalidAmount` | You already claimed, or you have no position |
+| `MustUseFullClaim` | Used `claimPendingWithdraw` while you still have active stake |
+| `NotAttacker` | Called `claimAttackerBounty` from an address other than the named attacker |
+| `BountyAlreadyClaimed` | Attacker bounty already paid |
+| `PoolNotExpired` | Called `claimExpired` before `block.timestamp >= expiry` |
+| `InvalidGoodFaithParams` | Called `claimAttackerBounty` on a bad-faith `CORRUPTED` outcome |
+
+<Card title="Confidence Pools Reference" icon="book" href="/battlechain/reference/confidence-pools">
+  Full contract API, payout formulas, and error list
+</Card>

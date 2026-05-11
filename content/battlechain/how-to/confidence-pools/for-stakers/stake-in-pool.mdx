@@ -1,0 +1,156 @@
+---
+title: "How to Stake in a Confidence Pool"
+description: "Discover a pool, approve the stake token, deposit, and manage your exit"
+---
+
+## Overview
+
+Staking in a [Confidence Pool](/battlechain/explanation/confidence-pools) is a bet that the protocol behind an agreement will reach `PRODUCTION` cleanly. If it does, you reclaim your principal plus a pro-rata share of the bonus pool. If the agreement is `CORRUPTED`, your principal sweeps to the sponsor's recovery address.
+
+This guide walks through staking, contributing bonus, and exiting before resolution.
+
+## Before You Stake
+
+Read [Confidence Pools — Trust Model](/battlechain/explanation/confidence-pools#trust-model) and verify:
+
+1. The agreement is real and the protocol is known.
+2. The pool's `recoveryAddress` is governed by something defensible (multisig, timelock).
+3. The `expiry` gives the agreement room to actually resolve.
+4. The `outcomeModerator` is the BattleChain DAO or another moderator you recognize.
+
+You can pull all of that from the pool directly:
+
+```solidity
+import { IConfidencePool } from "battlechain-lib/interfaces/IConfidencePool.sol";
+
+IConfidencePool poolI = IConfidencePool(pool);
+address agreement = poolI.agreement();
+address token = poolI.stakeToken();
+address recovery = poolI.recoveryAddress();
+address moderator = poolI.outcomeModerator();
+uint256 expiry = poolI.expiry();
+uint256 minStake = poolI.minStake();
+```
+
+## Find the Pool
+
+If you have the agreement address, look up the pool through the factory:
+
+```solidity
+import { BCScript } from "battlechain-lib/BCScript.sol";
+
+contract LookupPool is BCScript {
+    function _protocolName() internal pure override returns (string memory) { return "Staker"; }
+    function _contacts() internal view override returns (Contact[] memory) { /* ... */ }
+    function _recoveryAddress() internal view override returns (address) { return msg.sender; }
+
+    function run(address agreement) external view returns (address pool) {
+        return tryGetPool(agreement); // returns address(0) if no pool exists
+    }
+}
+```
+
+`getPool(agreement)` reverts on missing pool; `tryGetPool(agreement)` returns zero. Use whichever fits your script's error model.
+
+## Stake
+
+Staking is a two-step ERC20 flow (approve, then call `stake`). The library handles both:
+
+```solidity
+function run(address pool, uint256 amount) external {
+    vm.startBroadcast();
+    approveAndStake(pool, amount);
+    vm.stopBroadcast();
+}
+```
+
+Requirements at the time of the call:
+
+- `amount >= minStake` (factory default, or per-pool override).
+- The pool outcome is still `UNRESOLVED`.
+- `block.timestamp < expiry`.
+- The agreement is **not** in `PROMOTION_REQUESTED`, `PRODUCTION`, or `CORRUPTED`. Staking closes once the agreement is on its way out.
+
+The first stake locks the pool's `expiry`. After that, the sponsor cannot extend or shorten the window.
+
+## Contribute a Bonus
+
+Anyone can add bonus liquidity to reward stakers — sponsors do this to bootstrap confidence, but third parties can too:
+
+```solidity
+function run(address pool, uint256 amount) external {
+    vm.startBroadcast();
+    approveAndContributeBonus(pool, amount);
+    vm.stopBroadcast();
+}
+```
+
+<Note>
+Bonus is not a claim on principal. Bonus contributors have no withdrawal path — the bonus is distributed pro-rata to stakers on `SURVIVED`/`EXPIRED` outcomes and swept with stake principal on `CORRUPTED`.
+</Note>
+
+## Request a Withdrawal
+
+To exit while the pool is still `UNRESOLVED`:
+
+```solidity
+function run(address pool, uint256 amount) external {
+    vm.startBroadcast();
+    requestPoolWithdraw(pool, amount);
+    vm.stopBroadcast();
+}
+```
+
+This moves principal from the at-risk bucket into a pending bucket. **Pending principal is protected** — it does not contribute to the `CORRUPTED` sweep snapshot.
+
+You can only have one pending request at a time; calling `requestPoolWithdraw` again reverts with `WithdrawAlreadyPending` until you `withdraw()` or `cancelPoolWithdraw(pool)`.
+
+## Finalize the Withdrawal
+
+```solidity
+function run(address pool) external {
+    vm.startBroadcast();
+    withdrawFromPool(pool);
+    vm.stopBroadcast();
+}
+```
+
+When `withdraw` succeeds depends on the agreement's current AttackRegistry state:
+
+| AttackRegistry state | Behavior |
+|----------------------|----------|
+| `NEW_DEPLOYMENT`, `ATTACK_REQUESTED` | Instant withdrawal once requested |
+| `UNDER_ATTACK` | 72-hour delay between request and withdrawal |
+| `PROMOTION_REQUESTED` | `WithdrawsDisabled` — wait for state to change |
+| `PRODUCTION`, `CORRUPTED` | `StakingClosed` — pool will resolve; use claim flows |
+
+The 72-hour delay exists so a staker watching a live attack cannot front-run the `CORRUPTED` flag.
+
+## Cancel a Withdrawal
+
+Change your mind before the outcome is flagged? Return pending principal to active stake:
+
+```solidity
+function run(address pool) external {
+    vm.startBroadcast();
+    cancelPoolWithdraw(pool);
+    vm.stopBroadcast();
+}
+```
+
+This reverts with `OutcomeAlreadySet` once the moderator has flagged a terminal state — at that point use the appropriate claim path instead.
+
+## Position-Reading Cheatsheet
+
+```solidity
+IConfidencePool poolI = IConfidencePool(pool);
+
+uint256 active   = poolI.stakes(msg.sender);             // principal at risk
+uint256 pending  = poolI.pendingWithdrawAmount(msg.sender); // principal in exit queue (protected)
+uint256 reqAt    = poolI.withdrawRequestedAt(msg.sender);   // 0 if no pending request
+PoolStates.Outcome outcome = poolI.outcome();             // UNRESOLVED until moderator flags
+```
+
+<Card title="Claim Your Payout" icon="arrow-right" href="/battlechain/how-to/confidence-pools/for-stakers/claim-pool-payout">
+  Next: claim flows for SURVIVED, EXPIRED, and CORRUPTED outcomes
+</Card>

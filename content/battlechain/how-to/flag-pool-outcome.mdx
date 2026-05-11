@@ -1,0 +1,135 @@
+---
+title: "How to Flag a Confidence Pool Outcome"
+description: "Finalize the terminal state of a Confidence Pool against AttackRegistry state"
+---
+
+## Overview
+
+The outcome moderator on a [Confidence Pool](/battlechain/explanation/confidence-pools) — the BattleChain DAO in production — finalizes the pool's terminal state by calling `flagOutcome`. The role is intentionally narrow: the moderator can only ratify what the AttackRegistry already says is true, and the only discretionary inputs are on the good-faith `CORRUPTED` path.
+
+This guide is the runbook for that final step. The substantive decisions (`markCorrupted`, `promote`, `instantPromote`) happen upstream in the AttackRegistry — see [How to Approve or Reject Requests](/battlechain/how-to/approve-reject-requests) and [How to Instant Promote](/battlechain/how-to/instant-promotion) for those.
+
+## When to Flag
+
+A pool's outcome should be flagged once the upstream agreement reaches a terminal AttackRegistry state:
+
+| Upstream state | Pool outcome to flag | Helper |
+|----------------|----------------------|--------|
+| `PRODUCTION`   | `SURVIVED`           | `flagPoolSurvived(pool)` |
+| `CORRUPTED` (bad-faith) | `CORRUPTED`     | `flagPoolCorruptedBadFaith(pool)` |
+| `CORRUPTED` (good-faith whitehat) | `CORRUPTED` | `flagPoolCorruptedGoodFaith(pool, attacker, bps)` |
+
+Pools that pass their `expiry` without being flagged resolve through the `EXPIRED` backstop path, triggered by any staker calling `claimExpired`. Moderators do not flag `EXPIRED` directly.
+
+## SURVIVED
+
+When the agreement has been promoted to `PRODUCTION`:
+
+```solidity
+import { BCScript } from "battlechain-lib/BCScript.sol";
+
+contract FlagSurvived is BCScript {
+    function _protocolName() internal pure override returns (string memory) { return "DAO"; }
+    function _contacts() internal view override returns (Contact[] memory) { /* ... */ }
+    function _recoveryAddress() internal view override returns (address) { return msg.sender; }
+
+    function run(address pool) external {
+        vm.startBroadcast();
+        flagPoolSurvived(pool);
+        vm.stopBroadcast();
+    }
+}
+```
+
+The pool calls `_getAgreementState()` and reverts with `InvalidOutcome` if the AttackRegistry does not report `PRODUCTION`. Stakers then claim via `claimSurvived`.
+
+## CORRUPTED — Bad Faith
+
+When the agreement was marked `CORRUPTED` by the attack moderator and the exploit was not a whitehat following Safe Harbor rules:
+
+```solidity
+function run(address pool) external {
+    vm.startBroadcast();
+    flagPoolCorruptedBadFaith(pool);
+    vm.stopBroadcast();
+}
+```
+
+This sets `goodFaith = false`, `attacker = address(0)`, `attackerBountyBps = 0`. All snapshotted stake + bonus sweeps to the pool's `recoveryAddress` when anyone calls `claimCorrupted`.
+
+The pool reverts with `InvalidOutcome` if the AttackRegistry doesn't report `CORRUPTED`. It reverts with `InvalidGoodFaithParams` if any of `attacker` or `attackerBountyBps` are non-zero while `goodFaith = false`.
+
+## CORRUPTED — Good Faith
+
+When the agreement was marked `CORRUPTED` because of a whitehat exploit that should be rewarded:
+
+```solidity
+function run(address pool, address attacker, uint16 bps) external {
+    vm.startBroadcast();
+    flagPoolCorruptedGoodFaith(pool, attacker, bps);
+    vm.stopBroadcast();
+}
+```
+
+Discretionary inputs:
+
+- **`attacker`**: the whitehat's address. Must be non-zero. Only this address can call `claimAttackerBounty`.
+- **`bps`**: bounty as basis points of the snapshot (`snapshotTotalStaked + snapshotTotalBonus`). Must be `1..10000`. Common ranges: 500–2000 (5–20%).
+
+The bps should reflect the protocol's published Safe Harbor bounty terms. Read `agreement.getBountyTerms()` and translate the percentage to bps:
+
+```solidity
+import { IAgreement } from "battlechain-lib/interfaces/IAgreement.sol";
+import { BountyTerms } from "battlechain-lib/types/AgreementTypes.sol";
+
+BountyTerms memory terms = IAgreement(agreement).getBountyTerms();
+uint16 bps = uint16(terms.bountyPercentage * 100); // 10% → 1000 bps
+```
+
+The attacker then claims via `claimAttackerBounty(pool)`; any caller can trigger the remainder sweep with `claimCorrupted(pool)`.
+
+## What Cannot Be Flagged
+
+| Attempted outcome | Why it reverts |
+|-------------------|----------------|
+| `SURVIVED` while upstream is not `PRODUCTION` | `InvalidOutcome` |
+| `CORRUPTED` while upstream is not `CORRUPTED` | `InvalidOutcome` |
+| `UNRESOLVED` or `EXPIRED` | `InvalidOutcome` (these are not moderator-flaggable states) |
+| Any flag after a previous `flagOutcome` | `OutcomeAlreadySet` |
+| Bad-faith with non-zero `attacker` or `bps` | `InvalidGoodFaithParams` |
+| Good-faith with zero `attacker` or `bps`, or `bps > 10000` | `InvalidGoodFaithParams` |
+
+The moderator role is not a kill switch; it is a finalizer.
+
+## Verifying Upstream State
+
+Before flagging, sanity-check the AttackRegistry state directly:
+
+```solidity
+import { IAttackRegistry } from "battlechain-lib/interfaces/IAttackRegistry.sol";
+
+IAttackRegistry registry = IAttackRegistry(_bcAttackRegistry());
+IAttackRegistry.ContractState state = registry.getAgreementState(agreement);
+```
+
+If the state is not `PRODUCTION` or `CORRUPTED`, hold off — flagging will revert, and the pool stays open. If the state is `CORRUPTED` and you can't tell good-faith from bad-faith yet, do not guess; the bad-faith sweep is irreversible.
+
+## Recording the Decision
+
+Every flag emits:
+
+```solidity
+event OutcomeFlagged(
+    address indexed moderator,
+    PoolStates.Outcome outcome,
+    bool goodFaith,
+    address attacker,
+    uint16 attackerBountyBps
+);
+```
+
+For good-faith outcomes, the DAO's decision rationale (which whitehat, which exploit, how bps was chosen) should live in the same forum or signal channel the DAO uses for `markCorrupted` decisions — the on-chain event records the parameters, not the reasoning.
+
+<Card title="Confidence Pools" icon="book" href="/battlechain/explanation/confidence-pools">
+  Background on the moderator role and outcome semantics
+</Card>

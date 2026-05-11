@@ -1,0 +1,133 @@
+---
+title: "How to Create a Confidence Pool"
+description: "Open a third-party confidence pool around your active Safe Harbor agreement"
+---
+
+## Overview
+
+A [Confidence Pool](/battlechain/explanation/confidence-pools) lets external parties stake capital on your agreement reaching `PRODUCTION` cleanly, and lets sponsors add bonus rewards for those stakers. The pool resolves automatically against your agreement's upstream state in the AttackRegistry.
+
+This guide creates a pool for an agreement you already adopted. If you don't have an agreement yet, start with [How to Create a Safe Harbor Agreement](/battlechain/how-to/create-agreement).
+
+## Prerequisites
+
+- An adopted agreement on the BattleChain Safe Harbor Registry.
+- An ERC20 token chosen as the stake token (commonly a stablecoin or your protocol's own token).
+- A `recoveryAddress` — where corrupted funds sweep on a `CORRUPTED` outcome. Use a multisig or timelock you control.
+- `battlechain-lib` v0.X with `BCConfidencePool` support (this PR).
+
+<Warning>
+The `recoveryAddress` is sponsor-controlled and can be changed until corrupted funds are swept. Stakers will inspect this address before depositing, so set it up with governance you can defend publicly.
+</Warning>
+
+## Quick Start with `battlechain-lib`
+
+```solidity
+import { BCScript } from "battlechain-lib/BCScript.sol";
+import { Contact } from "battlechain-lib/types/AgreementTypes.sol";
+
+contract CreatePool is BCScript {
+    function _protocolName() internal pure override returns (string memory) {
+        return "MyProtocol";
+    }
+
+    function _contacts() internal pure override returns (Contact[] memory) {
+        Contact[] memory c = new Contact[](1);
+        c[0] = Contact({ name: "Security", contact: "security@myprotocol.xyz" });
+        return c;
+    }
+
+    function _recoveryAddress() internal view override returns (address) {
+        return msg.sender;
+    }
+
+    function run() external {
+        vm.startBroadcast();
+
+        address agreement = vm.envAddress("AGREEMENT");
+        address stakeToken = vm.envAddress("STAKE_TOKEN");
+
+        // 30-day expiry, factory default moderator, recovery address from msg.sender
+        address pool = createPool(agreement, stakeToken, _recoveryAddress());
+
+        vm.stopBroadcast();
+    }
+}
+```
+
+`createPool` reverts if a pool already exists for the agreement (one agreement maps to exactly one pool, forever).
+
+<Note>
+The confidence pool factory address is not yet in `BCConfig` for testnet/mainnet. Until a deployment is confirmed, call `_setConfidencePoolFactory(factoryAddress)` in your script's setup before any pool helper.
+</Note>
+
+## Choose the Expiry
+
+The factory enforces a 30-day minimum expiry lead. Once the first stake lands, expiry is locked and you can no longer extend or shorten it.
+
+```solidity
+// 30 days from now (default)
+address pool = createPool(agreement, stakeToken, recoveryAddr);
+
+// 90 days
+address pool = createPoolWithExpiry(
+    agreement, stakeToken, recoveryAddr, block.timestamp + 90 days
+);
+```
+
+Pick an expiry that gives your agreement room to transition through its lifecycle (`UNDER_ATTACK` → `PROMOTION_REQUESTED` → `PRODUCTION`). Pools that expire before the agreement resolves pay out via the `EXPIRED` backstop path, returning principal + bonus to stakers regardless of upstream outcome.
+
+## Override the Outcome Moderator
+
+By default the pool uses the factory's `defaultOutcomeModerator` — in production this is the BattleChain DAO (or a DAO-controlled account). To use a different moderator address:
+
+```solidity
+address customModerator = 0x...;
+address pool = createPoolWithExpiry(
+    agreement, stakeToken, recoveryAddr, block.timestamp + 30 days, customModerator
+);
+```
+
+This is rarely needed — the DAO's `flagOutcome` is constrained to mirror AttackRegistry state, not invent outcomes. See [Confidence Pools](/battlechain/explanation/confidence-pools#the-outcome-moderators-role) for the full constraint table.
+
+## Deterministic Address
+
+Pool addresses are deterministic on `keccak256(abi.encode(agreement))`. You can precompute the address before calling `createPool`:
+
+```solidity
+import { Clones } from "@openzeppelin/contracts/proxy/Clones.sol";
+import { IConfidencePoolFactory } from "battlechain-lib/interfaces/IConfidencePoolFactory.sol";
+
+IConfidencePoolFactory factory = IConfidencePoolFactory(BCConfig.confidencePoolFactory());
+bytes32 salt = keccak256(abi.encode(agreement));
+address predicted = Clones.predictDeterministicAddress(factory.poolImplementation(), salt, address(factory));
+```
+
+This is useful if you want to fund the recovery address or post the pool address publicly before deployment.
+
+## Verify the Pool
+
+After creation, confirm the configuration matches what you intended:
+
+```solidity
+import { IConfidencePool } from "battlechain-lib/interfaces/IConfidencePool.sol";
+
+IConfidencePool poolI = IConfidencePool(pool);
+assert(poolI.agreement() == agreement);
+assert(poolI.stakeToken() == stakeToken);
+assert(poolI.recoveryAddress() == recoveryAddr);
+assert(poolI.expiry() == block.timestamp + 30 days);
+```
+
+## Common Reverts
+
+| Error | Cause |
+|-------|-------|
+| `BCConfidencePool__PoolAlreadyExists` | A pool was already created for this agreement. Use `getPool(agreement)` to fetch the address. |
+| `InvalidAgreement` | The factory could not find the agreement in the Safe Harbor Registry. Adopt it first. |
+| `ExpiryTooSoon` | Expiry is less than 30 days from `block.timestamp`. |
+| `ZeroAddress` | One of `agreement`, `stakeToken`, or `recoveryAddress` is the zero address. |
+
+<Card title="Manage Your Pool" icon="arrow-right" href="/battlechain/how-to/confidence-pools/for-protocols/manage-confidence-pool">
+  Next: update recovery address, extend expiry before first stake, and pause when needed
+</Card>
