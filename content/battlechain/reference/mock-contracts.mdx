@@ -79,7 +79,7 @@ To set ETH/USD to $2,000:
 cast send 0xAA72F0168eE17aA93098eC6ECf2EEe72B46aca19 \
   "updateAnswer(int256)" 200000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 ```
 
 The value `200000000000` is `2000 * 1e8` (8 decimals).
@@ -151,7 +151,7 @@ To mint 1,000,000 USDC to yourself:
 cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
   "mint()" \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 ```
 
 To mint a specific amount to any address:
@@ -160,7 +160,7 @@ To mint a specific amount to any address:
 cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
   "mint(address,uint256)" 0xYOUR_ADDRESS 5000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 ```
 
 The value `5000000000` is `5000 * 1e6` (USDC has 6 decimals).
@@ -244,12 +244,12 @@ cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
   "approve(address,uint256)" \
   0x91442C344c069e9B62f068C6F7075E9B403840E0 1000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 
 cast send 0x91442C344c069e9B62f068C6F7075E9B403840E0 \
   "mint(uint256)" 1000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 ```
 
 To supply native ETH to vBNB:
@@ -259,7 +259,7 @@ cast send 0x11e4B3Bbe7Fc26514b8D13383a3FB30E3Ced1F62 \
   "mint()" \
   --value 1ether \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 ```
 
 ---
@@ -486,14 +486,14 @@ cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
   "approve(address,uint256)" \
   0x102CdAF4B7097752f2Bb336c6cDf39f0aBBbb58c 1000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 
 cast send 0x102CdAF4B7097752f2Bb336c6cDf39f0aBBbb58c \
   "supply((address,address,address,address,uint256),uint256,uint256,address,bytes)" \
   "(0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE,0x4CAc28Fc96bb8fa0e6F94ef0E579384902142f42,0x0000000000000000000000000000000000000001,0x0000000000000000000000000000000000000002,800000000000000000)" \
   1000000000 0 $YOUR_ADDRESS 0x \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 ```
 
 The value `1000000000` is `1000 * 1e6` (USDC has 6 decimals).
@@ -631,7 +631,7 @@ cast send 0x6f3C17caA459F8012669f24D294AF72c2F8d9CBF \
   "sendCrossChainMessage((bytes32,address,address,(address,uint256),uint256,address[],bytes))" \
   "(0x0000000000000000000000000000000000000000000000000000000000000001,0xYOUR_DESTINATION_ADDRESS,0xYOUR_DESTINATION_ADDRESS,(0x0000000000000000000000000000000000000000,0),200000,\[\],0x1234)" \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 ```
 
 ### Delivering a Message
@@ -647,7 +647,7 @@ cast send 0x6f3C17caA459F8012669f24D294AF72c2F8d9CBF \
   <MESSAGE_ID> \
   <SOURCE_BLOCKCHAIN_ID> \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 ```
 
 You can inspect the pending queue at any time:

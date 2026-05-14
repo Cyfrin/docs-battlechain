@@ -119,7 +119,7 @@ cast send 0xcea5c0ade89389dd5fc461f69ccbd812cfb7fbd8 \
   "(627,$BASE_COST,$L2_TARGET,0,$CALLDATA,1000000,800,[],$REFUND_RECIPIENT)" \
   --value $BASE_COST \
   --rpc-url $SEPOLIA_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 ```
 
 The L2 transaction hash returned by `requestL2TransactionDirect` is the same hash that appears on BattleChain once the sequencer picks the priority transaction up — usually within a minute. On the L2 side the call arrives with `msg.sender` set to the L1-aliased version of your L1 sender.
