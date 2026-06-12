@@ -72,15 +72,15 @@
   {
     "id": "/battlechain/how-to/add-battlechain-to-metamask",
     "title": "How to Add BattleChain to MetaMask",
-    "content": "Overview To interact with contracts on BattleChain, you need to add the network to your wallet. This guide covers MetaMask, but the same details work for any EVM-compatible wallet. One-Click Setup Click the button below to add BattleChain Testnet to MetaMask automatically: Manual Setup If you prefer to add the network manually: 1. Open MetaMask and click the network selector at the top 2. Click Add Network → Add a network manually 3. Enter the following details: - Network Name: BattleChain Testnet - RPC URL: https://testnet.battlechain.com - Chain ID: 627 - Currency Symbol: ETH - Block Explorer URL: https://explorer.testnet.battlechain.com/ 4. Click Save BattleChain Testnet is now available in your MetaMask network list. Mainnet To add BattleChain Mainnet manually, use these details: - Network Name: BattleChain - RPC URL: https://mainnet.battlechain.com - Chain ID: 626 - Currency Symbol: ETH - Block Explorer URL: https://explorer.mainnet.battlechain.com/ Troubleshooting | Issue | Solut",
+    "content": "Overview To interact with contracts on BattleChain, you need to add the network to your wallet. This guide covers MetaMask, but the same details work for any EVM-compatible wallet. Mainnet Click the button below to add BattleChain to MetaMask automatically: If you prefer to add the network manually: 1. Open MetaMask and click the network selector at the top 2. Click Add Network → Add a network manually 3. Enter the following details: - Network Name: BattleChain - RPC URL: https://mainnet.battlechain.com - Chain ID: 626 - Currency Symbol: ETH - Block Explorer URL: https://explorer.mainnet.battlechain.com/ 4. Click Save BattleChain is now available in your MetaMask network list. Testnet To add BattleChain Testnet manually, use these details: - Network Name: BattleChain Testnet - RPC URL: https://testnet.battlechain.com - Chain ID: 627 - Currency Symbol: ETH - Block Explorer URL: https://explorer.testnet.battlechain.com/ Troubleshooting | Issue | Solution | |-------|----------| | Cannot c",
     "url": "/battlechain/how-to/add-battlechain-to-metamask",
     "category": "battlechain",
     "headings": [
       "Overview",
-      "One-Click Setup",
-      "Manual Setup",
       "Mainnet",
-      "Troubleshooting"
+      "Testnet",
+      "Troubleshooting",
+      "Next Steps"
     ]
   },
   {
