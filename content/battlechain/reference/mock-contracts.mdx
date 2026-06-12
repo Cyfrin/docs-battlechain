@@ -1,9 +1,11 @@
 ---
 title: "Mock & Dependency Contracts"
-description: "Mock and infrastructure contracts deployed on the BattleChain testnet"
+description: "Mock dependency contracts on the BattleChain testnet and Safe infrastructure on both networks"
 ---
 
 BattleChain testnet includes mock versions of common mainnet dependencies and real infrastructure contracts so you can deploy your exact production bytecode — only swapping constructor parameters like oracle addresses.
+
+The mock contracts on this page (tokens, price feeds, and protocol mocks) are deployed on **testnet only** — they are not deployed on BattleChain mainnet. The [Safe contracts](#safe-gnosis-safe) at the bottom of this page are real contracts deployed on both networks.
 
 ## Mock Chainlink Price Feeds
 
@@ -663,9 +665,9 @@ cast call 0x6f3C17caA459F8012669f24D294AF72c2F8d9CBF \
 
 ## Safe (Gnosis Safe)
 
-The full [Safe](https://docs.safe.global/) smart account infrastructure is deployed on BattleChain testnet. These are real Safe contracts (not mocks) — protocols that use Safe multisigs for governance, treasury, or access control can use the same addresses and deployment patterns as on mainnet.
+The full [Safe](https://docs.safe.global/) smart account infrastructure is deployed on both BattleChain testnet and mainnet. Unlike the mock dependencies above, these are real Safe contracts (not mocks) — protocols that use Safe multisigs for governance, treasury, or access control can use the same deployment patterns as on other chains. The contracts were deployed by Cyfrin, so the addresses differ between the two networks and from Safe's canonical addresses on other chains.
 
-### Deployed Addresses
+### Deployed Addresses (Testnet)
 
 | Contract                     | Address                                                 |
 | ---------------------------- | ------------------------------------------------------- |
@@ -680,3 +682,19 @@ The full [Safe](https://docs.safe.global/) smart account infrastructure is deplo
 | TokenCallbackHandler         | <code>0x232898253fABB3a1EB585bdEE4bE2a36f6D6fd64</code> |
 | CompatibilityFallbackHandler | <code>0xc6B2C6982A5643b7702894D4A0901b9371dd1283</code> |
 | ExtensibleFallbackHandler    | <code>0x745c41Ae7AC9C23f173B45f5B47E692dC57c2ae2</code> |
+
+### Deployed Addresses (Mainnet)
+
+| Contract                     | Address                                                 |
+| ---------------------------- | ------------------------------------------------------- |
+| Safe                         | <code>0xFF716747B4D28EAE844Dc069387C9bFC00e51737</code> |
+| SafeL2                       | <code>0xb6524C4fBcEd314EAad98Bc750B6AD76B64d7f8A</code> |
+| SafeProxyFactory             | <code>0x8d0D56f72E266a4BfA05340f68409dEBbdbdc9e2</code> |
+| CreateCall                   | <code>0x5A499D08755a9dC90208Ef5b031a3118789EBF5A</code> |
+| MultiSend                    | <code>0x28E369665036bFe0041c1E5838A608b1a818296f</code> |
+| MultiSendCallOnly            | <code>0xed4c81c91602CDD5c1e396a1AF28735E03EdA9e2</code> |
+| SignMessageLib               | <code>0x95cb704BFF25b8943BcE3fAE5D1b4665f7b08115</code> |
+| SafeToL2Setup                | <code>0xa8fB860254764C68360596f64BA841b077bebBA4</code> |
+| TokenCallbackHandler         | <code>0x63b920c6D0B5EC07345d9810169376192654d38F</code> |
+| CompatibilityFallbackHandler | <code>0x2744C4f8336B6e2A8a182495FbB327Db493F303f</code> |
+| ExtensibleFallbackHandler    | <code>0x115b290ecDe805FD846E0C347f3419A4234Fd673</code> |

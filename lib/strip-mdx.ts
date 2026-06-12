@@ -15,11 +15,11 @@ const NETWORK_INFO: Record<string, string> = {
     '| Field | Value |',
     '|-------|-------|',
     '| Network Name | BattleChain |',
-    '| Chain ID | TBD |',
-    '| RPC URL | TBD |',
-    '| Explorer | TBD |',
+    '| Chain ID | `626` |',
+    '| RPC URL | `https://mainnet.battlechain.com` |',
+    '| Explorer | https://explorer.mainnet.battlechain.com/ |',
     '| Currency | ETH |',
-    '| CAIP-2 ID | TBD |',
+    '| CAIP-2 ID | `eip155:626` |',
   ].join('\n'),
 }
 

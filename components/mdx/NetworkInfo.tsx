@@ -136,6 +136,7 @@ export function NetworkInfo({ network = 'testnet' }: NetworkInfoProps) {
     }
 
     try {
+      const hasExplorer = config.explorer !== 'TBD'
       await provider.request({
         method: 'wallet_addEthereumChain',
         params: [
@@ -143,7 +144,7 @@ export function NetworkInfo({ network = 'testnet' }: NetworkInfoProps) {
             chainId: chainIdHex,
             chainName: config.name,
             rpcUrls: [config.rpcUrl],
-            blockExplorerUrls: [config.explorer],
+            ...(hasExplorer ? { blockExplorerUrls: [config.explorer] } : {}),
             nativeCurrency: {
               name: 'Ether',
               symbol: config.currencySymbol,
@@ -220,18 +221,16 @@ export function NetworkInfo({ network = 'testnet' }: NetworkInfoProps) {
               <td className="py-2 pr-4 font-medium text-gray-500 dark:text-gray-400">RPC URL</td>
               <td className="py-2 font-mono break-all">{config.rpcUrl}</td>
             </tr>
-            <tr className="border-b border-gray-100 dark:border-gray-800">
-              <td className="py-2 pr-4 font-medium text-gray-500 dark:text-gray-400">Explorer</td>
-              <td className="py-2">
-                {config.explorer !== 'TBD' ? (
+            {config.explorer !== 'TBD' && (
+              <tr className="border-b border-gray-100 dark:border-gray-800">
+                <td className="py-2 pr-4 font-medium text-gray-500 dark:text-gray-400">Explorer</td>
+                <td className="py-2">
                   <a href={config.explorer} target="_blank" rel="noopener noreferrer" className="text-[#004DFF] hover:underline font-mono break-all">
                     {config.explorer}
                   </a>
-                ) : (
-                  <span className="font-mono">TBD</span>
-                )}
-              </td>
-            </tr>
+                </td>
+              </tr>
+            )}
             <tr className="border-b border-gray-100 dark:border-gray-800">
               <td className="py-2 pr-4 font-medium text-gray-500 dark:text-gray-400">Currency</td>
               <td className="py-2 font-mono">{config.currencySymbol}</td>

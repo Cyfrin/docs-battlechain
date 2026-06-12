@@ -6,7 +6,9 @@ Full documentation: https://docs.battlechain.com/llms-full.txt
 
 ---
 
-## Network
+## Networks
+
+### Testnet
 
 | Field    | Value                                                           |
 | -------- | --------------------------------------------------------------- |
@@ -15,17 +17,37 @@ Full documentation: https://docs.battlechain.com/llms-full.txt
 | Explorer | `https://explorer.testnet.battlechain.com`                      |
 | Bridge   | `https://portal.battlechain.com/bridge` (Sepolia → BattleChain) |
 
+### Mainnet
+
+| Field    | Value                                       |
+| -------- | ------------------------------------------- |
+| Chain ID | `626`                                       |
+| RPC      | `https://mainnet.battlechain.com`           |
+| Explorer | `https://explorer.mainnet.battlechain.com/` |
+
+Default to the testnet for development — it has the mock dependency contracts, free test ETH, and instant attack-mode approval via the permissionless `MockRegistryModerator`. Both networks have a block explorer and contract verification. Mainnet is the production network.
+
 ---
 
 ## Deployed Contracts (Testnet)
 
 | Contract                   | Address                                      |
 | -------------------------- | -------------------------------------------- |
-| AttackRegistry (Proxy)     | `0xdD029a6374095EEb4c47a2364Ce1D0f47f007350` |
-| SafeHarborRegistry (Proxy) | `0x0A652e265336a0296816ac4D8400880E3e537c24` |
-| AgreementFactory (Proxy)   | `0x2BEe2970f10FDc2aeA28662Bb6f6a501278eBd46` |
-| BattleChainDeployer        | `0x74269804941119554460956f16Fe82Fbe4B90448` |
-| MockRegistryModerator      | `0x1bC64E6F187a47D136106784f4E9182801535BD3` |
+| AttackRegistry (Proxy)     | `0x22134e878c409a0Eab7259d873b38e26Ca966d3C` |
+| SafeHarborRegistry (Proxy) | `0x07E09f67B272aec60eebBfB3D592eC649BDCFEFc` |
+| AgreementFactory (Proxy)   | `0xf52CEA27b9E20D03Ec48CDe4fafF8F27565646f2` |
+| BattleChainDeployer        | `0x0f75289c6b883b885A1fDF9BCCABE1bbFB094077` |
+| MockRegistryModerator      | `0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF` |
+
+## Deployed Contracts (Mainnet)
+
+| Contract                   | Address                                      |
+| -------------------------- | -------------------------------------------- |
+| AttackRegistry (Proxy)     | `0x24876e481eC7198CAC95af739Df2a852CE65A415` |
+| SafeHarborRegistry (Proxy) | `0xd229f4EE1bAE432010b72a9d1bD682570F4C6eBe` |
+| AgreementFactory (Proxy)   | `0xCdB7F5C0F708baBaabE82afE1DbA8362023AcFdd` |
+| BattleChainDeployer        | `0xD12765D21dDba418B8Fc0583c4716763e03Aa078` |
+| Registry Moderator         | `0x445d5685c4Ae71550Da0716b82B434AEA140E0c7` |
 
 ### Mock Dependencies (Testnet)
 
@@ -44,7 +66,7 @@ Full documentation: https://docs.battlechain.com/llms-full.txt
 | NonfungiblePositionManager | `0xE357f3D536b2c0a21c0256cAB027CE962D0483bF` |
 | Uniswap V4 PoolManager     | `0xB4CB4B877FcF85Db498B81EEa8F3A1136797F7`   |
 
-All test tokens are mintable by anyone (`mint()` for 1M tokens, or `mint(address,uint256)` for specific amounts). Full reference: https://docs.battlechain.com/battlechain/reference/mock-contracts
+All test tokens are mintable by anyone (`mint()` for 1M tokens, or `mint(address,uint256)` for specific amounts). Mock dependencies are testnet-only — they are not deployed on mainnet. Full reference: https://docs.battlechain.com/battlechain/reference/mock-contracts
 
 ---
 
@@ -175,9 +197,9 @@ Exports: `attackRegistryAbi`, `registryAbi`, `agreementFactoryAbi`, `agreementAb
 1. **Deploy** contracts via `bcDeployCreate` / `bcDeployCreate2` — on BattleChain this registers with `AttackRegistry` automatically
 2. **Create a Safe Harbor agreement** via `createAndAdoptAgreement` — defines scope, bounty terms, and recovery address
 3. **Request attack mode** (BattleChain only) — `requestAttackMode(agreement)` → state becomes `ATTACK_REQUESTED`
-4. **Approve (testnet)** — call `approveAttack(agreementAddress)` on the `MockRegistryModerator` (`0x1bC64E6F187a47D136106784f4E9182801535BD3`) — permissionless, instant approval. On mainnet this is a controlled DAO action.
+4. **Approve (testnet)** — call `approveAttack(agreementAddress)` on the `MockRegistryModerator` (`0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF`) — permissionless, instant approval. On mainnet this is a controlled DAO action.
    ```bash
-   cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 "approveAttack(address)" <agreementAddress> --account battlechain --rpc-url https://testnet.battlechain.com
+   cast send 0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF "approveAttack(address)" <agreementAddress> --account battlechain --rpc-url https://testnet.battlechain.com
    ```
    → state becomes `UNDER_ATTACK`
 5. **Promote to production** — `attackRegistry.promote(agreementAddress)` → 3-day countdown, then `PRODUCTION`

@@ -67,7 +67,7 @@ contract Deploy is BCDeploy {
 On BattleChain, `bcDeployCreate*` calls go through `BattleChainDeployer`, which wraps CreateX and auto-registers your contracts with the `AttackRegistry`. On any other supported chain (190+ EVM chains), the same functions route directly through [CreateX](https://github.com/pcaversaccio/createx) (`0xba5Ed...`), giving you deterministic addresses without any code changes.
 
 <Tip>
-Use `bcDeployCreate2` when you need the same contract address across BattleChain and mainnet. The salt + bytecode determines the address, so it's identical on every chain where CreateX is deployed.
+Use `bcDeployCreate2` when you need deterministic addresses. On the 190+ chains that share the canonical CreateX deployment (`0xba5Ed...`), the same salt + bytecode produces the same address everywhere. BattleChain's CreateX and BattleChainDeployer live at different addresses, so addresses computed on BattleChain differ from those chains — and between BattleChain mainnet and testnet.
 </Tip>
 
 ### Available deploy helpers

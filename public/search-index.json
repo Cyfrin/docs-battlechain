@@ -72,7 +72,7 @@
   {
     "id": "/battlechain/how-to/add-battlechain-to-metamask",
     "title": "How to Add BattleChain to MetaMask",
-    "content": "Overview To interact with contracts on BattleChain, you need to add the network to your wallet. This guide covers MetaMask, but the same details work for any EVM-compatible wallet. One-Click Setup Click the button below to add BattleChain Testnet to MetaMask automatically: Manual Setup If you prefer to add the network manually: 1. Open MetaMask and click the network selector at the top 2. Click Add Network → Add a network manually 3. Enter the following details: - Network Name: BattleChain Testnet - RPC URL: https://testnet.battlechain.com - Chain ID: 627 - Currency Symbol: ETH - Block Explorer URL: https://explorer.testnet.battlechain.com/ 4. Click Save BattleChain Testnet is now available in your MetaMask network list. Mainnet BattleChain Mainnet details will be announced when the network launches. Check back here for updates. Troubleshooting | Issue | Solution | |-------|----------| | Cannot connect to RPC | Ensure the RPC URL is entered exactly as shown above | | Wrong chain ID | R",
+    "content": "Overview To interact with contracts on BattleChain, you need to add the network to your wallet. This guide covers MetaMask, but the same details work for any EVM-compatible wallet. One-Click Setup Click the button below to add BattleChain Testnet to MetaMask automatically: Manual Setup If you prefer to add the network manually: 1. Open MetaMask and click the network selector at the top 2. Click Add Network → Add a network manually 3. Enter the following details: - Network Name: BattleChain Testnet - RPC URL: https://testnet.battlechain.com - Chain ID: 627 - Currency Symbol: ETH - Block Explorer URL: https://explorer.testnet.battlechain.com/ 4. Click Save BattleChain Testnet is now available in your MetaMask network list. Mainnet To add BattleChain Mainnet manually, use these details: - Network Name: BattleChain - RPC URL: https://mainnet.battlechain.com - Chain ID: 626 - Currency Symbol: ETH - Block Explorer URL: https://explorer.mainnet.battlechain.com/ Troubleshooting | Issue | Solut",
     "url": "/battlechain/how-to/add-battlechain-to-metamask",
     "category": "battlechain",
     "headings": [
@@ -240,7 +240,7 @@
   {
     "id": "/battlechain/how-to/verifying-contracts",
     "title": "Verifying Contracts",
-    "content": "Overview Verifying a contract publishes its source code on the block explorer so anyone can read, audit, and interact with it. Verified contracts display a checkmark badge and expose a Contract tab with the full source, ABI, and constructor arguments. Why Verify - Transparency — whitehats and the community can review your code directly on the explorer - Trust — verified source proves the deployed bytecode matches your published code - Debugging — the explorer's zkEVM debugger can map execution traces back to source lines for verified contracts Quick Start with battlechain-lib If you use battlechain-lib, it ships a reusable justfile module with verification targets built in. Add this to your justfile: Then verify contracts with: The bc-verify-broadcast target automatically parses your broadcast JSON, matches deployed bytecode against your compiled artifacts, and verifies each contract — including contracts deployed through CreateX or BattleChainDeployer factories. --- Verify with Forge ",
+    "content": "Overview Verifying a contract publishes its source code on the block explorer so anyone can read, audit, and interact with it. Verified contracts display a checkmark badge and expose a Contract tab with the full source, ABI, and constructor arguments. Contract verification works on both BattleChain networks: | Network | Explorer | Verifier API | |---------|----------|--------------| | Testnet | https://explorer.testnet.battlechain.com/ | https://block-explorer-api.testnet.battlechain.com/api | | Mainnet | https://explorer.mainnet.battlechain.com/ | https://block-explorer-api.mainnet.battlechain.com/api | The examples below use the testnet endpoints. For mainnet, swap in chain ID 626, the mainnet verifier API, and https://mainnet.battlechain.com as the RPC URL. Why Verify - Transparency — whitehats and the community can review your code directly on the explorer - Trust — verified source proves the deployed bytecode matches your published code - Debugging — the explorer's zkEVM debugger ",
     "url": "/battlechain/how-to/verifying-contracts",
     "category": "battlechain",
     "headings": [
@@ -296,7 +296,7 @@
   {
     "id": "/battlechain/quickstart/review-first-request",
     "title": "Review Your First Request",
-    "content": "⚖️ You are the DAO A protocol wants to open their contracts for attack. You decide if they're allowed to. Your job is to prevent abuse — mainly ensuring no one copies a live mainnet protocol onto BattleChain to have it \"attacked\" and drained under Safe Harbor cover. Prerequisites: You must be the registry moderator or part of the DAO multisig to approve or reject requests. --- Find Pending Requests Watch for AgreementStateChanged events where newState = 2 (ATTACK_REQUESTED), or query directly: | Value | State | |-------|-------| | 2 | ATTACK_REQUESTED — needs your review | | 3 | UNDER_ATTACK — already approved | --- Get the Agreement Details Pull the full agreement to review scope and terms: Check which contracts are in scope and how they were deployed: bash cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \\ \"approveAttack(address)\" \\ $AGREEMENT_ADDRESS \\ --rpc-url https://testnet.battlechain.com \\ --account battlechain bash cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \\ \"r",
+    "content": "⚖️ You are the DAO A protocol wants to open their contracts for attack. You decide if they're allowed to. Your job is to prevent abuse — mainly ensuring no one copies a live mainnet protocol onto BattleChain to have it \"attacked\" and drained under Safe Harbor cover. Prerequisites: You must be the registry moderator or part of the DAO multisig to approve or reject requests. --- Find Pending Requests Watch for AgreementStateChanged events where newState = 2 (ATTACK_REQUESTED), or query directly: | Value | State | |-------|-------| | 2 | ATTACK_REQUESTED — needs your review | | 3 | UNDER_ATTACK — already approved | --- Get the Agreement Details Pull the full agreement to review scope and terms: Check which contracts are in scope and how they were deployed: bash cast send 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \\ \"approveAttack(address)\" \\ $AGREEMENT_ADDRESS \\ --rpc-url https://testnet.battlechain.com \\ --account battlechain bash cast send 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \\ \"r",
     "url": "/battlechain/quickstart/review-first-request",
     "category": "battlechain",
     "headings": [
@@ -305,6 +305,20 @@
       "Review Checklist",
       "Make Your Decision",
       "Approve"
+    ]
+  },
+  {
+    "id": "/battlechain/reference/architecture",
+    "title": "Chain Architecture",
+    "content": "BattleChain is a ZK rollup built on ZKsync OS that settles to Ethereum. Mainnet is chain ID 626; testnet is chain ID 627 and settles to Sepolia. The L2 is EVM-equivalent at the bytecode level, with a small set of differences in precompiles and finality semantics that this page documents. For deployed contract addresses (L1 Bridgehub, ZK Chain proxy, etc.), see Contracts. Sequencer & Block Building BattleChain runs a single-sequencer model. One main node (the sequencer) orders transactions, executes them, and produces blocks; external nodes replay those blocks but never propose their own. There is no L2 consensus or proposer election — finality comes entirely from L1 once batches are committed and proven. | Stage | What it means | Block tag | |-------|---------------|-----------| | Produced | Sequencer has executed the block | latest, pending | | Committed | Batch containing the block is committed to L1 | safe | | Executed | L1 has verified the ZK proof and applied state | finalized | l",
+    "url": "/battlechain/reference/architecture",
+    "category": "battlechain",
+    "headings": [
+      "Sequencer & Block Building",
+      "Block Limits",
+      "Precompiles",
+      "Wrapped Ether (WETH)",
+      "Bridge & Cross-Chain Messaging"
     ]
   },
   {
@@ -338,12 +352,12 @@
   {
     "id": "/battlechain/reference/contracts",
     "title": "Contract API Reference",
-    "content": "Deployed Addresses | Contract | Testnet | Mainnet | |----------|---------|---------| | AttackRegistry (Proxy) | 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 | TBD | | SafeHarborRegistry (Proxy) | 0x0A652e265336a0296816ac4D8400880E3e537c24 | TBD | | AgreementFactory (Proxy) | 0x2BEe2970f10FDc2aeA28662Bb6f6a501278eBd46 | TBD | | BattleChainDeployer | 0x74269804941119554460956f16Fe82Fbe4B90448 | TBD | For mock Chainlink price feeds and test tokens, see Mock Contracts. Sepolia | Contract | Address | |----------|---------| | Bridgehub | 0xcea5c0ade89389dd5fc461f69ccbd812cfb7fbd8 | | ZK Chain (627) | 0x564ca3000EfF59D9a647A1B8c871f27236201D1D | | Chain Type Manager | 0x3F9A46ec287C93b74D4f144712bDb4EEdEEEEC74 | | Validator Timelock | 0x8C2a0b3C86CaA986f5dCd71f053c63Ac8324EA6f | --- AttackRegistry Tracks attack/production status of contracts. State-Changing Functions View Functions Events --- Agreement Per-protocol Safe Harbor terms. Owner Functions View Functions --- AgreementFactory Creates A",
+    "content": "Deployed Addresses | Contract | Testnet | Mainnet | |----------|---------|---------| | AttackRegistry (Proxy) | 0x22134e878c409a0Eab7259d873b38e26Ca966d3C | 0x24876e481eC7198CAC95af739Df2a852CE65A415 | | SafeHarborRegistry (Proxy) | 0x07E09f67B272aec60eebBfB3D592eC649BDCFEFc | 0xd229f4EE1bAE432010b72a9d1bD682570F4C6eBe | | AgreementFactory (Proxy) | 0xf52CEA27b9E20D03Ec48CDe4fafF8F27565646f2 | 0xCdB7F5C0F708baBaabE82afE1DbA8362023AcFdd | | BattleChainDeployer | 0x0f75289c6b883b885A1fDF9BCCABE1bbFB094077 | 0xD12765D21dDba418B8Fc0583c4716763e03Aa078 | For mock Chainlink price feeds and test tokens (testnet only), see Mock Contracts. Sepolia (Testnet L1) | Contract | Address | |----------|---------| | Bridgehub | 0xcea5c0ade89389dd5fc461f69ccbd812cfb7fbd8 | | ZK Chain (627) | 0x564ca3000EfF59D9a647A1B8c871f27236201D1D | | Chain Type Manager | 0x3F9A46ec287C93b74D4f144712bDb4EEdEEEEC74 | | Validator Timelock | 0x8C2a0b3C86CaA986f5dCd71f053c63Ac8324EA6f | --- AttackRegistry Tracks attack/pr",
     "url": "/battlechain/reference/contracts",
     "category": "battlechain",
     "headings": [
       "Deployed Addresses",
-      "Sepolia",
+      "Sepolia (Testnet L1)",
       "AttackRegistry",
       "State-Changing Functions",
       "View Functions"
@@ -352,7 +366,7 @@
   {
     "id": "/battlechain/reference/governance-parameters",
     "title": "Governance Parameters",
-    "content": "Registry Moderator The address that can approve/reject requests and instant promote. Valid Chains CAIP-2 chain IDs that can be used in agreements. Common Chain IDs | Chain | CAIP-2 ID | |-------|-----------| | Ethereum Mainnet | eip155:1 | | Arbitrum One | eip155:42161 | | Optimism | eip155:10 | | Base | eip155:8453 | | BattleChain Testnet | eip155:627 | Time Constants Set at deployment (require upgrade to change): | Constant | Value | Effect | |----------|-------|--------| | PROMOTION_WINDOW | 14 days | Auto-promote if DAO inactive | | PROMOTION_DELAY | 3 days | Delay after promote() | | MIN_COMMITMENT | 7 days | Minimum agreement commitment | Agreement Factory Creates and validates agreements. Safe Harbor Registry Links protocols to agreements. BattleChain Deployer Registers new deployments. Contract Upgrades Both AttackRegistry and AgreementFactory use UUPS upgradeable pattern:",
+    "content": "Registry Moderator The address that can approve/reject requests and instant promote. Valid Chains CAIP-2 chain IDs that can be used in agreements. Common Chain IDs | Chain | CAIP-2 ID | |-------|-----------| | Ethereum Mainnet | eip155:1 | | Arbitrum One | eip155:42161 | | Optimism | eip155:10 | | Base | eip155:8453 | | BattleChain | eip155:626 | | BattleChain Testnet | eip155:627 | Time Constants Set at deployment (require upgrade to change): | Constant | Value | Effect | |----------|-------|--------| | PROMOTION_WINDOW | 14 days | Auto-promote if DAO inactive | | PROMOTION_DELAY | 3 days | Delay after promote() | | MIN_COMMITMENT | 7 days | Minimum agreement commitment | Agreement Factory Creates and validates agreements. Safe Harbor Registry Links protocols to agreements. BattleChain Deployer Registers new deployments. Contract Upgrades Both AttackRegistry and AgreementFactory use UUPS upgradeable pattern:",
     "url": "/battlechain/reference/governance-parameters",
     "category": "battlechain",
     "headings": [
@@ -380,7 +394,7 @@
   {
     "id": "/battlechain/reference/mock-contracts",
     "title": "Mock & Dependency Contracts",
-    "content": "BattleChain testnet includes mock versions of common mainnet dependencies and real infrastructure contracts so you can deploy your exact production bytecode — only swapping constructor parameters like oracle addresses. Mock Chainlink Price Feeds These MockV3Aggregator contracts implement the same interface as Chainlink price feeds. Contracts that consume latestRoundData() or getRoundData() on mainnet can point at these addresses on testnet without code changes. All feeds use 8 decimals, matching Chainlink's standard for USD pairs. Deployed Addresses | Pair | Address | | -------- | ------------------------------------------------------- | | ETH/USD | 0xAA72F0168eE17aA93098eC6ECf2EEe72B46aca19 | | BTC/USD | 0xd87f56De7Fe8d2913B3B8e45C5fd983185286b66 | | LINK/USD | 0xEa8789e4f6a1d101AfF3093543FC8133c27987FD | | USDC/USD | 0x469be0Db9E0E884a2D9E64a186008C684423B79C | Interface Unlike real Chainlink feeds, anyone can update the answer on a mock aggregator. This is useful for testing oracle-",
+    "content": "BattleChain testnet includes mock versions of common mainnet dependencies and real infrastructure contracts so you can deploy your exact production bytecode — only swapping constructor parameters like oracle addresses. The mock contracts on this page (tokens, price feeds, and protocol mocks) are deployed on testnet only — they are not deployed on BattleChain mainnet. The Safe contracts at the bottom of this page are real contracts deployed on both networks. Mock Chainlink Price Feeds These MockV3Aggregator contracts implement the same interface as Chainlink price feeds. Contracts that consume latestRoundData() or getRoundData() on mainnet can point at these addresses on testnet without code changes. All feeds use 8 decimals, matching Chainlink's standard for USD pairs. Deployed Addresses | Pair | Address | | -------- | ------------------------------------------------------- | | ETH/USD | 0xAA72F0168eE17aA93098eC6ECf2EEe72B46aca19 | | BTC/USD | 0xd87f56De7Fe8d2913B3B8e45C5fd983185286b66",
     "url": "/battlechain/reference/mock-contracts",
     "category": "battlechain",
     "headings": [
@@ -477,7 +491,7 @@
   {
     "id": "/index",
     "title": "Welcome to Cyfrin",
-    "content": "Powering the future of smart contract security Cyfrin is: The complete platform for Web3 security researchers, developers, and learners. From competitive audits to professional certifications, Cyfrin powers the future of smart contract security. Competitive Security Audits Compete to find vulnerabilities in smart contracts. Earn rewards, build your reputation, and protect Web3. Web3 Education Platform Learn smart contract development and security. Get certified and advance your career in blockchain. Vulnerability Research Navigate 20,000+ security findings. Research, learn, and contribute to the community knowledge base. Security-First Blockchain Coming soon - Revolutionary blockchain infrastructure for decentralized security and audit coordination. Unified Accounts One profile across the entire ecosystem. Manage your settings, wallets, and credentials in one place. Quick Start Sign up for a free Cyfrin account to access all platforms Create account → - Security Researcher? Join CodeHa",
+    "content": "Powering the future of smart contract security Cyfrin is: The complete platform for Web3 security researchers, developers, and learners. From competitive audits to professional certifications, Cyfrin powers the future of smart contract security. Competitive Security Audits Compete to find vulnerabilities in smart contracts. Earn rewards, build your reputation, and protect Web3. Web3 Education Platform Learn smart contract development and security. Get certified and advance your career in blockchain. Vulnerability Research Navigate 20,000+ security findings. Research, learn, and contribute to the community knowledge base. Security-First Blockchain A layer 2 for stress testing smart contracts. Protocols deploy under Safe Harbor agreements and whitehats legally attack them for bounties. Unified Accounts One profile across the entire ecosystem. Manage your settings, wallets, and credentials in one place. Quick Start Sign up for a free Cyfrin account to access all platforms Create account →",
     "url": "/index",
     "category": "index.mdx",
     "headings": [
@@ -493,6 +507,11 @@
     "content": "Get Started The Problem Web3 has a fundamental gap in its development lifecycle. Code goes from audit to mainnet with nothing in between — and the industry pays for it. Projects go from $0 to $5M TVL overnight after an audit. Bug bounties don't attract serious testing. The industry loses billions to preventable exploits. Web3 Today Dev → Testnet → Mainnet Testnet uses fake money. Bugs are discovered after millions are at risk. With BattleChain Dev → Testnet → BattleChain → Mainnet Real funds, controlled risk. Bugs are found before they matter. How It Works BattleChain is a pre-mainnet, post-testnet environment with real funds. Protocols deploy audited contracts, whitehats legally attack them for bounties, and battle-tested contracts promote to mainnet with confidence. 1 Audit Get your contracts reviewed 2 Deploy Deploy contracts to BattleChain 3 Stress Test Whitehats attack under Safe Harbor 4 Promote DAO approves battle-tested contracts 5 Mainnet Ship with confidence Every contract on",
     "url": "/overview",
     "category": "overview.mdx",
-    "headings": ["How It Works", "Why an L2?", "Learn More", "Build with AI"]
+    "headings": [
+      "How It Works",
+      "Why an L2?",
+      "Learn More",
+      "Build with AI"
+    ]
   }
 ]

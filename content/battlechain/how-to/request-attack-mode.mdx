@@ -23,7 +23,7 @@ Call `requestUnderAttack` on the `AttackRegistry`:
 
 <CodeGroup labels="cast, Foundry script">
 ```bash
-cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
+cast send 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
   "requestUnderAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com
@@ -41,7 +41,7 @@ interface IAttackRegistry {
 
 contract RequestAttackMode is Script {
     IAttackRegistry constant REGISTRY =
-        IAttackRegistry(0xdD029a6374095EEb4c47a2364Ce1D0f47f007350);
+        IAttackRegistry(0x22134e878c409a0Eab7259d873b38e26Ca966d3C);
 
     function run() external {
         address agreement = vm.envAddress("AGREEMENT_ADDRESS");
@@ -78,7 +78,7 @@ If your contracts weren't deployed via `BattleChainDeployer`, call `requestUnder
 
 <CodeGroup labels="cast, Foundry script">
 ```bash
-cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
+cast send 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
   "requestUnderAttackByNonAuthorized(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com
@@ -96,7 +96,7 @@ interface IAttackRegistry {
 
 contract RequestAttackModeNonAuthorized is Script {
     IAttackRegistry constant REGISTRY =
-        IAttackRegistry(0xdD029a6374095EEb4c47a2364Ce1D0f47f007350);
+        IAttackRegistry(0x22134e878c409a0Eab7259d873b38e26Ca966d3C);
 
     function run() external {
         address agreement = vm.envAddress("AGREEMENT_ADDRESS");
@@ -121,7 +121,7 @@ This path requires extra DAO scrutiny since there's no on-chain proof of deploym
 To go directly to production without attack testing:
 
 ```bash
-cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
+cast send 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
   "goToProduction(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com
@@ -132,7 +132,7 @@ This immediately sets state to `PRODUCTION` with no Safe Harbor protection.
 ## Check Request Status
 
 ```bash
-cast call 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
+cast call 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
   "getAgreementState(address)(uint8)" $AGREEMENT_ADDRESS \
   --rpc-url https://testnet.battlechain.com
 ```
@@ -156,7 +156,7 @@ cast call 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
 On testnet the registry moderator is a `MockRegistryModerator` — a permissionless contract that forwards any `approveAttack` call straight to the `AttackRegistry`. You can approve your own request immediately:
 
 ```bash
-cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
+cast send 0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com
@@ -165,28 +165,24 @@ cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
 </Network>
 <Network title="Mainnet">
 
-<Warning>
-Mainnet is not yet live. Contract addresses and RPC URL will be published here when mainnet launches.
-</Warning>
-
 ## Request Attack Mode
 
-Call `requestUnderAttack` on the `AttackRegistry`:
+Call `requestUnderAttack` on the `AttackRegistry` (`0x24876e481eC7198CAC95af739Df2a852CE65A415` on mainnet):
 
 ```bash
-cast send $ATTACK_REGISTRY \
+cast send 0x24876e481eC7198CAC95af739Df2a852CE65A415 \
   "requestUnderAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url $BATTLECHAIN_RPC_URL
+  --rpc-url https://mainnet.battlechain.com
 ```
 
 ## For Non-BattleChainDeployer Contracts
 
 ```bash
-cast send $ATTACK_REGISTRY \
+cast send 0x24876e481eC7198CAC95af739Df2a852CE65A415 \
   "requestUnderAttackByNonAuthorized(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url $BATTLECHAIN_RPC_URL
+  --rpc-url https://mainnet.battlechain.com
 ```
 
 <Warning>
@@ -196,10 +192,10 @@ This path requires extra DAO scrutiny since there's no on-chain proof of deploym
 ## Skip Attack Mode Entirely
 
 ```bash
-cast send $ATTACK_REGISTRY \
+cast send 0x24876e481eC7198CAC95af739Df2a852CE65A415 \
   "goToProduction(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url $BATTLECHAIN_RPC_URL
+  --rpc-url https://mainnet.battlechain.com
 ```
 
 This immediately sets state to `PRODUCTION` with no Safe Harbor protection.
@@ -207,9 +203,9 @@ This immediately sets state to `PRODUCTION` with no Safe Harbor protection.
 ## Check Request Status
 
 ```bash
-cast call $ATTACK_REGISTRY \
+cast call 0x24876e481eC7198CAC95af739Df2a852CE65A415 \
   "getAgreementState(address)(uint8)" $AGREEMENT_ADDRESS \
-  --rpc-url $BATTLECHAIN_RPC_URL
+  --rpc-url https://mainnet.battlechain.com
 ```
 
 | Output | Meaning |
@@ -225,6 +221,8 @@ cast call $ATTACK_REGISTRY \
 | DAO Approves | Immediate → `UNDER_ATTACK` |
 | DAO Rejects | Immediate → `NOT_DEPLOYED` |
 | DAO Takes No Action | 14 days → `PRODUCTION` (auto-promote) |
+
+On mainnet the registry moderator is a controlled DAO role — there is no instant self-approval.
 
 </Network>
 

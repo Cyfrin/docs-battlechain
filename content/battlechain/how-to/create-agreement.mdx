@@ -97,7 +97,7 @@ accounts[1] = Account({
 
 Chain[] memory chains = new Chain[](1);
 chains[0] = Chain({
-    caip2ChainId: "eip155:325",  // BattleChain
+    caip2ChainId: "eip155:627",  // BattleChain Testnet (626 on mainnet)
     assetRecoveryAddress: "0xYourRecoveryMultisig",
     accounts: accounts
 });
@@ -165,7 +165,7 @@ You can update agreements, with restrictions during commitment:
 // Always allowed
 agreement.setProtocolName("New Name");
 agreement.setContactDetails(newContacts);
-agreement.addAccounts("eip155:325", newAccounts);
+agreement.addAccounts("eip155:627", newAccounts);
 
 // Only favorable changes during commitment
 agreement.setBountyTerms(betterTerms);

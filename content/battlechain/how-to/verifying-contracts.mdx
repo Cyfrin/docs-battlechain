@@ -7,6 +7,15 @@ description: "Verify contract source code on the BattleChain block explorer"
 
 Verifying a contract publishes its source code on the block explorer so anyone can read, audit, and interact with it. Verified contracts display a checkmark badge and expose a **Contract** tab with the full source, ABI, and constructor arguments.
 
+Contract verification works on both BattleChain networks:
+
+| Network | Explorer | Verifier API |
+|---------|----------|--------------|
+| Testnet | [https://explorer.testnet.battlechain.com/](https://explorer.testnet.battlechain.com/) | `https://block-explorer-api.testnet.battlechain.com/api` |
+| Mainnet | [https://explorer.mainnet.battlechain.com/](https://explorer.mainnet.battlechain.com/) | `https://block-explorer-api.mainnet.battlechain.com/api` |
+
+The examples below use the testnet endpoints. For mainnet, swap in chain ID `626`, the mainnet verifier API, and `https://mainnet.battlechain.com` as the RPC URL.
+
 ## Why Verify
 
 - **Transparency** — whitehats and the community can review your code directly on the explorer

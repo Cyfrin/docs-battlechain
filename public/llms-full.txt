@@ -69,7 +69,7 @@ BattleChain is designed for AI-assisted development. Deploy contracts, create ag
 
   - [Configure Your AI Tools](https://docs.battlechain.com/battlechain/how-to/configure-ai-tools): Add BattleChain context to Claude Code, Cursor, Copilot, and other AI tools
 
-> **Note:** BattleChain Testnet is live. Mainnet details will be announced soon.
+> **Note:** BattleChain Mainnet (chain ID 626) and BattleChain Testnet (chain ID 627) are both live. The tutorials and quickstarts in these docs use the testnet, which has free test ETH and mock dependency contracts. Both networks have a block explorer and contract verification.
 
 ### Using BattleChain with AI
 Source: https://docs.battlechain.com/battlechain/using-battlechain-with-ai
@@ -537,7 +537,7 @@ just request-attack-mode
 On testnet, the DAO moderator is a permissionless contract — approve your own request immediately:
 
 ```bash
-cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
+cast send 0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com
@@ -731,7 +731,7 @@ Tell your AI to add `AGREEMENT_ADDRESS` to `.env` and set `RECOVERY_ADDRESS` to 
 
 ```bash
 just request-attack-mode
-cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
+cast send 0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com
@@ -766,7 +766,7 @@ Copy `AGREEMENT_ADDRESS` into `.env` and set `RECOVERY_ADDRESS` to your wallet a
 
 ```bash
 just request-attack-mode
-cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
+cast send 0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com
@@ -1204,7 +1204,7 @@ contract Deploy is BCDeploy {
 
 On BattleChain, `bcDeployCreate*` calls go through `BattleChainDeployer`, which wraps CreateX and auto-registers your contracts with the `AttackRegistry`. On any other supported chain (190+ EVM chains), the same functions route directly through [CreateX](https://github.com/pcaversaccio/createx) (`0xba5Ed...`), giving you deterministic addresses without any code changes.
 
-> **Tip:** Use `bcDeployCreate2` when you need the same contract address across BattleChain and mainnet. The salt + bytecode determines the address, so it's identical on every chain where CreateX is deployed.
+> **Tip:** Use `bcDeployCreate2` when you need deterministic addresses. On the 190+ chains that share the canonical CreateX deployment (`0xba5Ed...`), the same salt + bytecode produces the same address everywhere. BattleChain's CreateX and BattleChainDeployer live at different addresses, so addresses computed on BattleChain differ from those chains — and between BattleChain mainnet and testnet.
 
 ### Available deploy helpers
 
@@ -1927,20 +1927,26 @@ If you prefer to add the network manually:
 | Field | Value |
 |-------|-------|
 | Network Name | BattleChain |
-| Chain ID | TBD |
-| RPC URL | TBD |
-| Explorer | TBD |
+| Chain ID | `626` |
+| RPC URL | `https://mainnet.battlechain.com` |
+| Explorer | https://explorer.mainnet.battlechain.com/ |
 | Currency | ETH |
-| CAIP-2 ID | TBD |
+| CAIP-2 ID | `eip155:626` |
 
-> **Note:** BattleChain Mainnet details will be announced when the network launches. Check back here for updates.
+To add BattleChain Mainnet manually, use these details:
+
+- **Network Name**: BattleChain
+- **RPC URL**: `https://mainnet.battlechain.com`
+- **Chain ID**: `626`
+- **Currency Symbol**: `ETH`
+- **Block Explorer URL**: `https://explorer.mainnet.battlechain.com/`
 
 ## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
 | Cannot connect to RPC | Ensure the RPC URL is entered exactly as shown above |
-| Wrong chain ID | Remove the network and re-add with Chain ID `627` |
+| Wrong chain ID | Remove the network and re-add with Chain ID `627` (testnet) or `626` (mainnet) |
 | Transactions stuck | Try resetting your MetaMask account (Settings → Advanced → Reset Account) |
 
 ## Next Steps
@@ -2156,6 +2162,15 @@ Source: https://docs.battlechain.com/battlechain/how-to/verifying-contracts
 ## Overview
 
 Verifying a contract publishes its source code on the block explorer so anyone can read, audit, and interact with it. Verified contracts display a checkmark badge and expose a **Contract** tab with the full source, ABI, and constructor arguments.
+
+Contract verification works on both BattleChain networks:
+
+| Network | Explorer | Verifier API |
+|---------|----------|--------------|
+| Testnet | [https://explorer.testnet.battlechain.com/](https://explorer.testnet.battlechain.com/) | `https://block-explorer-api.testnet.battlechain.com/api` |
+| Mainnet | [https://explorer.mainnet.battlechain.com/](https://explorer.mainnet.battlechain.com/) | `https://block-explorer-api.mainnet.battlechain.com/api` |
+
+The examples below use the testnet endpoints. For mainnet, swap in chain ID `626`, the mainnet verifier API, and `https://mainnet.battlechain.com` as the RPC URL.
 
 ## Why Verify
 
@@ -2394,7 +2409,7 @@ accounts[1] = Account({
 
 Chain[] memory chains = new Chain[](1);
 chains[0] = Chain({
-    caip2ChainId: "eip155:325",  // BattleChain
+    caip2ChainId: "eip155:627",  // BattleChain Testnet (626 on mainnet)
     assetRecoveryAddress: "0xYourRecoveryMultisig",
     accounts: accounts
 });
@@ -2462,7 +2477,7 @@ You can update agreements, with restrictions during commitment:
 // Always allowed
 agreement.setProtocolName("New Name");
 agreement.setContactDetails(newContacts);
-agreement.addAccounts("eip155:325", newAccounts);
+agreement.addAccounts("eip155:627", newAccounts);
 
 // Only favorable changes during commitment
 agreement.setBountyTerms(betterTerms);
@@ -2497,7 +2512,7 @@ Before requesting:
 Call `requestUnderAttack` on the `AttackRegistry`:
 
 ```bash
-cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
+cast send 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
   "requestUnderAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com
@@ -2515,7 +2530,7 @@ interface IAttackRegistry {
 
 contract RequestAttackMode is Script {
     IAttackRegistry constant REGISTRY =
-        IAttackRegistry(0xdD029a6374095EEb4c47a2364Ce1D0f47f007350);
+        IAttackRegistry(0x22134e878c409a0Eab7259d873b38e26Ca966d3C);
 
     function run() external {
         address agreement = vm.envAddress("AGREEMENT_ADDRESS");
@@ -2550,7 +2565,7 @@ This validates:
 If your contracts weren't deployed via `BattleChainDeployer`, call `requestUnderAttackByNonAuthorized` instead. This must be called by the **agreement owner** — the same address that created the agreement via `AgreementFactory`.
 
 ```bash
-cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
+cast send 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
   "requestUnderAttackByNonAuthorized(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com
@@ -2568,7 +2583,7 @@ interface IAttackRegistry {
 
 contract RequestAttackModeNonAuthorized is Script {
     IAttackRegistry constant REGISTRY =
-        IAttackRegistry(0xdD029a6374095EEb4c47a2364Ce1D0f47f007350);
+        IAttackRegistry(0x22134e878c409a0Eab7259d873b38e26Ca966d3C);
 
     function run() external {
         address agreement = vm.envAddress("AGREEMENT_ADDRESS");
@@ -2590,7 +2605,7 @@ contract RequestAttackModeNonAuthorized is Script {
 To go directly to production without attack testing:
 
 ```bash
-cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
+cast send 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
   "goToProduction(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com
@@ -2601,7 +2616,7 @@ This immediately sets state to `PRODUCTION` with no Safe Harbor protection.
 ## Check Request Status
 
 ```bash
-cast call 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
+cast call 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
   "getAgreementState(address)(uint8)" $AGREEMENT_ADDRESS \
   --rpc-url https://testnet.battlechain.com
 ```
@@ -2625,32 +2640,30 @@ cast call 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
 On testnet the registry moderator is a `MockRegistryModerator` — a permissionless contract that forwards any `approveAttack` call straight to the `AttackRegistry`. You can approve your own request immediately:
 
 ```bash
-cast send 0x1bC64E6F187a47D136106784f4E9182801535BD3 \
+cast send 0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
   --rpc-url https://testnet.battlechain.com
 ```
 
-> **Warning:** Mainnet is not yet live. Contract addresses and RPC URL will be published here when mainnet launches.
-
 ## Request Attack Mode
 
-Call `requestUnderAttack` on the `AttackRegistry`:
+Call `requestUnderAttack` on the `AttackRegistry` (`0x24876e481eC7198CAC95af739Df2a852CE65A415` on mainnet):
 
 ```bash
-cast send $ATTACK_REGISTRY \
+cast send 0x24876e481eC7198CAC95af739Df2a852CE65A415 \
   "requestUnderAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url $BATTLECHAIN_RPC_URL
+  --rpc-url https://mainnet.battlechain.com
 ```
 
 ## For Non-BattleChainDeployer Contracts
 
 ```bash
-cast send $ATTACK_REGISTRY \
+cast send 0x24876e481eC7198CAC95af739Df2a852CE65A415 \
   "requestUnderAttackByNonAuthorized(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url $BATTLECHAIN_RPC_URL
+  --rpc-url https://mainnet.battlechain.com
 ```
 
 > **Warning:** This path requires extra DAO scrutiny since there's no on-chain proof of deployment.
@@ -2658,10 +2671,10 @@ cast send $ATTACK_REGISTRY \
 ## Skip Attack Mode Entirely
 
 ```bash
-cast send $ATTACK_REGISTRY \
+cast send 0x24876e481eC7198CAC95af739Df2a852CE65A415 \
   "goToProduction(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url $BATTLECHAIN_RPC_URL
+  --rpc-url https://mainnet.battlechain.com
 ```
 
 This immediately sets state to `PRODUCTION` with no Safe Harbor protection.
@@ -2669,9 +2682,9 @@ This immediately sets state to `PRODUCTION` with no Safe Harbor protection.
 ## Check Request Status
 
 ```bash
-cast call $ATTACK_REGISTRY \
+cast call 0x24876e481eC7198CAC95af739Df2a852CE65A415 \
   "getAgreementState(address)(uint8)" $AGREEMENT_ADDRESS \
-  --rpc-url $BATTLECHAIN_RPC_URL
+  --rpc-url https://mainnet.battlechain.com
 ```
 
 | Output | Meaning |
@@ -2687,6 +2700,8 @@ cast call $ATTACK_REGISTRY \
 | DAO Approves | Immediate → `UNDER_ATTACK` |
 | DAO Rejects | Immediate → `NOT_DEPLOYED` |
 | DAO Takes No Action | 14 days → `PRODUCTION` (auto-promote) |
+
+On mainnet the registry moderator is a controlled DAO role — there is no instant self-approval.
 
 ## Troubleshooting
 
@@ -3078,7 +3093,7 @@ If multiple whitehats exploit the same issue, they share the aggregate cap propo
 ## Get Recovery Address
 
 ```solidity
-string memory recoveryStr = agreement.getAssetRecoveryAddress("eip155:325");
+string memory recoveryStr = agreement.getAssetRecoveryAddress("eip155:627");
 // Parse to address for transfers
 ```
 
@@ -3277,7 +3292,7 @@ Source: https://docs.battlechain.com/battlechain/quickstart/review-first-request
 Watch for `AgreementStateChanged` events where `newState = 2` (`ATTACK_REQUESTED`), or query directly:
 
 ```bash
-cast call 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
+cast call 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
   "getAgreementState(address)(uint8)" \
   $AGREEMENT_ADDRESS \
   --rpc-url https://testnet.battlechain.com
@@ -3353,7 +3368,7 @@ for (uint i = 0; i < contracts.length; i++) {
 ### Approve
 
 ```bash
-cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
+cast send 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
   "approveAttack(address)" \
   $AGREEMENT_ADDRESS \
   --rpc-url https://testnet.battlechain.com \
@@ -3365,7 +3380,7 @@ This moves the agreement to `UNDER_ATTACK`, enables Safe Harbor protection, and 
 ### Reject
 
 ```bash
-cast send 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 \
+cast send 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
   "rejectAttackRequest(address)" \
   $AGREEMENT_ADDRESS \
   --rpc-url https://testnet.battlechain.com \
@@ -3397,6 +3412,144 @@ This returns the agreement to `NOT_DEPLOYED`. The protocol can fix whatever was 
 
 ## Reference
 
+### Chain Architecture
+Source: https://docs.battlechain.com/battlechain/reference/architecture
+
+*Sequencer model, precompiles, WETH, and the L1↔L2 bridge for BattleChain*
+
+BattleChain is a ZK rollup built on [ZKsync OS](https://github.com/matter-labs/zksync-os) that settles to Ethereum. Mainnet is chain ID `626`; testnet is chain ID `627` and settles to **Sepolia**. The L2 is EVM-equivalent at the bytecode level, with a small set of differences in precompiles and finality semantics that this page documents.
+
+For deployed contract addresses (L1 Bridgehub, ZK Chain proxy, etc.), see [Contracts](https://docs.battlechain.com/battlechain/reference/contracts).
+
+## Sequencer & Block Building
+
+BattleChain runs a **single-sequencer model**. One main node (the sequencer) orders transactions, executes them, and produces blocks; external nodes replay those blocks but never propose their own. There is no L2 consensus or proposer election — finality comes entirely from L1 once batches are committed and proven.
+
+| Stage | What it means | Block tag |
+|-------|---------------|-----------|
+| Produced | Sequencer has executed the block | `latest`, `pending` |
+| Committed | Batch containing the block is committed to L1 | `safe` |
+| Executed | L1 has verified the ZK proof and applied state | `finalized` |
+
+`latest` and `pending` return the same block — there is no separate mempool view. `earliest` and `finalized` are not yet implemented; `finalized` returns the latest L1-executed block when available.
+
+External nodes (ENs) sync via a `zks/` devp2p subprotocol. ENs configured as **verifiers** can independently re-execute and check batch proofs as a 2FA layer over the main node.
+
+### Block Limits
+
+| Parameter | Value |
+|-----------|-------|
+| Block gas limit | 100,000,000 |
+| Base fee bounds | ±12.5% per block (EIP-1559 style) |
+| Pubdata price | Up to +50% per block |
+
+The fee model tracks three resources — EVM gas, **native** (proving cost), and **pubdata** (L1 data bytes) — and charges the maximum of the EVM cost and the native+pubdata cost. See the upstream [fees design doc](https://matter-labs.github.io/zksync-os-server/latest/design/fees.html) for the full model.
+
+## Precompiles
+
+BattleChain inherits ZKsync OS's precompile set. Standard EVM precompiles live at the same addresses as on Ethereum, with two omissions and one addition.
+
+| Address | Name | Status | Notes |
+|---------|------|--------|-------|
+| `0x01` | `ecRecover` | Supported | secp256k1 signature recovery |
+| `0x02` | `SHA2-256` | Supported | |
+| `0x03` | `RIPEMD-160` | Supported | |
+| `0x04` | `identity` | Supported | |
+| `0x05` | `modexp` | Supported | High native cost — see fee model |
+| `0x06` | `ecAdd` | Supported | alt_bn128 |
+| `0x07` | `ecMul` | Supported | alt_bn128 |
+| `0x08` | `ecPairing` | Supported | alt_bn128 |
+| `0x09` | `BLAKE2F` | **Not supported** | EIP-152 |
+| `0x0a` | `point_evaluation` | **Not supported** | EIP-4844 KZG |
+| `0x100` | `p256Verify` | Supported | RIP-7212 — secp256r1 (P-256) signature verification, useful for passkeys / WebAuthn |
+
+> **Note:** Contracts that depend on `BLAKE2F` (rare) or `point_evaluation` (EIP-4844 blob verification) should treat those code paths as unavailable on BattleChain.
+
+Gas costs for supported precompiles match Ethereum's schedule, but the **native** dimension can dominate the effective fee for proving-heavy precompiles like `modexp`. Avoid running large `modexp` inputs in hot paths.
+
+## Wrapped Ether (WETH)
+
+The canonical L2 wrapped base token is deployed by the protocol at genesis and used by the ZKsync ecosystem bridges when ETH must be represented as an ERC-20 (e.g., when bridging out to a chain whose native asset is not ETH).
+
+For protocols that need a mintable test WETH while developing on the testnet, use the mock listed under [Mock Contracts](https://docs.battlechain.com/battlechain/reference/mock-contracts). The mock and the canonical WETH are independent contracts.
+
+## Bridge & Cross-Chain Messaging
+
+BattleChain uses the standard ZK Stack bridging stack: a Bridgehub on each layer routes priority transactions and asset transfers, and a Message Root tracks proven L2→L1 messages. L1 contract addresses are listed on the [Contracts](https://docs.battlechain.com/battlechain/reference/contracts) page.
+
+### L1 → L2
+
+L1-originated calls flow through the Sepolia Bridgehub and surface on BattleChain as **priority transactions** (the `from` address is L1-aliased). This is the path used for:
+
+- **Deposits** — ETH and ERC-20s, via `requestL2TransactionDirect` / `requestL2TransactionTwoBridges` on the Bridgehub. The user-facing UI is at [portal.battlechain.com/bridge](https://portal.battlechain.com/bridge).
+- **Cross-chain governance** — the L1 governance contract sends a priority transaction whose target is the L2 contract being administered. The same path delivers chain-admin parameter changes.
+- **Protocol-driven L2 calls** — anything that needs to be invoked from L1 with L2 execution semantics, including fee parameter updates and similar policy actions, can be expressed as a priority transaction.
+
+Priority transactions are L1-finality-bound: once included on Ethereum and pulled by the sequencer's L1 watcher, the L2 must execute them in order; they cannot be censored at the L2 level.
+
+#### Sending an L1 → L2 message
+
+Call `requestL2TransactionDirect` on the Sepolia Bridgehub. `chainId` is BattleChain testnet's `627`; `l2Contract` is the contract you want to invoke on BattleChain; `l2Calldata` is the ABI-encoded call. The examples below use the testnet deployment.
+
+```solidity
+// L1 (Sepolia)
+import {IBridgehub, L2TransactionRequestDirect} from "@matterlabs/zksync-contracts/contracts/bridgehub/IBridgehub.sol";
+
+IBridgehub bridgehub = IBridgehub(0xcea5c0ade89389dd5fc461f69ccbd812cfb7fbd8);
+
+uint256 l2GasLimit = 1_000_000;
+uint256 l2GasPerPubdataByteLimit = 800;
+
+// Quote the ETH that has to be forwarded to L2 to cover gas.
+uint256 baseCost = bridgehub.l2TransactionBaseCost(
+    627,                          // BattleChain chain ID
+    tx.gasprice,
+    l2GasLimit,
+    l2GasPerPubdataByteLimit
+);
+
+bytes32 l2TxHash = bridgehub.requestL2TransactionDirect{value: baseCost + valueToSendOnL2}(
+    L2TransactionRequestDirect({
+        chainId: 627,
+        mintValue: baseCost + valueToSendOnL2, // ETH minted on L2 to the refund recipient + msg.value
+        l2Contract: address(0xYourBattleChainContract),
+        l2Value: valueToSendOnL2,              // msg.value on the L2 call
+        l2Calldata: abi.encodeCall(IYourContract.doThing, (arg1, arg2)),
+        l2GasLimit: l2GasLimit,
+        l2GasPerPubdataByteLimit: l2GasPerPubdataByteLimit,
+        factoryDeps: new bytes[](0),
+        refundRecipient: msg.sender            // gets unspent gas on L2
+    })
+);
+```
+
+Equivalent call from the command line:
+
+```bash
+cast send 0xcea5c0ade89389dd5fc461f69ccbd812cfb7fbd8 \
+  "requestL2TransactionDirect((uint256,uint256,address,uint256,bytes,uint256,uint256,bytes[],address))" \
+  "(627,$BASE_COST,$L2_TARGET,0,$CALLDATA,1000000,800,[],$REFUND_RECIPIENT)" \
+  --value $BASE_COST \
+  --rpc-url $SEPOLIA_RPC_URL \
+  --keystore $KEYSTORE
+```
+
+The L2 transaction hash returned by `requestL2TransactionDirect` is the same hash that appears on BattleChain once the sequencer picks the priority transaction up — usually within a minute. On the L2 side the call arrives with `msg.sender` set to the L1-aliased version of your L1 sender.
+
+### L2 → L1
+
+Withdrawals and arbitrary outbound messages are emitted by L2 contracts and aggregated by the protocol into a Merkle tree, rooted on L1 and verified as part of proof execution. After the proof is executed on L1, anyone can finalize a withdrawal or relay a message by submitting a Merkle proof against the root.
+
+Use the protocol's L2-to-L1 messenger from your L2 contract for arbitrary outbound messages, and the L2 asset router for asset withdrawals.
+
+### Interop (chain ↔ chain)
+
+ZKsync OS exposes interop primitives for sending and verifying messages between BattleChain and other ZK chains that share a settlement layer. Interop is an evolving feature of the underlying protocol; check the upstream [ZKsync OS docs](https://docs.zksync.io/zksync-network/zksync-os) for the current state.
+
+## Versioning
+
+BattleChain testnet currently runs ZKsync OS protocol version **v30.2**. Precompile behavior is stable across patch versions.
+
 ### Contract API Reference
 Source: https://docs.battlechain.com/battlechain/reference/contracts
 
@@ -3406,14 +3559,14 @@ Source: https://docs.battlechain.com/battlechain/reference/contracts
 
 | Contract | Testnet | Mainnet |
 |----------|---------|---------|
-| AttackRegistry (Proxy) | 0xdD029a6374095EEb4c47a2364Ce1D0f47f007350 | TBD |
-| SafeHarborRegistry (Proxy) | 0x0A652e265336a0296816ac4D8400880E3e537c24 | TBD |
-| AgreementFactory (Proxy) | 0x2BEe2970f10FDc2aeA28662Bb6f6a501278eBd46 | TBD |
-| BattleChainDeployer | 0x74269804941119554460956f16Fe82Fbe4B90448 | TBD |
+| AttackRegistry (Proxy) | 0x22134e878c409a0Eab7259d873b38e26Ca966d3C | 0x24876e481eC7198CAC95af739Df2a852CE65A415 |
+| SafeHarborRegistry (Proxy) | 0x07E09f67B272aec60eebBfB3D592eC649BDCFEFc | 0xd229f4EE1bAE432010b72a9d1bD682570F4C6eBe |
+| AgreementFactory (Proxy) | 0xf52CEA27b9E20D03Ec48CDe4fafF8F27565646f2 | 0xCdB7F5C0F708baBaabE82afE1DbA8362023AcFdd |
+| BattleChainDeployer | 0x0f75289c6b883b885A1fDF9BCCABE1bbFB094077 | 0xD12765D21dDba418B8Fc0583c4716763e03Aa078 |
 
-For mock Chainlink price feeds and test tokens, see [Mock Contracts](https://docs.battlechain.com/battlechain/reference/mock-contracts).
+For mock Chainlink price feeds and test tokens (testnet only), see [Mock Contracts](https://docs.battlechain.com/battlechain/reference/mock-contracts).
 
-### Sepolia
+### Sepolia (Testnet L1)
 
 | Contract | Address |
 |----------|---------|
@@ -3573,9 +3726,11 @@ import { attackRegistryAbi, registryAbi } from 'battlechain-lib/ts/abi'
 ### Mock & Dependency Contracts
 Source: https://docs.battlechain.com/battlechain/reference/mock-contracts
 
-*Mock and infrastructure contracts deployed on the BattleChain testnet*
+*Mock dependency contracts on the BattleChain testnet and Safe infrastructure on both networks*
 
 BattleChain testnet includes mock versions of common mainnet dependencies and real infrastructure contracts so you can deploy your exact production bytecode — only swapping constructor parameters like oracle addresses.
+
+The mock contracts on this page (tokens, price feeds, and protocol mocks) are deployed on **testnet only** — they are not deployed on BattleChain mainnet. The [Safe contracts](#safe-gnosis-safe) at the bottom of this page are real contracts deployed on both networks.
 
 ## Mock Chainlink Price Feeds
 
@@ -3649,7 +3804,7 @@ To set ETH/USD to $2,000:
 cast send 0xAA72F0168eE17aA93098eC6ECf2EEe72B46aca19 \
   "updateAnswer(int256)" 200000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 ```
 
 The value `200000000000` is `2000 * 1e8` (8 decimals).
@@ -3719,7 +3874,7 @@ To mint 1,000,000 USDC to yourself:
 cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
   "mint()" \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 ```
 
 To mint a specific amount to any address:
@@ -3728,7 +3883,7 @@ To mint a specific amount to any address:
 cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
   "mint(address,uint256)" 0xYOUR_ADDRESS 5000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 ```
 
 The value `5000000000` is `5000 * 1e6` (USDC has 6 decimals).
@@ -3810,12 +3965,12 @@ cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
   "approve(address,uint256)" \
   0x91442C344c069e9B62f068C6F7075E9B403840E0 1000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 
 cast send 0x91442C344c069e9B62f068C6F7075E9B403840E0 \
   "mint(uint256)" 1000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 ```
 
 To supply native ETH to vBNB:
@@ -3825,7 +3980,7 @@ cast send 0x11e4B3Bbe7Fc26514b8D13383a3FB30E3Ced1F62 \
   "mint()" \
   --value 1ether \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 ```
 
 ---
@@ -4048,14 +4203,14 @@ cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
   "approve(address,uint256)" \
   0x102CdAF4B7097752f2Bb336c6cDf39f0aBBbb58c 1000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 
 cast send 0x102CdAF4B7097752f2Bb336c6cDf39f0aBBbb58c \
   "supply((address,address,address,address,uint256),uint256,uint256,address,bytes)" \
   "(0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE,0x4CAc28Fc96bb8fa0e6F94ef0E579384902142f42,0x0000000000000000000000000000000000000001,0x0000000000000000000000000000000000000002,800000000000000000)" \
   1000000000 0 $YOUR_ADDRESS 0x \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 ```
 
 The value `1000000000` is `1000 * 1e6` (USDC has 6 decimals).
@@ -4191,7 +4346,7 @@ cast send 0x6f3C17caA459F8012669f24D294AF72c2F8d9CBF \
   "sendCrossChainMessage((bytes32,address,address,(address,uint256),uint256,address[],bytes))" \
   "(0x0000000000000000000000000000000000000000000000000000000000000001,0xYOUR_DESTINATION_ADDRESS,0xYOUR_DESTINATION_ADDRESS,(0x0000000000000000000000000000000000000000,0),200000,\[\],0x1234)" \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 ```
 
 ### Delivering a Message
@@ -4207,7 +4362,7 @@ cast send 0x6f3C17caA459F8012669f24D294AF72c2F8d9CBF \
   <MESSAGE_ID> \
   <SOURCE_BLOCKCHAIN_ID> \
   --rpc-url $BATTLECHAIN_RPC_URL \
-  --private-key $PRIVATE_KEY
+  --keystore $KEYSTORE
 ```
 
 You can inspect the pending queue at any time:
@@ -4223,9 +4378,9 @@ cast call 0x6f3C17caA459F8012669f24D294AF72c2F8d9CBF \
 
 ## Safe (Gnosis Safe)
 
-The full [Safe](https://docs.safe.global/) smart account infrastructure is deployed on BattleChain testnet. These are real Safe contracts (not mocks) — protocols that use Safe multisigs for governance, treasury, or access control can use the same addresses and deployment patterns as on mainnet.
+The full [Safe](https://docs.safe.global/) smart account infrastructure is deployed on both BattleChain testnet and mainnet. Unlike the mock dependencies above, these are real Safe contracts (not mocks) — protocols that use Safe multisigs for governance, treasury, or access control can use the same deployment patterns as on other chains. The contracts were deployed by Cyfrin, so the addresses differ between the two networks and from Safe's canonical addresses on other chains.
 
-### Deployed Addresses
+### Deployed Addresses (Testnet)
 
 | Contract                     | Address                                                 |
 | ---------------------------- | ------------------------------------------------------- |
@@ -4240,6 +4395,22 @@ The full [Safe](https://docs.safe.global/) smart account infrastructure is deplo
 | TokenCallbackHandler         | 0x232898253fABB3a1EB585bdEE4bE2a36f6D6fd64 |
 | CompatibilityFallbackHandler | 0xc6B2C6982A5643b7702894D4A0901b9371dd1283 |
 | ExtensibleFallbackHandler    | 0x745c41Ae7AC9C23f173B45f5B47E692dC57c2ae2 |
+
+### Deployed Addresses (Mainnet)
+
+| Contract                     | Address                                                 |
+| ---------------------------- | ------------------------------------------------------- |
+| Safe                         | 0xFF716747B4D28EAE844Dc069387C9bFC00e51737 |
+| SafeL2                       | 0xb6524C4fBcEd314EAad98Bc750B6AD76B64d7f8A |
+| SafeProxyFactory             | 0x8d0D56f72E266a4BfA05340f68409dEBbdbdc9e2 |
+| CreateCall                   | 0x5A499D08755a9dC90208Ef5b031a3118789EBF5A |
+| MultiSend                    | 0x28E369665036bFe0041c1E5838A608b1a818296f |
+| MultiSendCallOnly            | 0xed4c81c91602CDD5c1e396a1AF28735E03EdA9e2 |
+| SignMessageLib               | 0x95cb704BFF25b8943BcE3fAE5D1b4665f7b08115 |
+| SafeToL2Setup                | 0xa8fB860254764C68360596f64BA841b077bebBA4 |
+| TokenCallbackHandler         | 0x63b920c6D0B5EC07345d9810169376192654d38F |
+| CompatibilityFallbackHandler | 0x2744C4f8336B6e2A8a182495FbB327Db493F303f |
+| ExtensibleFallbackHandler    | 0x115b290ecDe805FD846E0C347f3419A4234Fd673 |
 
 ### Contract States
 Source: https://docs.battlechain.com/battlechain/reference/contract-states
@@ -4574,6 +4745,7 @@ safeHarborRegistry.setInvalidChains(chainIds);
 | Arbitrum One | `eip155:42161` |
 | Optimism | `eip155:10` |
 | Base | `eip155:8453` |
+| BattleChain | `eip155:626` |
 | BattleChain Testnet | `eip155:627` |
 
 ## Time Constants
@@ -4715,11 +4887,11 @@ This usually means your contract exceeds the size limit. Try splitting it into s
 
 ### Cannot connect to RPC
 
-Ensure the RPC URL is entered exactly as `https://testnet.battlechain.com`.
+Ensure the RPC URL is entered exactly as `https://testnet.battlechain.com` (testnet) or `https://mainnet.battlechain.com` (mainnet).
 
 ### Wrong chain ID
 
-Remove the BattleChain network from your wallet and re-add it with Chain ID `627`. See [Add BattleChain to MetaMask](https://docs.battlechain.com/battlechain/how-to/add-battlechain-to-metamask).
+Remove the BattleChain network from your wallet and re-add it with Chain ID `627` (testnet) or `626` (mainnet). See [Add BattleChain to MetaMask](https://docs.battlechain.com/battlechain/how-to/add-battlechain-to-metamask).
 
 ### The Contract Lifecycle
 Source: https://docs.battlechain.com/battlechain/explanation/contract-lifecycle
@@ -4922,7 +5094,7 @@ Before attacking, resolve the Binding Agreement and verify the contract is attac
 ### Option 1: Block explorer API
 
 ```
-GET https://block-explorer-api.battlechain.com/battlechain/agreement/by-contract/{contractAddress}
+GET https://block-explorer-api.mainnet.battlechain.com/battlechain/agreement/by-contract/{contractAddress}
 GET https://block-explorer-api.testnet.battlechain.com/battlechain/agreement/by-contract/{contractAddress}
 ```
 

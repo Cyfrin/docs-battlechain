@@ -3,7 +3,7 @@ title: "Chain Architecture"
 description: "Sequencer model, precompiles, WETH, and the L1↔L2 bridge for BattleChain"
 ---
 
-BattleChain is a ZK rollup built on [ZKsync OS](https://github.com/matter-labs/zksync-os) that settles to Ethereum. Testnet is chain ID `627` and settles to **Sepolia**. The L2 is EVM-equivalent at the bytecode level, with a small set of differences in precompiles and finality semantics that this page documents.
+BattleChain is a ZK rollup built on [ZKsync OS](https://github.com/matter-labs/zksync-os) that settles to Ethereum. Mainnet is chain ID `626`; testnet is chain ID `627` and settles to **Sepolia**. The L2 is EVM-equivalent at the bytecode level, with a small set of differences in precompiles and finality semantics that this page documents.
 
 For deployed contract addresses (L1 Bridgehub, ZK Chain proxy, etc.), see [Contracts](/battlechain/reference/contracts).
 
@@ -77,7 +77,7 @@ Priority transactions are L1-finality-bound: once included on Ethereum and pulle
 
 #### Sending an L1 → L2 message
 
-Call `requestL2TransactionDirect` on the Sepolia Bridgehub. `chainId` is BattleChain's `627`; `l2Contract` is the contract you want to invoke on BattleChain; `l2Calldata` is the ABI-encoded call.
+Call `requestL2TransactionDirect` on the Sepolia Bridgehub. `chainId` is BattleChain testnet's `627`; `l2Contract` is the contract you want to invoke on BattleChain; `l2Calldata` is the ABI-encoded call. The examples below use the testnet deployment.
 
 ```solidity
 // L1 (Sepolia)
