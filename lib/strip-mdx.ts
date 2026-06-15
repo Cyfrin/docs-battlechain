@@ -50,9 +50,11 @@ export function stripMdxToMarkdown(raw: string): string {
     /<NetworkInfo\s+network="([^"]*)"[^>]*\/>/g,
     (_m, network: string) => NETWORK_INFO[network] ?? '',
   )
+  // A bare <NetworkInfo /> follows the live network toggle on the site; static
+  // markdown has no toggle, so emit both networks' details.
   text = text.replace(
     /<NetworkInfo\s*\/>/g,
-    NETWORK_INFO.testnet,
+    `**Mainnet**\n\n${NETWORK_INFO.mainnet}\n\n**Testnet**\n\n${NETWORK_INFO.testnet}`,
   )
 
   // Convert callout components to blockquotes

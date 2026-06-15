@@ -8,6 +8,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { Footer } from "@/components/layout/Footer";
 import { ContentLayout } from "@/components/layout/ContentLayout";
 import { SubNavbar } from "@/components/layout/SubNavbar";
+import { NetworkProvider } from "@/components/mdx/NetworkTabs";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -101,17 +102,19 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <ProductThemeProvider>
-            <div className="flex min-h-screen flex-col">
-              <Header />
-              <SubNavbar />
-              <div className="flex flex-1">
-                <Sidebar />
-                <main className="flex-1 overflow-auto min-w-0">
-                  <ContentLayout>{children}</ContentLayout>
-                </main>
+            <NetworkProvider>
+              <div className="flex min-h-screen flex-col">
+                <Header />
+                <SubNavbar />
+                <div className="flex flex-1">
+                  <Sidebar />
+                  <main className="flex-1 overflow-auto min-w-0">
+                    <ContentLayout>{children}</ContentLayout>
+                  </main>
+                </div>
+                <Footer />
               </div>
-              <Footer />
-            </div>
+            </NetworkProvider>
           </ProductThemeProvider>
         </ThemeProvider>
       </body>

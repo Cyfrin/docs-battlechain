@@ -2,9 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { battlechain } from '@/config/battlechain'
+import { useNetwork, type NetworkId } from '@/components/mdx/NetworkTabs'
 
 interface NetworkInfoProps {
-  network?: 'testnet' | 'mainnet'
+  // When omitted, the card follows the global Testnet/Mainnet toggle.
+  // When set, it always shows that network regardless of the toggle.
+  network?: NetworkId
 }
 
 interface EIP1193Provider {
@@ -46,8 +49,9 @@ function metaMaskMobileDeeplink(): string {
   return `https://metamask.app.link/dapp/${host}${pathname}${search}`
 }
 
-export function NetworkInfo({ network = 'testnet' }: NetworkInfoProps) {
-  const config = battlechain[network]
+export function NetworkInfo({ network }: NetworkInfoProps) {
+  const { network: active } = useNetwork()
+  const config = battlechain[network ?? active]
   const providersRef = useRef<EIP6963ProviderDetail[]>([])
   const [mounted, setMounted] = useState(false)
   const [hasInjectedProvider, setHasInjectedProvider] = useState(false)
