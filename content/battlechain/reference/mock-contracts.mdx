@@ -5,7 +5,7 @@ description: "Mock dependency contracts on the BattleChain testnet and Safe infr
 
 BattleChain testnet includes mock versions of common mainnet dependencies and real infrastructure contracts so you can deploy your exact production bytecode — only swapping constructor parameters like oracle addresses.
 
-The mock contracts on this page (tokens, price feeds, and protocol mocks) are deployed on **testnet only** — they are not deployed on BattleChain mainnet. The [Safe contracts](#safe-gnosis-safe) at the bottom of this page are real contracts deployed on both networks.
+The mock contracts on this page (tokens, price feeds, and protocol mocks) are deployed on **testnet only** — they are not deployed on BattleChain mainnet. The real (non-mock) contracts at the bottom are genuine deployments, not mocks: [Safe](#safe-gnosis-safe) on both networks, and [Multicall3](#multicall3) on mainnet.
 
 ## Mock Chainlink Price Feeds
 
@@ -698,3 +698,44 @@ The full [Safe](https://docs.safe.global/) smart account infrastructure is deplo
 | TokenCallbackHandler         | <code>0x63b920c6D0B5EC07345d9810169376192654d38F</code> |
 | CompatibilityFallbackHandler | <code>0x2744C4f8336B6e2A8a182495FbB327Db493F303f</code> |
 | ExtensibleFallbackHandler    | <code>0x115b290ecDe805FD846E0C347f3419A4234Fd673</code> |
+
+---
+
+## Multicall3
+
+[Multicall3](https://github.com/mds1/multicall3) batches many contract reads into a single `eth_call`, and can aggregate multiple state-changing calls into one transaction. It lives at the same canonical address — `0xcA11bde05977b3631167028862bE2a173976CA11` — on 250+ chains, so libraries like [viem](https://viem.sh), wagmi, ethers, and Foundry detect and use it automatically.
+
+Unlike the mocks above, this is the real Multicall3, deployed on **BattleChain mainnet only** at that canonical address. It is intentionally not on testnet: deploying it there exceeds the canonical pre-signed transaction's 1,000,000 gas limit, so the standard address can't be reproduced.
+
+### Deployed Address (Mainnet)
+
+| Contract   | Address                                                 |
+| ---------- | ------------------------------------------------------- |
+| Multicall3 | <code>0xcA11bde05977b3631167028862bE2a173976CA11</code> |
+
+Because it sits at the canonical address, most tooling needs no configuration — point your client at BattleChain mainnet and Multicall3 batching works out of the box.
+
+### Interface
+
+`aggregate3` is the usual entry point. The complete ABI — `aggregate`, `tryAggregate`, `aggregate3Value`, and the block/balance helpers — is the standard Multicall3 ABI, available from [multicall3.com](https://multicall3.com).
+
+<AccordionGroup>
+  <Accordion title="aggregate3">
+    ```solidity
+    struct Call3 {
+        address target;     // contract to call
+        bool allowFailure;  // if false, the batch reverts when this call fails
+        bytes callData;     // ABI-encoded calldata
+    }
+
+    struct Result {
+        bool success;
+        bytes returnData;
+    }
+
+    function aggregate3(Call3[] calldata calls)
+        external payable returns (Result[] memory returnData);
+    ```
+
+  </Accordion>
+</AccordionGroup>
