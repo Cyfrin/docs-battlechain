@@ -54,3 +54,9 @@
 - [The Contract Lifecycle](https://docs.battlechain.com/battlechain/explanation/contract-lifecycle): Understanding how contracts move through BattleChain states
 - [Safe Harbor Protection](https://docs.battlechain.com/battlechain/explanation/safe-harbor): Understanding the legal protections for whitehats on BattleChain
 - [Best Practices](https://docs.battlechain.com/battlechain/explanation/best-practices): Guidelines for getting the most out of BattleChain
+
+## Machine-readable resources
+
+- [Deployments JSON](https://docs.battlechain.com/deployments.json): All BattleChain networks, chain IDs, RPC/explorer URLs, and contract addresses as structured JSON
+- [Full docs as markdown](https://docs.battlechain.com/llms-full.txt): Complete text of every page in one file
+- [Docs MCP server](https://docs.battlechain.com/api/mcp): Streamable HTTP MCP endpoint exposing search_docs, read_page, and list_pages

@@ -1,0 +1,83 @@
+{
+  "_note": "Canonical source for BattleChain testnet mock/dependency contracts + Safe infrastructure. Edit here; `pnpm build-deployments` writes public/mock-contracts.json and the docs reference these via %%mock.path%% tokens. teleporter.messenger is null: pending verification (multiple deployments exist on-chain). Mocks are testnet-only unless noted.",
+  "feeds": {
+    "ethUsd": "0xAA72F0168eE17aA93098eC6ECf2EEe72B46aca19",
+    "btcUsd": "0xd87f56De7Fe8d2913B3B8e45C5fd983185286b66",
+    "linkUsd": "0xEa8789e4f6a1d101AfF3093543FC8133c27987FD",
+    "usdcUsd": "0x469be0Db9E0E884a2D9E64a186008C684423B79C"
+  },
+  "tokens": {
+    "weth": { "address": "0x4CAc28Fc96bb8fa0e6F94ef0E579384902142f42", "symbol": "WETH", "decimals": 18 },
+    "usdc": { "address": "0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE", "symbol": "USDC", "decimals": 6 },
+    "usdt": { "address": "0x0d414B0CCef51a25cd32c93b869A9fF2e883a27E", "symbol": "USDT", "decimals": 6 },
+    "dai": { "address": "0x393cBd865554a543D992218d190EA9dcE47d9bC2", "symbol": "DAI", "decimals": 18 },
+    "wbtc": { "address": "0xB90cb0F537F2E7D11b165a8C5C79B7a593aBE4f0", "symbol": "WBTC", "decimals": 8 },
+    "link": { "address": "0xDBCaD9c8f2757f1b7Fe7fC394bEB035018aEA9DC", "symbol": "LINK", "decimals": 18 },
+    "mtk": { "address": "0xA55C81615ea60e870d7a4Dff8C662B4C39c56C80", "symbol": "MTK", "decimals": 18 }
+  },
+  "venus": {
+    "comptroller": "0xAE582334FCf2f932ea1B4D0B484aC34A8184B2e8",
+    "vUsdc": "0x91442C344c069e9B62f068C6F7075E9B403840E0",
+    "vWeth": "0x2A7b8d39e8544517F0Ce0ff4ac895580c79ff692",
+    "vWbtc": "0x9F01733b6B26404495b38fe69f20D5A8252EFd14",
+    "vDai": "0x7ea22541B90794ADa16E5b42A5FF2bf7489e587c",
+    "vBnb": "0x11e4B3Bbe7Fc26514b8D13383a3FB30E3Ced1F62",
+    "vUsdt": "0x2D9680c4cEfe5E36bFB0B78c48dd1d8A06090e8d"
+  },
+  "uniV3": {
+    "factory": "0xd5DCFCab1B60C70F45D61597b351674b4b3C8CDc",
+    "swapRouter": "0x4FC93149e329C15BfF627E967aaA487079D89d2F",
+    "positionManager": "0x43d314e63223041C61460c9A2F5e597Ff7D1cd30"
+  },
+  "kyber": {
+    "router": "0x5A8Eec040E6CDD11cf78A154a5485677aEeb4d0b"
+  },
+  "euler": {
+    "evc": "0xB5D56dECA76e65cC9332Af01971bC8ad018a1Fc1",
+    "eusdcVault": "0x9a6fb480a74e6BAEE31EAbe297384ceA1EBb4d81",
+    "ewethVault": "0x38aF9d1C638C43d4340a700A854721dD5cdCf974"
+  },
+  "morpho": {
+    "core": "0x102CdAF4B7097752f2Bb336c6cDf39f0aBBbb58c",
+    "markets": {
+      "usdcWeth": "0x9c975e07b7926e2fc62ff54950968875656e5a416cedeb289bd55e3f83c422a2",
+      "usdcWbtc": "0x222fa6bbdaa780faeb791457ebe4cbae616e488a622fba3d5d191bd93151a5b8",
+      "wethWbtc": "0xf3d5303bd0352a06c05b2c8903aa4f076b87e0d0c9e375487c59205d41e0e647"
+    }
+  },
+  "ccip": {
+    "router": "0xFA553888e385ECd9ab294e295C206b912a0F402E"
+  },
+  "teleporter": {
+    "messenger": null
+  },
+  "safeTestnet": {
+    "safe": "0x52AbFB25E19C3625178D885D5C75EFB9a99203EB",
+    "safeL2": "0x71314F3E6B1D9386A1de784B644Cf5D0Dde3bB97",
+    "safeProxyFactory": "0x80DbD037C59521F393fDfE15504c6b6b7969F1a1",
+    "createCall": "0x670D1c4c5cc72193b352562Ed75B9ae8224E98b3",
+    "multiSend": "0x69BEaBc6824ba1461F53800d9C3F29FFeC7cf408",
+    "multiSendCallOnly": "0xa6a3C9103C062429e459D263bF5EcCd31Effd56C",
+    "signMessageLib": "0x930833004d88b8bF3208a216323aFfdf9D40C14C",
+    "safeToL2Setup": "0xeCd943c75D2344Fb0AC29D781EFE602E7d87f82B",
+    "tokenCallbackHandler": "0x232898253fABB3a1EB585bdEE4bE2a36f6D6fd64",
+    "compatibilityFallbackHandler": "0xc6B2C6982A5643b7702894D4A0901b9371dd1283",
+    "extensibleFallbackHandler": "0x745c41Ae7AC9C23f173B45f5B47E692dC57c2ae2"
+  },
+  "safeMainnet": {
+    "safe": "0xFF716747B4D28EAE844Dc069387C9bFC00e51737",
+    "safeL2": "0xb6524C4fBcEd314EAad98Bc750B6AD76B64d7f8A",
+    "safeProxyFactory": "0x8d0D56f72E266a4BfA05340f68409dEBbdbdc9e2",
+    "createCall": "0x5A499D08755a9dC90208Ef5b031a3118789EBF5A",
+    "multiSend": "0x28E369665036bFe0041c1E5838A608b1a818296f",
+    "multiSendCallOnly": "0xed4c81c91602CDD5c1e396a1AF28735E03EdA9e2",
+    "signMessageLib": "0x95cb704BFF25b8943BcE3fAE5D1b4665f7b08115",
+    "safeToL2Setup": "0xa8fB860254764C68360596f64BA841b077bebBA4",
+    "tokenCallbackHandler": "0x63b920c6D0B5EC07345d9810169376192654d38F",
+    "compatibilityFallbackHandler": "0x2744C4f8336B6e2A8a182495FbB327Db493F303f",
+    "extensibleFallbackHandler": "0x115b290ecDe805FD846E0C347f3419A4234Fd673"
+  },
+  "multicall3": {
+    "mainnet": "0xcA11bde05977b3631167028862bE2a173976CA11"
+  }
+}

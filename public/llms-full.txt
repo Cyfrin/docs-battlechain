@@ -3553,23 +3553,50 @@ Source: https://docs.battlechain.com/battlechain/reference/contracts
 
 ## Deployed Addresses
 
+> **Note:** Every address on this page comes from a single source of truth and is served as JSON at [`/deployments.json`](https://docs.battlechain.com/deployments.json). Fetch that file from scripts or AI agents instead of scraping these tables.
+
+The **proxy** is the address you interact with. Implementation and Sepolia L1 addresses follow below.
+
 | Contract | Testnet | Mainnet |
 |----------|---------|---------|
-| AttackRegistry (Proxy) | 0x22134e878c409a0Eab7259d873b38e26Ca966d3C | 0x24876e481eC7198CAC95af739Df2a852CE65A415 |
-| SafeHarborRegistry (Proxy) | 0x07E09f67B272aec60eebBfB3D592eC649BDCFEFc | 0xd229f4EE1bAE432010b72a9d1bD682570F4C6eBe |
-| AgreementFactory (Proxy) | 0xf52CEA27b9E20D03Ec48CDe4fafF8F27565646f2 | 0xCdB7F5C0F708baBaabE82afE1DbA8362023AcFdd |
-| BattleChainDeployer | 0x0f75289c6b883b885A1fDF9BCCABE1bbFB094077 | 0xD12765D21dDba418B8Fc0583c4716763e03Aa078 |
+| AttackRegistry (proxy) | `0x22134e878c409a0Eab7259d873b38e26Ca966d3C` | `0x24876e481eC7198CAC95af739Df2a852CE65A415` |
+| SafeHarborRegistry (proxy) | `0x07E09f67B272aec60eebBfB3D592eC649BDCFEFc` | `0xd229f4EE1bAE432010b72a9d1bD682570F4C6eBe` |
+| AgreementFactory (proxy) | `0xf52CEA27b9E20D03Ec48CDe4fafF8F27565646f2` | `0xCdB7F5C0F708baBaabE82afE1DbA8362023AcFdd` |
+| BattleChainDeployer | `0x0f75289c6b883b885A1fDF9BCCABE1bbFB094077` | `0xD12765D21dDba418B8Fc0583c4716763e03Aa078` |
+| CreateX | `0xf1Ebfaa992854ECcB01Ac1F60e5b5279095cca7F` | `0xa397f06F07251A3AEd53f6d3019A2a6cbd83E53e` |
+
+**Testnet only** — `MockRegistryModerator` at `0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF`. This permissionless contract lets you approve your own attack request instantly on testnet; mainnet uses the DAO multisig below.
 
 For mock Chainlink price feeds and test tokens (testnet only), see [Mock Contracts](https://docs.battlechain.com/battlechain/reference/mock-contracts).
 
+### Implementation addresses
+
+The current UUPS implementations behind the proxies above:
+
+| Contract | Testnet | Mainnet |
+|----------|---------|---------|
+| AttackRegistry | `0x4496b7e04b4Dd94153AA0d614708d5f06fc65a13` | `0x2d226C9f76748C3759F640Ee527Ad0D1A312fbB2` |
+| SafeHarborRegistry | `0x7d6fC65eA6436f1621973BcfeaAD8951853D8E35` | `0x96d9cCEf1C2eBD19Cc4D3293Bd726c335F9523d7` |
+| AgreementFactory | `0x8E940c4FE62ea1696751faA99F45F30459c6c978` | `0xF52b4B00E6c33ED327886fc64c205a9F2DEc3623` |
+
+### Mainnet governance
+
+| Role | Address |
+|------|---------|
+| Owner (Safe) | `0xfA26440c6DDc56C93A9248078e13a5eB050ADb1E` |
+| Registry moderator (Safe) | `0x445d5685c4Ae71550Da0716b82B434AEA140E0c7` |
+| Treasury (Safe) | `0x2B1731F5EedBa4141a66C6F81C5290BF61d3325c` |
+
 ### Sepolia (Testnet L1)
+
+Settlement layer (L1) for BattleChain Testnet (chain 627)
 
 | Contract | Address |
 |----------|---------|
-| Bridgehub | 0xcea5c0ade89389dd5fc461f69ccbd812cfb7fbd8 |
-| ZK Chain (627) | 0x564ca3000EfF59D9a647A1B8c871f27236201D1D |
-| Chain Type Manager | 0x3F9A46ec287C93b74D4f144712bDb4EEdEEEEC74 |
-| Validator Timelock | 0x8C2a0b3C86CaA986f5dCd71f053c63Ac8324EA6f |
+| Bridgehub | `0xcea5c0ade89389dd5fc461f69ccbd812cfb7fbd8` |
+| ZK Chain (627) | `0x564ca3000EfF59D9a647A1B8c871f27236201D1D` |
+| Chain Type Manager | `0x3F9A46ec287C93b74D4f144712bDb4EEdEEEEC74` |
+| Validator Timelock | `0x8C2a0b3C86CaA986f5dCd71f053c63Ac8324EA6f` |
 
 ---
 
@@ -3726,7 +3753,7 @@ Source: https://docs.battlechain.com/battlechain/reference/mock-contracts
 
 BattleChain testnet includes mock versions of common mainnet dependencies and real infrastructure contracts so you can deploy your exact production bytecode — only swapping constructor parameters like oracle addresses.
 
-The mock contracts on this page (tokens, price feeds, and protocol mocks) are deployed on **testnet only** — they are not deployed on BattleChain mainnet. The [Safe contracts](#safe-gnosis-safe) at the bottom of this page are real contracts deployed on both networks.
+The mock contracts on this page (tokens, price feeds, and protocol mocks) are deployed on **testnet only** — they are not deployed on BattleChain mainnet. The real (non-mock) contracts at the bottom are genuine deployments, not mocks: [Safe](#safe-gnosis-safe) on both networks, and [Multicall3](#multicall3) on mainnet.
 
 ## Mock Chainlink Price Feeds
 
@@ -3997,18 +4024,6 @@ Use with the [test tokens](#test-tokens) above (WETH, USDC, DAI, etc.) to create
 
 ---
 
-## Mock Uniswap V4
-
-A mock [Uniswap V4](https://docs.uniswap.org/contracts/v4/overview) PoolManager deployment.
-
-### Deployed Addresses
-
-| Contract    | Address                                               |
-| ----------- | ----------------------------------------------------- |
-| PoolManager | 0xB4CB4B877FcF85Db498B81EEa8F3A1136797F7 |
-
----
-
 ## Mock KyberSwap Router
 
 A mock [KyberSwap](https://kyberswap.com/) aggregator router with admin-configurable exchange rates. Implements the same `swap` and `swapSimpleMode` interface so contracts that integrate with KyberSwap on mainnet work on testnet without code changes.
@@ -4229,6 +4244,8 @@ A mock [Chainlink CCIP](https://docs.chain.link/ccip) router for testing cross-c
 
 A mock [Avalanche Teleporter](https://github.com/ava-labs/teleporter) messenger for BattleChain cross-chain dispatch and explicit delivery flows. Implements the full `ITeleporterMessenger` interface so contracts that use Teleporter on Avalanche mainnet work on BattleChain without code changes.
 
+> **Warning:** The Teleporter address below is **pending verification** — more than one Teleporter deployment exists on testnet. Confirm the correct address on the [explorer](https://explorer.testnet.battlechain.com/) before relying on it.
+
 Sent messages are queued as pending and can be delivered to the destination contract via `deliverMessage()`, which calls `receiveTeleporterMessage` on the target. This lets you simulate the full send → deliver lifecycle without Avalanche Warp Messaging.
 
 **Limitations:**
@@ -4407,6 +4424,43 @@ The full [Safe](https://docs.safe.global/) smart account infrastructure is deplo
 | TokenCallbackHandler         | 0x63b920c6D0B5EC07345d9810169376192654d38F |
 | CompatibilityFallbackHandler | 0x2744C4f8336B6e2A8a182495FbB327Db493F303f |
 | ExtensibleFallbackHandler    | 0x115b290ecDe805FD846E0C347f3419A4234Fd673 |
+
+---
+
+## Multicall3
+
+[Multicall3](https://github.com/mds1/multicall3) batches many contract reads into a single `eth_call`, and can aggregate multiple state-changing calls into one transaction. It lives at the same canonical address — `0xcA11bde05977b3631167028862bE2a173976CA11` — on 250+ chains, so libraries like [viem](https://viem.sh), wagmi, ethers, and Foundry detect and use it automatically.
+
+Unlike the mocks above, this is the real Multicall3, deployed on **BattleChain mainnet only** at that canonical address. It is intentionally not on testnet: deploying it there exceeds the canonical pre-signed transaction's 1,000,000 gas limit, so the standard address can't be reproduced.
+
+### Deployed Address (Mainnet)
+
+| Contract   | Address                                                 |
+| ---------- | ------------------------------------------------------- |
+| Multicall3 | 0xcA11bde05977b3631167028862bE2a173976CA11 |
+
+Because it sits at the canonical address, most tooling needs no configuration — point your client at BattleChain mainnet and Multicall3 batching works out of the box.
+
+### Interface
+
+`aggregate3` is the usual entry point. The complete ABI — `aggregate`, `tryAggregate`, `aggregate3Value`, and the block/balance helpers — is the standard Multicall3 ABI, available from [multicall3.com](https://multicall3.com).
+
+  
+    ```solidity
+    struct Call3 {
+        address target;     // contract to call
+        bool allowFailure;  // if false, the batch reverts when this call fails
+        bytes callData;     // ABI-encoded calldata
+    }
+
+    struct Result {
+        bool success;
+        bytes returnData;
+    }
+
+    function aggregate3(Call3[] calldata calls)
+        external payable returns (Result[] memory returnData);
+    ```
 
 ### Contract States
 Source: https://docs.battlechain.com/battlechain/reference/contract-states

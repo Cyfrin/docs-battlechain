@@ -17,10 +17,10 @@ All feeds use **8 decimals**, matching Chainlink's standard for USD pairs.
 
 | Pair     | Address                                                 |
 | -------- | ------------------------------------------------------- |
-| ETH/USD  | <code>0xAA72F0168eE17aA93098eC6ECf2EEe72B46aca19</code> |
-| BTC/USD  | <code>0xd87f56De7Fe8d2913B3B8e45C5fd983185286b66</code> |
-| LINK/USD | <code>0xEa8789e4f6a1d101AfF3093543FC8133c27987FD</code> |
-| USDC/USD | <code>0x469be0Db9E0E884a2D9E64a186008C684423B79C</code> |
+| ETH/USD  | <code>%%mock.feeds.ethUsd%%</code> |
+| BTC/USD  | <code>%%mock.feeds.btcUsd%%</code> |
+| LINK/USD | <code>%%mock.feeds.linkUsd%%</code> |
+| USDC/USD | <code>%%mock.feeds.usdcUsd%%</code> |
 
 ### Interface
 
@@ -78,7 +78,7 @@ All feeds use **8 decimals**, matching Chainlink's standard for USD pairs.
 To set ETH/USD to $2,000:
 
 ```bash
-cast send 0xAA72F0168eE17aA93098eC6ECf2EEe72B46aca19 \
+cast send %%mock.feeds.ethUsd%% \
   "updateAnswer(int256)" 200000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
   --keystore $KEYSTORE
@@ -96,13 +96,13 @@ Mintable ERC-20 tokens for protocols that need token dependencies (stablecoins, 
 
 | Token           | Symbol | Decimals | Address                                                 |
 | --------------- | ------ | -------- | ------------------------------------------------------- |
-| Wrapped Ether   | WETH   | 18       | <code>0x4CAc28Fc96bb8fa0e6F94ef0E579384902142f42</code> |
-| USD Coin        | USDC   | 6        | <code>0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE</code> |
-| Tether USD      | USDT   | 6        | <code>0x0d414B0CCef51a25cd32c93b869A9fF2e883a27E</code> |
-| Dai Stablecoin  | DAI    | 18       | <code>0x393cBd865554a543D992218d190EA9dcE47d9bC2</code> |
-| Wrapped BTC     | WBTC   | 8        | <code>0xB90cb0F537F2E7D11b165a8C5C79B7a593aBE4f0</code> |
-| Chainlink Token | LINK   | 18       | <code>0xDBCaD9c8f2757f1b7Fe7fC394bEB035018aEA9DC</code> |
-| My Token        | MTK    | 18       | <code>0xA55C81615ea60e870d7a4Dff8C662B4C39c56C80</code> |
+| Wrapped Ether   | WETH   | 18       | <code>%%mock.tokens.weth%%</code> |
+| USD Coin        | USDC   | 6        | <code>%%mock.tokens.usdc%%</code> |
+| Tether USD      | USDT   | 6        | <code>%%mock.tokens.usdt%%</code> |
+| Dai Stablecoin  | DAI    | 18       | <code>%%mock.tokens.dai%%</code> |
+| Wrapped BTC     | WBTC   | 8        | <code>%%mock.tokens.wbtc%%</code> |
+| Chainlink Token | LINK   | 18       | <code>%%mock.tokens.link%%</code> |
+| My Token        | MTK    | 18       | <code>%%mock.tokens.mtk%%</code> |
 
 ### Interface
 
@@ -150,7 +150,7 @@ Mintable ERC-20 tokens for protocols that need token dependencies (stablecoins, 
 To mint 1,000,000 USDC to yourself:
 
 ```bash
-cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
+cast send %%mock.tokens.usdc%% \
   "mint()" \
   --rpc-url $BATTLECHAIN_RPC_URL \
   --keystore $KEYSTORE
@@ -159,7 +159,7 @@ cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
 To mint a specific amount to any address:
 
 ```bash
-cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
+cast send %%mock.tokens.usdc%% \
   "mint(address,uint256)" 0xYOUR_ADDRESS 5000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
   --keystore $KEYSTORE
@@ -179,13 +179,13 @@ All markets are listed with a **0.75 collateral factor**. The mock Comptroller a
 
 | Contract    | Address                                                 |
 | ----------- | ------------------------------------------------------- |
-| Comptroller | <code>0xAE582334FCf2f932ea1B4D0B484aC34A8184B2e8</code> |
-| vUSDC       | <code>0x91442C344c069e9B62f068C6F7075E9B403840E0</code> |
-| vWETH       | <code>0x2A7b8d39e8544517F0Ce0ff4ac895580c79ff692</code> |
-| vWBTC       | <code>0x9F01733b6B26404495b38fe69f20D5A8252EFd14</code> |
-| vDAI        | <code>0x7ea22541B90794ADa16E5b42A5FF2bf7489e587c</code> |
-| vBNB        | <code>0x11e4B3Bbe7Fc26514b8D13383a3FB30E3Ced1F62</code> |
-| vUSDT       | <code>0x2D9680c4cEfe5E36bFB0B78c48dd1d8A06090e8d</code> |
+| Comptroller | <code>%%mock.venus.comptroller%%</code> |
+| vUSDC       | <code>%%mock.venus.vUsdc%%</code> |
+| vWETH       | <code>%%mock.venus.vWeth%%</code> |
+| vWBTC       | <code>%%mock.venus.vWbtc%%</code> |
+| vDAI        | <code>%%mock.venus.vDai%%</code> |
+| vBNB        | <code>%%mock.venus.vBnb%%</code> |
+| vUSDT       | <code>%%mock.venus.vUsdt%%</code> |
 
 The vToken markets use the [test tokens](#test-tokens) as their underlying assets. vBNB uses native ETH.
 
@@ -242,13 +242,13 @@ The vToken markets use the [test tokens](#test-tokens) as their underlying asset
 To supply 1,000 USDC to vUSDC (approve first, then mint):
 
 ```bash
-cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
+cast send %%mock.tokens.usdc%% \
   "approve(address,uint256)" \
-  0x91442C344c069e9B62f068C6F7075E9B403840E0 1000000000 \
+  %%mock.venus.vUsdc%% 1000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
   --keystore $KEYSTORE
 
-cast send 0x91442C344c069e9B62f068C6F7075E9B403840E0 \
+cast send %%mock.venus.vUsdc%% \
   "mint(uint256)" 1000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
   --keystore $KEYSTORE
@@ -257,7 +257,7 @@ cast send 0x91442C344c069e9B62f068C6F7075E9B403840E0 \
 To supply native ETH to vBNB:
 
 ```bash
-cast send 0x11e4B3Bbe7Fc26514b8D13383a3FB30E3Ced1F62 \
+cast send %%mock.venus.vBnb%% \
   "mint()" \
   --value 1ether \
   --rpc-url $BATTLECHAIN_RPC_URL \
@@ -274,23 +274,11 @@ A mock [Uniswap V3](https://docs.uniswap.org/contracts/v3/overview) deployment w
 
 | Contract                   | Address                                                 |
 | -------------------------- | ------------------------------------------------------- |
-| UniswapV3Factory           | <code>0xd5DCFCab1B60C70F45D61597b351674b4b3C8CDc</code> |
-| SwapRouter                 | <code>0x4FC93149e329C15BfF627E967aaA487079D89d2F</code> |
-| NonfungiblePositionManager | <code>0x43d314e63223041C61460c9A2F5e597Ff7D1cd30</code> |
+| UniswapV3Factory           | <code>%%mock.uniV3.factory%%</code> |
+| SwapRouter                 | <code>%%mock.uniV3.swapRouter%%</code> |
+| NonfungiblePositionManager | <code>%%mock.uniV3.positionManager%%</code> |
 
 Use with the [test tokens](#test-tokens) above (WETH, USDC, DAI, etc.) to create pools and test swap logic.
-
----
-
-## Mock Uniswap V4
-
-A mock [Uniswap V4](https://docs.uniswap.org/contracts/v4/overview) PoolManager deployment.
-
-### Deployed Addresses
-
-| Contract    | Address                                               |
-| ----------- | ----------------------------------------------------- |
-| PoolManager | <code>0xB4CB4B877FcF85Db498B81EEa8F3A1136797F7</code> |
 
 ---
 
@@ -308,7 +296,7 @@ A mock [KyberSwap](https://kyberswap.com/) aggregator router with admin-configur
 
 | Contract            | Address                                                 |
 | ------------------- | ------------------------------------------------------- |
-| MockKyberSwapRouter | <code>0x5A8Eec040E6CDD11cf78A154a5485677aEeb4d0b</code> |
+| MockKyberSwapRouter | <code>%%mock.kyber.router%%</code> |
 
 ### Interface
 
@@ -363,9 +351,9 @@ A mock [Euler V2](https://docs.euler.finance/) deployment with the Ethereum Vaul
 
 | Contract    | Address                                                 |
 | ----------- | ------------------------------------------------------- |
-| EVC         | <code>0xB5D56dECA76e65cC9332Af01971bC8ad018a1Fc1</code> |
-| eUSDC Vault | <code>0x9a6fb480a74e6BAEE31EAbe297384ceA1EBb4d81</code> |
-| eWETH Vault | <code>0x38aF9d1C638C43d4340a700A854721dD5cdCf974</code> |
+| EVC         | <code>%%mock.euler.evc%%</code> |
+| eUSDC Vault | <code>%%mock.euler.eusdcVault%%</code> |
+| eWETH Vault | <code>%%mock.euler.ewethVault%%</code> |
 
 The vaults use the [test tokens](#test-tokens) as their underlying assets (USDC and WETH respectively).
 
@@ -385,7 +373,7 @@ A mock [Morpho Blue](https://docs.morpho.org/) lending protocol deployment. Impl
 
 | Contract   | Address                                                 |
 | ---------- | ------------------------------------------------------- |
-| MockMorpho | <code>0x102CdAF4B7097752f2Bb336c6cDf39f0aBBbb58c</code> |
+| MockMorpho | <code>%%mock.morpho.core%%</code> |
 
 ### Markets
 
@@ -393,9 +381,9 @@ Three markets are pre-configured with an 80% liquidation LTV. Markets are identi
 
 | Market    | Id                                                                              |
 | --------- | ------------------------------------------------------------------------------- |
-| USDC/WETH | <code>0x9c975e07b7926e2fc62ff54950968875656e5a416cedeb289bd55e3f83c422a2</code> |
-| USDC/WBTC | <code>0x222fa6bbdaa780faeb791457ebe4cbae616e488a622fba3d5d191bd93151a5b8</code> |
-| WETH/WBTC | <code>0xf3d5303bd0352a06c05b2c8903aa4f076b87e0d0c9e375487c59205d41e0e647</code> |
+| USDC/WETH | <code>%%mock.morpho.markets.usdcWeth%%</code> |
+| USDC/WBTC | <code>%%mock.morpho.markets.usdcWbtc%%</code> |
+| WETH/WBTC | <code>%%mock.morpho.markets.wethWbtc%%</code> |
 
 Market names are formatted as **loanToken/collateralToken** — e.g., USDC/WETH means borrow USDC against WETH collateral. All markets use the [test tokens](#test-tokens).
 
@@ -484,15 +472,15 @@ Market names are formatted as **loanToken/collateralToken** — e.g., USDC/WETH 
 To supply 1,000 USDC to the USDC/WETH market (approve first, then supply):
 
 ```bash
-cast send 0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE \
+cast send %%mock.tokens.usdc%% \
   "approve(address,uint256)" \
-  0x102CdAF4B7097752f2Bb336c6cDf39f0aBBbb58c 1000000000 \
+  %%mock.morpho.core%% 1000000000 \
   --rpc-url $BATTLECHAIN_RPC_URL \
   --keystore $KEYSTORE
 
-cast send 0x102CdAF4B7097752f2Bb336c6cDf39f0aBBbb58c \
+cast send %%mock.morpho.core%% \
   "supply((address,address,address,address,uint256),uint256,uint256,address,bytes)" \
-  "(0xb9bEab76Db81BdF8c863f2cA648dA8d3bB5CB1EE,0x4CAc28Fc96bb8fa0e6F94ef0E579384902142f42,0x0000000000000000000000000000000000000001,0x0000000000000000000000000000000000000002,800000000000000000)" \
+  "(%%mock.tokens.usdc%%,%%mock.tokens.weth%%,0x0000000000000000000000000000000000000001,0x0000000000000000000000000000000000000002,800000000000000000)" \
   1000000000 0 $YOUR_ADDRESS 0x \
   --rpc-url $BATTLECHAIN_RPC_URL \
   --keystore $KEYSTORE
@@ -510,13 +498,17 @@ A mock [Chainlink CCIP](https://docs.chain.link/ccip) router for testing cross-c
 
 | Contract       | Address                                                 |
 | -------------- | ------------------------------------------------------- |
-| MockCCIPRouter | <code>0xFA553888e385ECd9ab294e295C206b912a0F402E</code> |
+| MockCCIPRouter | <code>%%mock.ccip.router%%</code> |
 
 ---
 
 ## Mock Teleporter Messenger
 
 A mock [Avalanche Teleporter](https://github.com/ava-labs/teleporter) messenger for BattleChain cross-chain dispatch and explicit delivery flows. Implements the full `ITeleporterMessenger` interface so contracts that use Teleporter on Avalanche mainnet work on BattleChain without code changes.
+
+<Warning>
+The Teleporter address below is **pending verification** — more than one Teleporter deployment exists on testnet. Confirm the correct address on the [explorer](https://explorer.testnet.battlechain.com/) before relying on it.
+</Warning>
 
 Sent messages are queued as pending and can be delivered to the destination contract via `deliverMessage()`, which calls `receiveTeleporterMessage` on the target. This lets you simulate the full send → deliver lifecycle without Avalanche Warp Messaging.
 
@@ -671,39 +663,39 @@ The full [Safe](https://docs.safe.global/) smart account infrastructure is deplo
 
 | Contract                     | Address                                                 |
 | ---------------------------- | ------------------------------------------------------- |
-| Safe                         | <code>0x52AbFB25E19C3625178D885D5C75EFB9a99203EB</code> |
-| SafeL2                       | <code>0x71314F3E6B1D9386A1de784B644Cf5D0Dde3bB97</code> |
-| SafeProxyFactory             | <code>0x80DbD037C59521F393fDfE15504c6b6b7969F1a1</code> |
-| CreateCall                   | <code>0x670D1c4c5cc72193b352562Ed75B9ae8224E98b3</code> |
-| MultiSend                    | <code>0x69BEaBc6824ba1461F53800d9C3F29FFeC7cf408</code> |
-| MultiSendCallOnly            | <code>0xa6a3C9103C062429e459D263bF5EcCd31Effd56C</code> |
-| SignMessageLib               | <code>0x930833004d88b8bF3208a216323aFfdf9D40C14C</code> |
-| SafeToL2Setup                | <code>0xeCd943c75D2344Fb0AC29D781EFE602E7d87f82B</code> |
-| TokenCallbackHandler         | <code>0x232898253fABB3a1EB585bdEE4bE2a36f6D6fd64</code> |
-| CompatibilityFallbackHandler | <code>0xc6B2C6982A5643b7702894D4A0901b9371dd1283</code> |
-| ExtensibleFallbackHandler    | <code>0x745c41Ae7AC9C23f173B45f5B47E692dC57c2ae2</code> |
+| Safe                         | <code>%%mock.safeTestnet.safe%%</code> |
+| SafeL2                       | <code>%%mock.safeTestnet.safeL2%%</code> |
+| SafeProxyFactory             | <code>%%mock.safeTestnet.safeProxyFactory%%</code> |
+| CreateCall                   | <code>%%mock.safeTestnet.createCall%%</code> |
+| MultiSend                    | <code>%%mock.safeTestnet.multiSend%%</code> |
+| MultiSendCallOnly            | <code>%%mock.safeTestnet.multiSendCallOnly%%</code> |
+| SignMessageLib               | <code>%%mock.safeTestnet.signMessageLib%%</code> |
+| SafeToL2Setup                | <code>%%mock.safeTestnet.safeToL2Setup%%</code> |
+| TokenCallbackHandler         | <code>%%mock.safeTestnet.tokenCallbackHandler%%</code> |
+| CompatibilityFallbackHandler | <code>%%mock.safeTestnet.compatibilityFallbackHandler%%</code> |
+| ExtensibleFallbackHandler    | <code>%%mock.safeTestnet.extensibleFallbackHandler%%</code> |
 
 ### Deployed Addresses (Mainnet)
 
 | Contract                     | Address                                                 |
 | ---------------------------- | ------------------------------------------------------- |
-| Safe                         | <code>0xFF716747B4D28EAE844Dc069387C9bFC00e51737</code> |
-| SafeL2                       | <code>0xb6524C4fBcEd314EAad98Bc750B6AD76B64d7f8A</code> |
-| SafeProxyFactory             | <code>0x8d0D56f72E266a4BfA05340f68409dEBbdbdc9e2</code> |
-| CreateCall                   | <code>0x5A499D08755a9dC90208Ef5b031a3118789EBF5A</code> |
-| MultiSend                    | <code>0x28E369665036bFe0041c1E5838A608b1a818296f</code> |
-| MultiSendCallOnly            | <code>0xed4c81c91602CDD5c1e396a1AF28735E03EdA9e2</code> |
-| SignMessageLib               | <code>0x95cb704BFF25b8943BcE3fAE5D1b4665f7b08115</code> |
-| SafeToL2Setup                | <code>0xa8fB860254764C68360596f64BA841b077bebBA4</code> |
-| TokenCallbackHandler         | <code>0x63b920c6D0B5EC07345d9810169376192654d38F</code> |
-| CompatibilityFallbackHandler | <code>0x2744C4f8336B6e2A8a182495FbB327Db493F303f</code> |
-| ExtensibleFallbackHandler    | <code>0x115b290ecDe805FD846E0C347f3419A4234Fd673</code> |
+| Safe                         | <code>%%mock.safeMainnet.safe%%</code> |
+| SafeL2                       | <code>%%mock.safeMainnet.safeL2%%</code> |
+| SafeProxyFactory             | <code>%%mock.safeMainnet.safeProxyFactory%%</code> |
+| CreateCall                   | <code>%%mock.safeMainnet.createCall%%</code> |
+| MultiSend                    | <code>%%mock.safeMainnet.multiSend%%</code> |
+| MultiSendCallOnly            | <code>%%mock.safeMainnet.multiSendCallOnly%%</code> |
+| SignMessageLib               | <code>%%mock.safeMainnet.signMessageLib%%</code> |
+| SafeToL2Setup                | <code>%%mock.safeMainnet.safeToL2Setup%%</code> |
+| TokenCallbackHandler         | <code>%%mock.safeMainnet.tokenCallbackHandler%%</code> |
+| CompatibilityFallbackHandler | <code>%%mock.safeMainnet.compatibilityFallbackHandler%%</code> |
+| ExtensibleFallbackHandler    | <code>%%mock.safeMainnet.extensibleFallbackHandler%%</code> |
 
 ---
 
 ## Multicall3
 
-[Multicall3](https://github.com/mds1/multicall3) batches many contract reads into a single `eth_call`, and can aggregate multiple state-changing calls into one transaction. It lives at the same canonical address — `0xcA11bde05977b3631167028862bE2a173976CA11` — on 250+ chains, so libraries like [viem](https://viem.sh), wagmi, ethers, and Foundry detect and use it automatically.
+[Multicall3](https://github.com/mds1/multicall3) batches many contract reads into a single `eth_call`, and can aggregate multiple state-changing calls into one transaction. It lives at the same canonical address — `%%mock.multicall3.mainnet%%` — on 250+ chains, so libraries like [viem](https://viem.sh), wagmi, ethers, and Foundry detect and use it automatically.
 
 Unlike the mocks above, this is the real Multicall3, deployed on **BattleChain mainnet only** at that canonical address. It is intentionally not on testnet: deploying it there exceeds the canonical pre-signed transaction's 1,000,000 gas limit, so the standard address can't be reproduced.
 
@@ -711,7 +703,7 @@ Unlike the mocks above, this is the real Multicall3, deployed on **BattleChain m
 
 | Contract   | Address                                                 |
 | ---------- | ------------------------------------------------------- |
-| Multicall3 | <code>0xcA11bde05977b3631167028862bE2a173976CA11</code> |
+| Multicall3 | <code>%%mock.multicall3.mainnet%%</code> |
 
 Because it sits at the canonical address, most tooling needs no configuration — point your client at BattleChain mainnet and Multicall3 batching works out of the box.
 

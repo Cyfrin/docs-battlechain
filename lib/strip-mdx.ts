@@ -1,26 +1,35 @@
+import deployments from '../config/deployments.json'
+import { substituteDeploymentTokens } from './deployments'
+
 const BASE_URL = 'https://docs.battlechain.com'
 
+interface NetworkMeta {
+  name: string
+  chainId: number
+  rpcUrl: string
+  explorer: string
+  currencySymbol: string
+  caip2: string
+}
+
+// Network details rendered into llms-full.txt are derived from the single
+// source of truth in config/deployments.json (same data the live site shows).
+function networkInfoTable(net: NetworkMeta): string {
+  return [
+    '| Field | Value |',
+    '|-------|-------|',
+    `| Network Name | ${net.name} |`,
+    `| Chain ID | \`${net.chainId}\` |`,
+    `| RPC URL | \`${net.rpcUrl}\` |`,
+    `| Explorer | ${net.explorer} |`,
+    `| Currency | ${net.currencySymbol} |`,
+    `| CAIP-2 ID | \`${net.caip2}\` |`,
+  ].join('\n')
+}
+
 const NETWORK_INFO: Record<string, string> = {
-  testnet: [
-    '| Field | Value |',
-    '|-------|-------|',
-    '| Network Name | BattleChain Testnet |',
-    '| Chain ID | `627` |',
-    '| RPC URL | `https://testnet.battlechain.com` |',
-    '| Explorer | https://explorer.testnet.battlechain.com/ |',
-    '| Currency | ETH |',
-    '| CAIP-2 ID | `eip155:627` |',
-  ].join('\n'),
-  mainnet: [
-    '| Field | Value |',
-    '|-------|-------|',
-    '| Network Name | BattleChain |',
-    '| Chain ID | `626` |',
-    '| RPC URL | `https://mainnet.battlechain.com` |',
-    '| Explorer | https://explorer.mainnet.battlechain.com/ |',
-    '| Currency | ETH |',
-    '| CAIP-2 ID | `eip155:626` |',
-  ].join('\n'),
+  testnet: networkInfoTable(deployments.networks.testnet),
+  mainnet: networkInfoTable(deployments.networks.mainnet),
 }
 
 /**
@@ -28,6 +37,10 @@ const NETWORK_INFO: Record<string, string> = {
  * Strips JSX components and replaces them with readable markdown equivalents.
  */
 export function stripMdxToMarkdown(raw: string): string {
+  // Resolve %%deployment.tokens%% to real addresses before stripping so the
+  // markdown handed to AIs / the copy button carries concrete values.
+  raw = substituteDeploymentTokens(raw)
+
   // Protect fenced code blocks from tag/brace stripping
   const codeBlocks: string[] = []
   let text = raw.replace(/```[\s\S]*?```/g, (match) => {

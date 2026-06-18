@@ -14,7 +14,7 @@ Contract verification works on both BattleChain networks:
 | Testnet | [https://explorer.testnet.battlechain.com/](https://explorer.testnet.battlechain.com/) | `https://block-explorer-api.testnet.battlechain.com/api` |
 | Mainnet | [https://explorer.mainnet.battlechain.com/](https://explorer.mainnet.battlechain.com/) | `https://block-explorer-api.mainnet.battlechain.com/api` |
 
-The examples below use the testnet endpoints. For mainnet, swap in chain ID `626`, the mainnet verifier API, and `https://mainnet.battlechain.com` as the RPC URL.
+The examples below use the testnet endpoints. For mainnet, swap in chain ID `626`, the mainnet verifier API, and `%%mainnet.rpc%%` as the RPC URL.
 
 ## Why Verify
 
@@ -57,7 +57,7 @@ forge verify-contract <CONTRACT_ADDRESS> <PATH>:<CONTRACT_NAME> \
   --verifier-url https://block-explorer-api.testnet.battlechain.com/api \
   --verifier custom \
   --etherscan-api-key "1234" \
-  --rpc-url https://testnet.battlechain.com
+  --rpc-url %%testnet.rpc%%
 ```
 
 Replace `<CONTRACT_ADDRESS>` with your deployed address and `<PATH>:<CONTRACT_NAME>` with the source path and contract name (e.g., `src/MyVault.sol:MyVault`).
@@ -68,7 +68,7 @@ Replace `<CONTRACT_ADDRESS>` with your deployed address and `<PATH>:<CONTRACT_NA
 | `--verifier-url` | `https://block-explorer-api.testnet.battlechain.com/api` | BattleChain explorer API |
 | `--verifier` | `custom` | Required when using a non-Etherscan explorer |
 | `--etherscan-api-key` | `"1234"` | Not validated — any non-empty string works |
-| `--rpc-url` | `https://testnet.battlechain.com` | BattleChain testnet RPC |
+| `--rpc-url` | `%%testnet.rpc%%` | BattleChain testnet RPC |
 
 On success you'll see:
 
@@ -94,7 +94,7 @@ Add `--verify` to your `forge script` call to verify contracts as they're deploy
 
 ```bash
 forge script script/Deploy.s.sol \
-  --rpc-url https://testnet.battlechain.com \
+  --rpc-url %%testnet.rpc%% \
   --broadcast --skip-simulation -g 300 \
   --verify \
   --verifier-url https://block-explorer-api.testnet.battlechain.com/api \
