@@ -66,14 +66,43 @@ Total cap across all whitehats for a single exploit.
 - **Non-zero**: Total payouts ≤ this value
 - **Note**: Cannot use with `retainable = true`
 
-## Bounty Calculation
+## Bounty Calculation and Settlement
+
+This is the canonical reference for how a bounty is calculated and paid. The how-to guides — [Execute an Attack](/battlechain/how-to/execute-attack) and [Claim Bounties](/battlechain/how-to/claim-bounties) — link here rather than restating it.
+
+### The formula
 
 ```
 Individual Bounty = min(RecoveredValue x bountyPercentage%, bountyCapUsd)
 
 If aggregateBountyCapUsd > 0:
-  Total Payouts ≤ aggregateBountyCapUsd
+  Total Payouts ≤ aggregateBountyCapUsd   (shared proportionally across whitehats)
 ```
+
+| Recovered | Percentage | Cap | Bounty |
+|-----------|------------|-----|--------|
+| \$500K | 10% | \$5M | \$50K |
+| \$10M | 10% | \$5M | \$1M |
+| \$100M | 10% | \$5M | \$5M (capped) |
+
+### Converting the USD cap to tokens
+
+`bountyCapUsd` is denominated in USD; convert it to a token amount with the current price:
+
+```solidity
+uint256 capUsd = terms.bountyCapUsd;          // $5,000,000
+uint256 ethPrice = 2000;                       // from an oracle
+uint256 capInEth = capUsd * 1e18 / ethPrice;   // 2,500 ETH
+```
+
+### Settlement: retainable vs return-all
+
+The `retainable` field (above) decides how recovered funds are split:
+
+- **`retainable = true`** — keep your bounty from the recovered funds and send the remainder to the recovery address.
+- **`retainable = false`** — send *all* recovered funds to the recovery address; the protocol pays your bounty separately.
+
+The code patterns for performing the transfers (including multiple token types) live in [Execute an Attack](/battlechain/how-to/execute-attack#handle-recovered-funds).
 
 ## Examples
 

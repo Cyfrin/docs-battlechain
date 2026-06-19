@@ -156,7 +156,7 @@ export function Sidebar() {
               className={`block px-3 py-2 rounded-lg text-sm transition-all ${
                 isActive
                   ? 'sidebar-link-active font-medium'
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
               }`}
             >
               {title}
@@ -176,6 +176,23 @@ export function Sidebar() {
           return
         }
 
+        // Top-level groups are section headers: always expanded, no collapse
+        // toggle. Only nested sub-groups (e.g. Quickstart, Block Explorer) keep
+        // the collapsible chevron.
+        if (level === 0) {
+          result.push(
+            <li key={`group-${group.group}-${index}`}>
+              <div className="px-3 pb-1 text-xs font-bold uppercase tracking-wider text-gray-900 dark:text-white">
+                {group.group}
+              </div>
+              <ul className="mt-1 space-y-1">
+                {renderPages(group.pages, level + 1, false)}
+              </ul>
+            </li>
+          )
+          return
+        }
+
         const groupId = `group-${group.group}-${index}`
         const isExpanded = expandedSections.has(groupId)
 
@@ -184,7 +201,7 @@ export function Sidebar() {
             <button
               type="button"
               onClick={() => toggleSection(groupId)}
-              className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
             >
               <span>{group.group}</span>
               <svg
@@ -228,7 +245,7 @@ export function Sidebar() {
     if (dropdown.dropdown === 'BattleChain') {
       return (
         <div key={`battlechain-${index}`} className="mb-2">
-          <ul className="space-y-1">
+          <ul className="space-y-6">
             {renderPages(dropdown.pages, 0, false)}
           </ul>
         </div>

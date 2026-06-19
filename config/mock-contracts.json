@@ -1,5 +1,5 @@
 {
-  "_note": "Canonical source for BattleChain testnet mock/dependency contracts + Safe infrastructure. Edit here; `pnpm build-deployments` writes public/mock-contracts.json and the docs reference these via %%mock.path%% tokens. teleporter.messenger is null: pending verification (multiple deployments exist on-chain). Mocks are testnet-only unless noted.",
+  "_note": "Canonical source for BattleChain testnet mock/dependency contracts + Safe infrastructure. Edit here; `pnpm build-deployments` writes public/mock-contracts.json and the docs reference these via %%mock.path%% tokens. Mocks are testnet-only unless noted.",
   "feeds": {
     "ethUsd": "0xAA72F0168eE17aA93098eC6ECf2EEe72B46aca19",
     "btcUsd": "0xd87f56De7Fe8d2913B3B8e45C5fd983185286b66",
@@ -47,9 +47,6 @@
   },
   "ccip": {
     "router": "0xFA553888e385ECd9ab294e295C206b912a0F402E"
-  },
-  "teleporter": {
-    "messenger": null
   },
   "safeTestnet": {
     "safe": "0x52AbFB25E19C3625178D885D5C75EFB9a99203EB",

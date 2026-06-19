@@ -1,0 +1,71 @@
+---
+title: "How Deployment Works"
+description: "The BattleChain deploy stack — how just recipes, battlechain-lib, BattleChainDeployer, and CreateX fit together, plus the Foundry flags you need"
+---
+
+When you deploy to BattleChain you're using a **layered stack**. Each layer is a thin wrapper over the one below it — so the `just setup` you run in the quickstart and the `bcDeployCreate(...)` you write in your own script are the *same path*, just entered at different heights.
+
+## The stack
+
+```
+just recipe            →  starter-kit convenience wrapper (forge script ... --skip-simulation)
+  forge script         →  your Solidity deploy script
+    battlechain-lib    →  BCDeploy / BCSafeHarbor helpers (bcDeployCreate, createAndAdoptAgreement, requestAttackMode)
+      BattleChainDeployer →  deploys + auto-registers the contract with the AttackRegistry
+        CreateX        →  the underlying CREATE/CREATE2/CREATE3 factory
+```
+
+| Layer | What it is | When you touch it |
+|-------|-----------|-------------------|
+| **`just` recipes** | Convenience aliases in the [starter kit](https://github.com/Cyfrin/battlechain-starter) that run `forge script` with the right flags | Quickstart / fastest path |
+| **`battlechain-lib`** | The library you install (`BCDeploy`, `BCSafeHarbor`, `BCScript`) exposing `bcDeployCreate*`, `createAndAdoptAgreement`, `requestAttackMode` | Writing your own deploy + agreement scripts |
+| **`BattleChainDeployer`** | On-chain deployer that wraps CreateX and **auto-registers each deployment** with the `AttackRegistry` (so contracts are attackable) | Reference / direct calls |
+| **CreateX** | Standard CREATE/CREATE2/CREATE3 factory used under the hood | Rarely directly |
+
+The key reason deployments go through `BattleChainDeployer` rather than a raw `CREATE` is **registration**: it records the deployer of every contract so the `AttackRegistry` can resolve which agreement covers it. Deploy outside this path and your contract won't be linked to its agreement.
+
+## Which layer should I use?
+
+- **Just trying it out?** Use the starter kit's `just` recipes — see [Deploy and Battle-Test Your Contract](/battlechain/quickstart/deploy-your-contract).
+- **Deploying your own contracts?** Install `battlechain-lib` and write a script with `BCScript` / `bcDeployCreate*` — see [Deploying Contracts](/battlechain/tutorials/deploying-contracts).
+- **Need the raw addresses/ABIs?** See the [Contract API Reference](/battlechain/reference/contracts).
+
+`battlechain-lib` works on BattleChain *and* 190+ other EVM chains (it falls back to CreateX directly off-BattleChain). Only `requestAttackMode` is BattleChain-specific.
+
+## Foundry on BattleChain
+
+These apply to every `forge script` / `cast` call against BattleChain. The starter kit's `justfile` and `battlechain-lib`'s `battlechain.just` already include them.
+
+### Always pass `--skip-simulation`
+
+Forge's local gas estimation isn't reliable on BattleChain, so simulation can fail before broadcast. Skip it:
+
+```bash
+forge script script/Deploy.s.sol --rpc-url %%testnet.rpc%% --broadcast --skip-simulation
+```
+
+### Add `-g 300` if a deploy still fails
+
+Bumps the gas estimate to 3× to clear vague out-of-gas failures:
+
+```bash
+forge script script/Deploy.s.sol --rpc-url %%testnet.rpc%% --broadcast --skip-simulation -g 300
+```
+
+### `--legacy` is **not** needed
+
+BattleChain accepts standard EIP-1559 transactions — none of the working deploy scripts use `--legacy`. If a tool or older guide tells you to add it, you can ignore that.
+
+### Watch the 24 KB contract size limit
+
+BattleChain enforces the EVM's 24,576-byte limit. An oversized contract can't be gas-estimated, which surfaces as:
+
+```
+AnyTxType(2) transaction can't be built due to missing keys: ["gas_limit"]
+```
+
+Fix it by enabling the optimizer, splitting the contract, or compiling with `--via-ir`. Check sizes with `forge build --sizes`.
+
+<Card title="Deploy and Battle-Test Your Contract" icon="rocket" href="/battlechain/quickstart/deploy-your-contract">
+  Put the stack to work — deploy a vault and open it for attack
+</Card>
