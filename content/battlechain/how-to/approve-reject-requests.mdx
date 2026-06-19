@@ -7,6 +7,16 @@ description: "Process attack mode requests as a DAO member"
 
 As the registry moderator, you review attack requests and decide whether to approve or reject them.
 
+## Approvals Dashboard (recommended)
+
+The easiest way to do this is the **[Approvals dashboard](https://approvals.battlechain.com)** — a public index of every attack-mode request and its state. Browsing requires no wallet; each request links through to the protocol's details, bounty terms, contracts in scope, and a verification flag for the agreement's terms URI.
+
+To act on a request, connect the **registry-moderator Safe** (the dashboard supports WalletConnect, so you can pair the Safe from your wallet of choice). Once connected as the moderator, each pending request shows **Approve** and **Reject** buttons that submit the same calls below through the Safe — no `cast` or scripting required.
+
+<Note>
+The dashboard is the recommended path. The contract calls below remain available for scripting, batch processing, or programmatic workflows.
+</Note>
+
 ## Approve a Request
 
 If the request passes review:

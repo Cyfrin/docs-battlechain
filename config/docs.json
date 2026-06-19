@@ -134,6 +134,10 @@
           "href": "https://explorer.testnet.battlechain.com"
         },
         {
+          "anchor": "Approvals",
+          "href": "https://approvals.battlechain.com"
+        },
+        {
           "anchor": "Bridge",
           "href": "https://portal.battlechain.com/bridge"
         },
