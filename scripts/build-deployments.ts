@@ -181,7 +181,7 @@ function generateBlock(data: Deployments): string {
     '',
     '</Network>',
     '',
-    'For mock Chainlink price feeds and test tokens (testnet only), see [Mock Contracts](/battlechain/reference/mock-contracts).',
+    'For mock Chainlink price feeds and test tokens (testnet only), see [Dependency Contracts](/battlechain/reference/dependency-contracts).',
     '',
     '### Implementation addresses',
     '',

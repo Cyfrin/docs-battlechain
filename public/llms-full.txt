@@ -3437,7 +3437,7 @@ The **proxy** is the address you interact with. Implementation and L1 addresses 
 
 **Testnet only** — `MockRegistryModerator` at ``. This permissionless contract lets you approve your own attack request instantly on testnet; mainnet uses the DAO multisig.
 
-For mock Chainlink price feeds and test tokens (testnet only), see [Mock Contracts](https://docs.battlechain.com/battlechain/reference/mock-contracts).
+For mock Chainlink price feeds and test tokens (testnet only), see [Dependency Contracts](https://docs.battlechain.com/battlechain/reference/dependency-contracts).
 
 ### Implementation addresses
 
@@ -3628,19 +3628,15 @@ import { attackRegistryAbi, registryAbi } from 'battlechain-lib/ts/abi'
 ```
 
 ### Dependency Contracts
-Source: https://docs.battlechain.com/battlechain/reference/mock-contracts
+Source: https://docs.battlechain.com/battlechain/reference/dependency-contracts
 
 *Dependency contracts your protocol can integrate with on BattleChain — mock protocols on testnet, plus Safe and Multicall3 infrastructure.*
 
 Your protocol often depends on external contracts — price oracles, DEXs, lending markets, multisigs. This page lists the dependency contracts available on BattleChain so you can deploy your exact production bytecode, only swapping constructor parameters like oracle addresses.
 
+Use the **Mainnet / Testnet** toggle in the top bar to switch networks. The [Safe](#safe-gnosis-safe) and [Multicall3](#multicall3) contracts toward the bottom are genuine deployments (not mocks).
+
 On **testnet**, BattleChain provides **mock versions** of common mainnet dependencies (Chainlink feeds, test tokens, Venus, Uniswap, and more) so you can exercise oracle- and protocol-dependent logic without real liquidity. These mocks are deployed on testnet only.
-
-On **mainnet**, point your contracts at the **real** protocol deployments (real Chainlink feeds, real Uniswap, etc.) at their canonical addresses — the mock contracts below exist on testnet only and are not deployed on BattleChain mainnet. The [Safe](#safe-gnosis-safe) infrastructure is deployed on both networks, and [Multicall3](#multicall3) is on mainnet.
-
-The [Safe](#safe-gnosis-safe) and [Multicall3](#multicall3) contracts at the bottom are genuine deployments (not mocks) and are listed for whichever network applies.
-
-> **Note:** The mock dependency contracts below are deployed on **testnet only**. On mainnet, integrate with the real protocol deployments at their own addresses. Switch the toggle to **Testnet** to see the mock addresses and interfaces. The [Safe](#safe-gnosis-safe) and [Multicall3](#multicall3) sections further down apply to mainnet.
 
 ## Mock Chainlink Price Feeds
 
@@ -4127,6 +4123,12 @@ A mock [Chainlink CCIP](https://docs.chain.link/ccip) router for testing cross-c
 
 ---
 
+## Mock Dependencies
+
+BattleChain provides mock versions of common dependencies (Chainlink feeds, test tokens, Venus, Uniswap, and more) on **testnet only** — they let you exercise oracle- and protocol-dependent logic without real liquidity. On **mainnet**, integrate with the real protocol deployments at their own canonical addresses instead.
+
+> **Note:** Switch the toggle to **Testnet** to see the mock addresses and interfaces. The [Safe](#safe-gnosis-safe) and [Multicall3](#multicall3) sections below are real deployments and apply to mainnet.
+
 ## Safe (Gnosis Safe)
 
 The full [Safe](https://docs.safe.global/) smart account infrastructure is deployed on both BattleChain testnet and mainnet. Unlike the mock dependencies above, these are real Safe contracts (not mocks) — protocols that use Safe multisigs for governance, treasury, or access control can use the same deployment patterns as on other chains. The contracts were deployed by Cyfrin, so the addresses differ between the two networks and from Safe's canonical addresses on other chains.
@@ -4482,7 +4484,7 @@ Gas costs for supported precompiles match Ethereum's schedule, but the **native*
 
 The canonical L2 wrapped base token is deployed by the protocol at genesis and used by the ZKsync ecosystem bridges when ETH must be represented as an ERC-20 (e.g., when bridging out to a chain whose native asset is not ETH).
 
-For protocols that need a mintable test WETH while developing on the testnet, use the mock listed under [Mock Contracts](https://docs.battlechain.com/battlechain/reference/mock-contracts). The mock and the canonical WETH are independent contracts.
+For protocols that need a mintable test WETH while developing on the testnet, use the mock listed under [Dependency Contracts](https://docs.battlechain.com/battlechain/reference/dependency-contracts). The mock and the canonical WETH are independent contracts.
 
 ## Bridge & Cross-Chain Messaging
 

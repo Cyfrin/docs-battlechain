@@ -101,7 +101,7 @@
                 "pages": [
                   "battlechain/explanation/how-deployment-works",
                   "battlechain/reference/contracts",
-                  "battlechain/reference/mock-contracts",
+                  "battlechain/reference/dependency-contracts",
                   "battlechain/reference/contract-states",
                   "battlechain/reference/bounty-terms",
                   "battlechain/reference/architecture",

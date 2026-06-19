@@ -26,6 +26,11 @@ const nextConfig = {
         destination: '/battlechain/using-battlechain-with-ai',
         permanent: true,
       },
+      {
+        source: '/battlechain/reference/mock-contracts',
+        destination: '/battlechain/reference/dependency-contracts',
+        permanent: true,
+      },
     ]
   },
 }
