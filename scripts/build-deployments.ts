@@ -139,11 +139,13 @@ function governanceTable(mainnet: Network): string {
   ].join('\n')
 }
 
-function sepoliaTable(sepolia: Network): string {
-  const c = sepolia.contracts
+// L1 settlement-layer table for a given L1 network (Sepolia for testnet,
+// Ethereum for mainnet). `zkChainId` is the L2 chain settled by this L1.
+function l1Table(l1: Network, zkChainId: number): string {
+  const c = l1.contracts
   const rows: [string, ContractEntry | undefined][] = [
     ['Bridgehub', c.bridgehub],
-    ['ZK Chain (627)', c.zkChain],
+    [`ZK Chain (${zkChainId})`, c.zkChain],
     ['Chain Type Manager', c.chainTypeManager],
     ['Validator Timelock', c.validatorTimelock],
   ]
@@ -155,7 +157,7 @@ function sepoliaTable(sepolia: Network): string {
 }
 
 function generateBlock(data: Deployments): string {
-  const { mainnet, sepolia } = data.networks
+  const { testnet, mainnet, sepolia, ethereum } = data.networks
 
   return [
     START_MARKER,
@@ -196,14 +198,23 @@ function generateBlock(data: Deployments): string {
     '',
     '</Network>',
     '',
-    // Sepolia is the L1 settlement layer for the testnet only.
+    // L1 settlement layer — Sepolia for testnet, Ethereum for mainnet.
     '<Network title="Testnet">',
     '',
-    '### Sepolia (Testnet L1)',
+    `### ${sepolia.name} (Testnet L1)`,
     '',
     sepolia.role ?? '',
     '',
-    sepoliaTable(sepolia),
+    l1Table(sepolia, testnet.chainId),
+    '',
+    '</Network>',
+    '<Network title="Mainnet">',
+    '',
+    `### ${ethereum.name} (Mainnet L1)`,
+    '',
+    ethereum.role ?? '',
+    '',
+    l1Table(ethereum, mainnet.chainId),
     '',
     '</Network>',
     '',
