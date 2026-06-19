@@ -66,6 +66,8 @@ Forge's local gas estimation doesn't work reliably on BattleChain. All `forge sc
 ```bash
 forge script ... --skip-simulation
 ```
+
+See [How Deployment Works](/battlechain/explanation/how-deployment-works#foundry-on-battlechain) for the full list of BattleChain Foundry flags and how the deploy stack fits together.
 </Warning>
 
 See the [deploying contracts tutorial](/battlechain/tutorials/deploying-contracts) for details on all deployment methods, including direct `BattleChainDeployer` usage.
@@ -196,12 +198,12 @@ Transactions can get stuck if the fee is too low for the current base fee. To re
 
 ```bash
 # Get current base fee
-cast gas-price --rpc-url https://testnet.battlechain.com
+cast gas-price --rpc-url %%testnet.rpc%%
 
 # Send a replacement with a higher max fee (e.g. 2x the current base fee)
 cast send \
   --account <your-keystore-account> \
-  --rpc-url https://testnet.battlechain.com \
+  --rpc-url %%testnet.rpc%% \
   --nonce <stuck-nonce> \
   --max-fee-per-gas <2x-current-base-fee> \
   --value 0 \
@@ -211,6 +213,6 @@ cast send \
 Find the stuck nonce via:
 
 ```bash
-cast nonce --rpc-url https://testnet.battlechain.com <your-wallet-address>
+cast nonce --rpc-url %%testnet.rpc%% <your-wallet-address>
 ```
 

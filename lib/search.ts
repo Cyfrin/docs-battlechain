@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
+import { substituteDeploymentTokens } from './deployments'
 
 export interface SearchDocument {
   id: string
@@ -81,7 +82,8 @@ export function buildSearchIndex(): SearchDocument[] {
     }
     try {
       const fileContent = fs.readFileSync(filePath, 'utf-8')
-      const { data, content } = matter(fileContent)
+      const { data, content: rawContent } = matter(fileContent)
+      const content = substituteDeploymentTokens(rawContent)
 
       // Get the relative path from content directory
       const relativePath = path.relative(contentDir, filePath)

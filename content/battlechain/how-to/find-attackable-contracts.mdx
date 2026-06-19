@@ -7,11 +7,58 @@ description: "Query the AttackRegistry to discover contracts you can legally att
 
 The `AttackRegistry` tracks which contracts are in attack mode. This guide shows how to find and verify targets.
 
-You can view agreement statuses and contracts currently under scope on the [BattleChain explorer](https://explorer.testnet.battlechain.com/agreements).
+You can browse agreement statuses and contracts under scope on the [BattleChain explorer](https://explorer.testnet.battlechain.com/agreements), or enumerate them programmatically with the API below.
 
-## Check a Specific Contract
+## List Attackable Contracts (HTTP API)
 
-The easiest way to check whether a contract is attackable is with `isAttackable` from `battlechain-lib`. It queries the block explorer API and handles the full scope hierarchy — including child contracts spawned by in-scope factories.
+The block explorer exposes a JSON API that lists agreements by state — the fastest way for a script or AI agent to enumerate live targets, with no wallet, RPC, or Foundry FFI required.
+
+```bash
+# Every contract currently open to attack (paginated)
+curl "https://block-explorer-api.testnet.battlechain.com/battlechain/agreements?state=UNDER_ATTACK"
+```
+
+Valid `state` values for finding targets are `UNDER_ATTACK` (open now) and `PROMOTION_REQUESTED` (still attackable, on a countdown to production). Paginate with `page` and `limit`.
+
+The response is `{ items, meta }`, where `meta` holds pagination (`totalItems`, `totalPages`, `currentPage`) and each item describes one agreement:
+
+| Field | Meaning |
+|-------|---------|
+| `agreementAddress` | The Safe Harbor agreement |
+| `protocolName` / `owner` | Who deployed it |
+| `state` | `UNDER_ATTACK` or `PROMOTION_REQUESTED` |
+| `coveredContracts` | Addresses in scope — the contracts you may attack |
+| `coveredAccounts[].childContractScope` | Whether child contracts are also in scope |
+| `bountyPercentage` / `bountyCapUsd` / `aggregateBountyCapUsd` | What you can earn ([Bounty Terms](/battlechain/reference/bounty-terms)) |
+| `retainable` | Whether you keep recovered funds or return them ([Execute an Attack](/battlechain/how-to/execute-attack)) |
+| `contactDetails` | How to reach the protocol |
+| `valuePricedUsd` / `valueBand` | Estimated value at risk |
+| `commitmentDeadline` | When the protocol's commitment window ends |
+
+Look up a single agreement, find the agreement covering a contract, or read a contract's state directly:
+
+```bash
+# One agreement's full details
+curl "https://block-explorer-api.testnet.battlechain.com/battlechain/agreement/<AGREEMENT_ADDRESS>"
+
+# Which agreement (if any) covers a given contract
+curl "https://block-explorer-api.testnet.battlechain.com/battlechain/agreement/by-contract/<CONTRACT_ADDRESS>"
+
+# A contract's current security state
+curl "https://block-explorer-api.testnet.battlechain.com/battlechain/contract-state/<CONTRACT_ADDRESS>"
+```
+
+The `by-contract` endpoint is what `battlechain-lib`'s `isAttackable` calls under the hood. It returns `{ "hasCoverage": bool, "agreements": [{ "state": ... }] }` — a contract is attackable when `hasCoverage` is `true` and any agreement's `state` is `UNDER_ATTACK` or `PROMOTION_REQUESTED`.
+
+For **mainnet**, use the `https://block-explorer-api.mainnet.battlechain.com` host instead.
+
+<Tip>
+Point your AI agent straight at this API — e.g. *"Fetch the `UNDER_ATTACK` agreements from the BattleChain explorer API and summarize the highest-bounty ones with their covered contracts."*
+</Tip>
+
+## Check a Specific Contract (in Solidity)
+
+Inside a Foundry script, the easiest way to check whether a contract is attackable is with `isAttackable` from `battlechain-lib`. It queries the block explorer API and handles the full scope hierarchy — including child contracts spawned by in-scope factories.
 
 **Standalone usage** (lightweight, no deploy/agreement overhead):
 
@@ -34,7 +81,7 @@ If you're already using `BCScript` for the full deploy + agreement flow, `isAtta
 Run with the `--ffi` flag since the function uses `vm.ffi` to call the explorer API:
 
 ```bash
-forge script script/CheckTarget.s.sol --ffi --rpc-url https://testnet.battlechain.com
+forge script script/CheckTarget.s.sol --ffi --rpc-url %%testnet.rpc%%
 ```
 
 <Note>

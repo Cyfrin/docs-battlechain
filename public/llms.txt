@@ -2,55 +2,65 @@
 
 > BattleChain is a pre-mainnet, post-testnet blockchain for stress-testing smart contracts with real funds. Protocols deploy audited contracts, whitehats legally attack them for bounties under Safe Harbor protection, and battle-tested contracts promote to mainnet.
 
-## Overview
+## Get Started
 
 - [BattleChain](https://docs.battlechain.com/overview): PvP Security Blockchain - Trial by Fire
 - [Using BattleChain with AI](https://docs.battlechain.com/battlechain/using-battlechain-with-ai): Give your AI coding agent full BattleChain context — skills, machine-readable docs, and MCP server
-
-## Quickstart
-
 - [Demo with Claude Desktop](https://docs.battlechain.com/battlechain/quickstart/claude-desktop-demo): Install the BattleChain MCP server and run the full security demo through Claude Desktop — no coding required.
 - [Deploy and Battle-Test Your Contract](https://docs.battlechain.com/battlechain/quickstart/deploy-your-contract): Deploy a vulnerable contract to BattleChain, create a Safe Harbor agreement, and open it for whitehat attack.
 - [Attack a Contract](https://docs.battlechain.com/battlechain/quickstart/execute-first-attack): Find an attackable contract on BattleChain, exploit it, collect your bounty, and walk away clean under Safe Harbor.
 
-## Tutorials
+## For Protocols
 
 - [Going Attackable: End-to-End Protocol Tutorial](https://docs.battlechain.com/battlechain/tutorials/going-attackable): A complete tutorial for protocols to deploy, configure, and enter attack mode on BattleChain
 - [Deploying Contracts to BattleChain](https://docs.battlechain.com/battlechain/tutorials/deploying-contracts): Learn how to deploy smart contracts using BattleChainDeployer and understand deployment options
-- [Attack a Contract](https://docs.battlechain.com/battlechain/tutorials/attacking-contracts): Find the vulnerability in a BattleChain vault, exploit it, collect your bounty, and walk away clean under Safe Harbor.
-- [Approving Requests: DAO Member Tutorial](https://docs.battlechain.com/battlechain/tutorials/approving-requests): A complete tutorial for DAO members on reviewing, approving, and managing attack requests
-- [Prediction Market](https://docs.battlechain.com/battlechain/tutorials/prediction-market): Bet on the outcome of BattleChain attack periods
-
-## How-to Guides
-
-- [Configure Your AI Tools](https://docs.battlechain.com/battlechain/how-to/configure-ai-tools): Add BattleChain context to your AI coding tools so they deploy to BattleChain and set up Safe Harbor by default
-- [How to Add BattleChain to MetaMask](https://docs.battlechain.com/battlechain/how-to/add-battlechain-to-metamask): Connect your wallet to the BattleChain network
-- [Exploring Agreements](https://docs.battlechain.com/battlechain/how-to/exploring-agreements): Browse Safe Harbor Agreements, filter by state, and inspect bounty terms and contract coverage
-- [Managing Agreements in the Explorer](https://docs.battlechain.com/battlechain/how-to/managing-agreements-in-explorer): Create, edit, and manage Safe Harbor Agreements and the attack lifecycle through the block explorer UI
-- [Verifying Contracts](https://docs.battlechain.com/battlechain/how-to/verifying-contracts): Verify contract source code on the BattleChain block explorer
 - [How to Create a Safe Harbor Agreement](https://docs.battlechain.com/battlechain/how-to/create-agreement): Create and configure your Safe Harbor agreement with bounty terms and scope
 - [How to Request Attack Mode](https://docs.battlechain.com/battlechain/how-to/request-attack-mode): Submit your contracts for DAO approval to enter attack mode
 - [How to Promote to Production](https://docs.battlechain.com/battlechain/how-to/promote-to-production): Move your contracts from attack mode to production after stress testing
+- [Prediction Market](https://docs.battlechain.com/battlechain/tutorials/prediction-market): Bet on the outcome of BattleChain attack periods
+
+## For Whitehats
+
 - [How to Find Attackable Contracts](https://docs.battlechain.com/battlechain/how-to/find-attackable-contracts): Query the AttackRegistry to discover contracts you can legally attack
+- [Attack a Contract](https://docs.battlechain.com/battlechain/tutorials/attacking-contracts): Find the vulnerability in a BattleChain vault, exploit it, collect your bounty, and walk away clean under Safe Harbor.
 - [How to Execute an Attack](https://docs.battlechain.com/battlechain/how-to/execute-attack): Properly execute an attack and handle recovered funds
 - [How to Claim Bounties](https://docs.battlechain.com/battlechain/how-to/claim-bounties): Understand bounty calculations, caps, and the claiming process
+
+## For the DAO
+
+- [Review Your First Request](https://docs.battlechain.com/battlechain/quickstart/review-first-request): Evaluate an attack mode request as a DAO member — check for mainnet copycats, verify terms, and approve or reject.
 - [How to Approve or Reject Requests](https://docs.battlechain.com/battlechain/how-to/approve-reject-requests): Process attack mode requests as a DAO member
 - [How to Use Instant Promotion](https://docs.battlechain.com/battlechain/how-to/instant-promotion): Emergency promotion for copycat or high-risk situations
-- [Review Your First Request](https://docs.battlechain.com/battlechain/quickstart/review-first-request): Evaluate an attack mode request as a DAO member — check for mainnet copycats, verify terms, and approve or reject.
+- [Approving Requests: DAO Member Tutorial](https://docs.battlechain.com/battlechain/tutorials/approving-requests): A complete tutorial for DAO members on reviewing, approving, and managing attack requests
+
+## Tools & Explorer
+
+- [How to Add BattleChain to MetaMask](https://docs.battlechain.com/battlechain/how-to/add-battlechain-to-metamask): Connect your wallet to the BattleChain network
+- [Configure Your AI Tools](https://docs.battlechain.com/battlechain/how-to/configure-ai-tools): Add BattleChain context to your AI coding tools so they deploy to BattleChain and set up Safe Harbor by default
+- [Exploring Agreements](https://docs.battlechain.com/battlechain/how-to/exploring-agreements): Browse Safe Harbor Agreements, filter by state, and inspect bounty terms and contract coverage
+- [Managing Agreements in the Explorer](https://docs.battlechain.com/battlechain/how-to/managing-agreements-in-explorer): Create, edit, and manage Safe Harbor Agreements and the attack lifecycle through the block explorer UI
+- [Verifying Contracts](https://docs.battlechain.com/battlechain/how-to/verifying-contracts): Verify contract source code on the BattleChain block explorer
 
 ## Reference
 
-- [Chain Architecture](https://docs.battlechain.com/battlechain/reference/architecture): Sequencer model, precompiles, WETH, and the L1↔L2 bridge for BattleChain
+- [How Deployment Works](https://docs.battlechain.com/battlechain/explanation/how-deployment-works): The BattleChain deploy stack — how just recipes, battlechain-lib, BattleChainDeployer, and CreateX fit together, plus the Foundry flags you need
 - [Contract API Reference](https://docs.battlechain.com/battlechain/reference/contracts): Complete API reference for BattleChain contracts
 - [Mock & Dependency Contracts](https://docs.battlechain.com/battlechain/reference/mock-contracts): Mock dependency contracts on the BattleChain testnet and Safe infrastructure on both networks
 - [Contract States](https://docs.battlechain.com/battlechain/reference/contract-states): Reference for all contract states and transitions
 - [Bounty Terms](https://docs.battlechain.com/battlechain/reference/bounty-terms): Reference for bounty configuration options
+- [Chain Architecture](https://docs.battlechain.com/battlechain/reference/architecture): Sequencer model, precompiles, WETH, and the L1↔L2 bridge for BattleChain
 - [Identity Requirements](https://docs.battlechain.com/battlechain/reference/identity-requirements): Reference for whitehat identity verification levels
 - [Governance Parameters](https://docs.battlechain.com/battlechain/reference/governance-parameters): Reference for DAO-controlled parameters
 
-## Concepts
+## Explanation
 
-- [FAQ & Troubleshooting](https://docs.battlechain.com/battlechain/faq): Common issues and questions when working with BattleChain.
 - [The Contract Lifecycle](https://docs.battlechain.com/battlechain/explanation/contract-lifecycle): Understanding how contracts move through BattleChain states
 - [Safe Harbor Protection](https://docs.battlechain.com/battlechain/explanation/safe-harbor): Understanding the legal protections for whitehats on BattleChain
 - [Best Practices](https://docs.battlechain.com/battlechain/explanation/best-practices): Guidelines for getting the most out of BattleChain
+- [FAQ & Troubleshooting](https://docs.battlechain.com/battlechain/faq): Common issues and questions when working with BattleChain.
+
+## Machine-readable resources
+
+- [Deployments JSON](https://docs.battlechain.com/deployments.json): All BattleChain networks, chain IDs, RPC/explorer URLs, and contract addresses as structured JSON
+- [Full docs as markdown](https://docs.battlechain.com/llms-full.txt): Complete text of every page in one file
+- [Docs MCP server](https://docs.battlechain.com/api/mcp): Streamable HTTP MCP endpoint exposing search_docs, read_page, and list_pages

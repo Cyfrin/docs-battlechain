@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "tsx scripts/build-search-index.ts && tsx scripts/build-llms-txt.ts",
+    "build-deployments": "tsx scripts/build-deployments.ts",
+    "prebuild": "tsx scripts/build-deployments.ts && tsx scripts/build-search-index.ts && tsx scripts/build-llms-txt.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",

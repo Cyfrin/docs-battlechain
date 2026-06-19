@@ -1,45 +1,34 @@
+import deployments from '@/config/deployments.json'
+
+// Network metadata and contract addresses are derived from the single source of
+// truth in config/deployments.json. Never hardcode addresses here — edit the
+// JSON and they flow into every consumer (this config, the docs tables, the
+// public /deployments.json endpoint, and llms-full.txt).
+
+type DeployedNetwork =
+  | typeof deployments.networks.testnet
+  | typeof deployments.networks.mainnet
+
+function networkConfig(net: DeployedNetwork) {
+  return {
+    name: net.name,
+    chainId: net.chainId,
+    rpcUrl: net.rpcUrl,
+    explorer: net.explorer,
+    currencySymbol: net.currencySymbol,
+    caip2: net.caip2,
+    contracts: {
+      attackRegistry: net.contracts.attackRegistry.proxy,
+      safeHarborRegistry: net.contracts.safeHarborRegistry.proxy,
+      agreementFactory: net.contracts.agreementFactory.proxy,
+      battleChainDeployer: net.contracts.battleChainDeployer.address,
+      createX: net.contracts.createX.address,
+    },
+  }
+}
+
 export const battlechain = {
-  testnet: {
-    name: "BattleChain Testnet",
-    chainId: 627,
-    rpcUrl: "https://testnet.battlechain.com",
-    explorer: "https://explorer.testnet.battlechain.com/",
-    portal: "https://portal.battlechain.com/bridge",
-    currencySymbol: "ETH",
-    caip2: "eip155:627",
-    contracts: {
-      createX: "0xf1Ebfaa992854ECcB01Ac1F60e5b5279095cca7F",
-      registryImplementation: "0x7d6fC65eA6436f1621973BcfeaAD8951853D8E35",
-      registryProxy: "0x07E09f67B272aec60eebBfB3D592eC649BDCFEFc",
-      agreementFactoryImplementation: "0x8E940c4FE62ea1696751faA99F45F30459c6c978",
-      agreementFactoryProxy: "0xf52CEA27b9E20D03Ec48CDe4fafF8F27565646f2",
-      attackRegistryImplementation: "0x4496b7e04b4Dd94153AA0d614708d5f06fc65a13",
-      attackRegistryProxy: "0x22134e878c409a0Eab7259d873b38e26Ca966d3C",
-      battleChainDeployer: "0x0f75289c6b883b885A1fDF9BCCABE1bbFB094077",
-    },
-  },
-  mainnet: {
-    name: "BattleChain",
-    chainId: 626,
-    rpcUrl: "https://mainnet.battlechain.com",
-    explorer: "https://explorer.mainnet.battlechain.com/",
-    currencySymbol: "ETH",
-    caip2: "eip155:626",
-    contracts: {
-      createX: "0xa397f06F07251A3AEd53f6d3019A2a6cbd83E53e",
-      registryImplementation: "0xBFF0ec94740c287932B50E64c2e8b380129B99a1",
-      registryProxy: "0xd229f4EE1bAE432010b72a9d1bD682570F4C6eBe",
-      agreementFactoryImplementation: "0x8d4fEDF4462E3876Ae7C70CC0C5cebA482003Ad5",
-      agreementFactoryProxy: "0xCdB7F5C0F708baBaabE82afE1DbA8362023AcFdd",
-      attackRegistryImplementation: "0x03A3228A4ce38362289E715bbc26Cac8b98e421B",
-      attackRegistryProxy: "0x24876e481eC7198CAC95af739Df2a852CE65A415",
-      battleChainDeployer: "0xD12765D21dDba418B8Fc0583c4716763e03Aa078",
-    },
-  },
-  links: {
-    discord: "https://discord.gg/cyfrin",
-    githubContracts: "https://github.com/Cyfrin/battlechain-safe-harbor",
-    githubDocs: "https://github.com/Cyfrin/docs-battlechain",
-    profiles: "https://profiles.cyfrin.io",
-  },
+  testnet: networkConfig(deployments.networks.testnet),
+  mainnet: networkConfig(deployments.networks.mainnet),
+  links: deployments.links,
 }

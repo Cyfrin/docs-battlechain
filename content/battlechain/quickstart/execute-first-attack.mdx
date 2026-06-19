@@ -142,10 +142,10 @@ Tell your AI to add `AGREEMENT_ADDRESS` to `.env` and set `RECOVERY_ADDRESS` to 
 
 ```bash
 just request-attack-mode
-cast send 0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF \
+cast send %%testnet.mockRegistryModerator%% \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com
+  --rpc-url %%testnet.rpc%%
 just check-state
 ```
 
@@ -179,10 +179,10 @@ Copy `AGREEMENT_ADDRESS` into `.env` and set `RECOVERY_ADDRESS` to your wallet a
 
 ```bash
 just request-attack-mode
-cast send 0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF \
+cast send %%testnet.mockRegistryModerator%% \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com
+  --rpc-url %%testnet.rpc%%
 just check-state
 ```
 
@@ -343,19 +343,19 @@ Send a replacement transaction to clear the stuck nonce:
 
 ```bash
 # Get current base fee
-cast gas-price --rpc-url https://testnet.battlechain.com
+cast gas-price --rpc-url %%testnet.rpc%%
 
 # Send a replacement with a higher max fee (e.g. 2x the current base fee)
 cast send \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com \
+  --rpc-url %%testnet.rpc%% \
   --nonce <stuck-nonce> \
   --max-fee-per-gas <2x-current-base-fee> \
   --value 0 \
   0x0000000000000000000000000000000000000000
 ```
 
-Find your pending nonce: `cast nonce --rpc-url https://testnet.battlechain.com <your-wallet-address>`
+Find your pending nonce: `cast nonce --rpc-url %%testnet.rpc%% <your-wallet-address>`
 
 </Tab>
 
