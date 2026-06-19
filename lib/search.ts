@@ -1,7 +1,31 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
-import { substituteDeploymentTokens, substituteActiveTokens } from './deployments'
+import {
+  substituteDeploymentTokens,
+  substituteActiveTokens,
+  resolveActiveField,
+} from './deployments'
+
+// Resolve <NetworkValue field="..." /> to concrete text before stripMarkdown
+// wipes JSX tags — otherwise pages that rely on it get garbled sentences and
+// empty table cells in the search index. Mirrors lib/strip-mdx.ts: tag bare
+// NetworkValue inside testnet-scoped blocks with network="testnet", then
+// resolve everything (mainnet default).
+function inlineNetworkValues(raw: string): string {
+  const tagged = raw.replace(
+    /(<Network\s+title="Testnet"\s*>|<TestnetOnly[^>]*>)([\s\S]*?)(<\/Network>|<\/TestnetOnly>)/g,
+    (_m, open: string, body: string, close: string) =>
+      `${open}${body.replace(/<NetworkValue\s+(?![^>]*\bnetwork=)/g, '<NetworkValue network="testnet" ')}${close}`,
+  )
+  return tagged.replace(/<NetworkValue\s+((?:[^>]|\/(?!>))*?)\s*\/>/g, (_m, attrs: string) => {
+    const field = attrs.match(/field="([^"]*)"/)?.[1]
+    if (!field) return ''
+    const net = attrs.match(/network="([^"]*)"/)?.[1] === 'testnet' ? 'testnet' : 'mainnet'
+    const path = attrs.match(/path="([^"]*)"/)?.[1] ?? ''
+    return `${resolveActiveField(net, field)}${path}`
+  })
+}
 
 export interface SearchDocument {
   id: string
@@ -83,9 +107,11 @@ export function buildSearchIndex(): SearchDocument[] {
     try {
       const fileContent = fs.readFileSync(filePath, 'utf-8')
       const { data, content: rawContent } = matter(fileContent)
-      // %%active.*%% has no toggle in the static index — degrade to mainnet.
+      // %%active.*%% has no toggle in the static index — degrade to mainnet
+      // (testnet inside testnet-scoped blocks). Resolve <NetworkValue> too,
+      // before stripMarkdown removes JSX tags.
       const content = substituteDeploymentTokens(
-        substituteActiveTokens(rawContent, 'mainnet'),
+        inlineNetworkValues(substituteActiveTokens(rawContent, 'mainnet')),
       )
 
       // Get the relative path from content directory

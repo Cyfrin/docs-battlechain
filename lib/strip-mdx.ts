@@ -48,8 +48,16 @@ export function stripMdxToMarkdown(raw: string): string {
   // testnet-scoped blocks first, then let the global pass below handle the rest.
   raw = raw.replace(
     /(<Network\s+title="Testnet"\s*>|<TestnetOnly[^>]*>)([\s\S]*?)(<\/Network>|<\/TestnetOnly>)/g,
-    (_m, open: string, body: string, close: string) =>
-      `${open}${substituteActiveTokens(body, 'testnet')}${close}`,
+    (_m, open: string, body: string, close: string) => {
+      // Resolve %%active.*%% tokens, and tag bare <NetworkValue> with
+      // network="testnet" so the inliner below resolves them against testnet
+      // too (e.g. mockRegistryModerator, which doesn't exist on mainnet).
+      const tagged = substituteActiveTokens(body, 'testnet').replace(
+        /<NetworkValue\s+(?![^>]*\bnetwork=)/g,
+        '<NetworkValue network="testnet" ',
+      )
+      return `${open}${tagged}${close}`
+    },
   )
   // Remaining %%active.*%% (outside testnet blocks) degrade to mainnet.
   raw = substituteActiveTokens(raw, 'mainnet')

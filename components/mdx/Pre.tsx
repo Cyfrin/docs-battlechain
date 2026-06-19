@@ -39,7 +39,10 @@ export function Pre({ children, ...props }: React.HTMLAttributes<HTMLPreElement>
   const { network } = useNetwork()
 
   // Substitute before paint so there's no flash of raw %%active%% tokens or the
-  // wrong network's values. Re-runs when the toggle changes.
+  // wrong network's values. Substitution mutates the DOM destructively (the
+  // %%active%% markers are gone afterwards), so the `key={network}` on <pre>
+  // remounts it on every toggle — restoring the original tokenized children so
+  // this effect can re-substitute for the newly selected network.
   useLayoutEffect(() => {
     const pre = preRef.current
     if (!pre) return
@@ -56,7 +59,7 @@ export function Pre({ children, ...props }: React.HTMLAttributes<HTMLPreElement>
 
   return (
     <div className="relative group">
-      <pre ref={preRef} {...props} suppressHydrationWarning>
+      <pre key={network} ref={preRef} {...props} suppressHydrationWarning>
         {children}
       </pre>
       <button

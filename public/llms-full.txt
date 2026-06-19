@@ -3435,7 +3435,7 @@ The **proxy** is the address you interact with. Implementation and L1 addresses 
 | BattleChainDeployer | `0xD12765D21dDba418B8Fc0583c4716763e03Aa078` |
 | CreateX | `0xa397f06F07251A3AEd53f6d3019A2a6cbd83E53e` |
 
-**Testnet only** — `MockRegistryModerator` at ``. This permissionless contract lets you approve your own attack request instantly on testnet; mainnet uses the DAO multisig.
+**Testnet only** — `MockRegistryModerator` at `0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF`. This permissionless contract lets you approve your own attack request instantly on testnet; mainnet uses the DAO multisig.
 
 For mock Chainlink price feeds and test tokens (testnet only), see [Dependency Contracts](https://docs.battlechain.com/battlechain/reference/dependency-contracts).
 
