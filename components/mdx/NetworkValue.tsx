@@ -18,19 +18,19 @@ interface NetworkValueProps {
 
 export function NetworkValue({ field, network, href, label, path, code = true }: NetworkValueProps) {
   const { network: active } = useNetwork()
-  const value = resolveActiveField(network ?? active, field)
+  const base = resolveActiveField(network ?? active, field)
+  const value = path ? `${base}${path}` : base
 
   if (href) {
-    const url = path ? `${value}${path}` : value
     return (
       <a
-        href={url}
+        href={value}
         target="_blank"
         rel="noopener noreferrer"
         className="text-[#004DFF] hover:underline break-all"
         suppressHydrationWarning
       >
-        {label ?? url}
+        {label ?? value}
       </a>
     )
   }

@@ -92,19 +92,18 @@ export function stripMdxToMarkdown(raw: string): string {
   // toggle, so resolve against the network override if given, else mainnet
   // (the production default). Done before the generic self-closing-tag strip.
   text = text.replace(
-    /<NetworkValue\s+([^/>]*?)\/>/g,
+    /<NetworkValue\s+((?:[^>]|\/(?!>))*?)\s*\/>/g,
     (_m, attrs: string) => {
       const field = attrs.match(/field="([^"]*)"/)?.[1]
       if (!field) return ''
       const net = attrs.match(/network="([^"]*)"/)?.[1] === 'testnet' ? 'testnet' : 'mainnet'
-      const value = resolveActiveField(net, field)
+      const path = attrs.match(/path="([^"]*)"/)?.[1] ?? ''
+      const value = `${resolveActiveField(net, field)}${path}`
       const asLink = /\bhref\b/.test(attrs)
       const asCode = !/code=\{?false\}?/.test(attrs) // code defaults to true
       if (asLink) {
-        const path = attrs.match(/path="([^"]*)"/)?.[1] ?? ''
-        const url = `${value}${path}`
         const label = attrs.match(/label="([^"]*)"/)?.[1]
-        return label ? `[${label}](${url})` : url
+        return label ? `[${label}](${value})` : value
       }
       return asCode ? `\`${value}\`` : value
     },

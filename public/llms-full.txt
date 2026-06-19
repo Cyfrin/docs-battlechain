@@ -1797,7 +1797,7 @@ The block explorer exposes a JSON API that lists agreements by state — the fas
 
 ```bash
 # Every contract currently open to attack (paginated)
-curl "https://block-explorer-api.testnet.battlechain.com/battlechain/agreements?state=UNDER_ATTACK"
+curl "https://block-explorer-api.mainnet.battlechain.com/battlechain/agreements?state=UNDER_ATTACK"
 ```
 
 Valid `state` values for finding targets are `UNDER_ATTACK` (open now) and `PROMOTION_REQUESTED` (still attackable, on a countdown to production). Paginate with `page` and `limit`.
@@ -1821,18 +1821,16 @@ Look up a single agreement, find the agreement covering a contract, or read a co
 
 ```bash
 # One agreement's full details
-curl "https://block-explorer-api.testnet.battlechain.com/battlechain/agreement/<AGREEMENT_ADDRESS>"
+curl "https://block-explorer-api.mainnet.battlechain.com/battlechain/agreement/<AGREEMENT_ADDRESS>"
 
 # Which agreement (if any) covers a given contract
-curl "https://block-explorer-api.testnet.battlechain.com/battlechain/agreement/by-contract/<CONTRACT_ADDRESS>"
+curl "https://block-explorer-api.mainnet.battlechain.com/battlechain/agreement/by-contract/<CONTRACT_ADDRESS>"
 
 # A contract's current security state
-curl "https://block-explorer-api.testnet.battlechain.com/battlechain/contract-state/<CONTRACT_ADDRESS>"
+curl "https://block-explorer-api.mainnet.battlechain.com/battlechain/contract-state/<CONTRACT_ADDRESS>"
 ```
 
 The `by-contract` endpoint is what `battlechain-lib`'s `isAttackable` calls under the hood. It returns `{ "hasCoverage": bool, "agreements": [{ "state": ... }] }` — a contract is attackable when `hasCoverage` is `true` and any agreement's `state` is `UNDER_ATTACK` or `PROMOTION_REQUESTED`.
-
-For **mainnet**, use the `https://block-explorer-api.mainnet.battlechain.com` host instead.
 
 > **Tip:** Point your AI agent straight at this API — e.g. *"Fetch the `UNDER_ATTACK` agreements from the BattleChain explorer API and summarize the highest-bounty ones with their covered contracts."*
 
@@ -3242,7 +3240,7 @@ You can also verify manually using `forge verify-contract`:
 ```bash
 forge verify-contract <CONTRACT_ADDRESS> <PATH>:<CONTRACT_NAME> \
   --chain-id 626 \
-  --verifier-url /api \
+  --verifier-url https://block-explorer-api.mainnet.battlechain.com/api \
   --verifier custom \
   --etherscan-api-key "1234" \
   --rpc-url https://mainnet.battlechain.com
@@ -3253,7 +3251,7 @@ Replace `<CONTRACT_ADDRESS>` with your deployed address and `:<CONTRACT_NAME>` w
 | Flag | Value | Notes |
 |------|-------|-------|
 | `--chain-id` | `626` | BattleChain chain ID |
-| `--verifier-url` | ```/api` | BattleChain explorer API |
+| `--verifier-url` | `https://block-explorer-api.mainnet.battlechain.com/api` | BattleChain explorer API |
 | `--verifier` | `custom` | Required when using a non-Etherscan explorer |
 | `--etherscan-api-key` | `"1234"` | Not validated — any non-empty string works |
 | `--rpc-url` | `https://mainnet.battlechain.com` | BattleChain RPC |
@@ -3267,7 +3265,7 @@ Submitting verification for [src/MyVault.sol:MyVault] 0x...
 Submitted contract for verification:
         Response: `OK`
         GUID: `<guid>`
-        URL: /address/0x...
+        URL: https://block-explorer-api.mainnet.battlechain.com/address/0x...
 ```
 
 The URL in the response links directly to the contract's verified page on the explorer.
@@ -3283,7 +3281,7 @@ forge script script/Deploy.s.sol \
   --rpc-url https://mainnet.battlechain.com \
   --broadcast --skip-simulation -g 300 \
   --verify \
-  --verifier-url /api \
+  --verifier-url https://block-explorer-api.mainnet.battlechain.com/api \
   --verifier custom \
   --etherscan-api-key 1234
 ```
