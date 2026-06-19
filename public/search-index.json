@@ -475,19 +475,6 @@
     ]
   },
   {
-    "id": "/battlechain/tutorials/prediction-market",
-    "title": "Prediction Market",
-    "content": "Coming Soon The BattleChain Prediction Market will allow participants to bet on the outcomes of attack periods. Will a protocol survive unscathed, or will whitehats find vulnerabilities? This feature is under development. Check back for updates. Planned Features - Bet on attack outcomes: Will this protocol get exploited during its attack period? - Market-driven security signals: Market prices reflect collective confidence in a protocol's security - Incentive alignment: Creates additional economic incentives for thorough security research How It Will Work 1. A protocol enters attack mode 2. A prediction market opens for that protocol's attack period 3. Participants bet on whether the protocol will be exploited 4. Markets resolve when the protocol promotes to production or is marked corrupted Stay Updated Join the community for announcements: Join the Cyfrin Discord for updates Follow the BattleChain repository",
-    "url": "/battlechain/tutorials/prediction-market",
-    "category": "battlechain",
-    "headings": [
-      "Coming Soon",
-      "Planned Features",
-      "How It Will Work",
-      "Stay Updated"
-    ]
-  },
-  {
     "id": "/battlechain/using-battlechain-with-ai",
     "title": "Using BattleChain with AI",
     "content": "BattleChain is built for AI-native development. Whether you're using Claude Code, Cursor, or any tool with a built-in chat, you can give your agent full BattleChain context in seconds. The BattleChain Skill The fastest way to give your AI agent BattleChain context is to install the Cyfrin skills package: This installs three skills: | Skill | What it does | |-------|-------------| | solidity | Production-grade Solidity standards: code quality, testing, security, Foundry workflows | | battlechain | BattleChain reference: deploying, Safe Harbor, whitehat attacks, contract lifecycle | | battlechain-tutorial | Interactive wizard: scans your project, asks guided questions, generates all scripts | Once installed, tell your agent \"Deploy my contracts to BattleChain\" and battlechain-tutorial will walk you through the full process. The skills are open source at github.com/Cyfrin/solskill. Claude Code Plugin If you use Claude Code, the same skills are also published as a plugin marketplace. This ",

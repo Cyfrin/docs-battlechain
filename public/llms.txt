@@ -17,7 +17,6 @@
 - [How to Create a Safe Harbor Agreement](https://docs.battlechain.com/battlechain/how-to/create-agreement): Create and configure your Safe Harbor agreement with bounty terms and scope
 - [How to Request Attack Mode](https://docs.battlechain.com/battlechain/how-to/request-attack-mode): Submit your contracts for DAO approval to enter attack mode
 - [How to Promote to Production](https://docs.battlechain.com/battlechain/how-to/promote-to-production): Move your contracts from attack mode to production after stress testing
-- [Prediction Market](https://docs.battlechain.com/battlechain/tutorials/prediction-market): Bet on the outcome of BattleChain attack periods
 
 ## For Whitehats
 
