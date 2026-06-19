@@ -4131,7 +4131,7 @@ BattleChain provides mock versions of common dependencies (Chainlink feeds, test
 
 ## Safe (Gnosis Safe)
 
-The full [Safe](https://docs.safe.global/) smart account infrastructure is deployed on both BattleChain testnet and mainnet. Unlike the mock dependencies above, these are real Safe contracts (not mocks) — protocols that use Safe multisigs for governance, treasury, or access control can use the same deployment patterns as on other chains. The contracts were deployed by Cyfrin, so the addresses differ between the two networks and from Safe's canonical addresses on other chains.
+The full [Safe](https://docs.safe.global/) smart account infrastructure is deployed on both BattleChain testnet and mainnet. These are **real** Safe contracts (not mocks) — protocols that use Safe multisigs for governance, treasury, or access control can use the same deployment patterns as on other chains. The contracts were deployed by Cyfrin, so the addresses differ between the two networks and from Safe's canonical addresses on other chains.
 
 ### Deployed Addresses (Testnet)
 
