@@ -31,6 +31,11 @@ const nextConfig = {
         destination: '/battlechain/using-battlechain-with-ai',
         permanent: true,
       },
+      {
+        source: '/battlechain/tutorials/prediction-market',
+        destination: '/overview',
+        permanent: true,
+      },
     ]
   },
 }
