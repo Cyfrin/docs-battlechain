@@ -12,6 +12,8 @@ description: "Find an attackable contract on BattleChain, exploit it, collect yo
   </div>
 </div>
 
+<TestnetOnly activity="deploy a target and attack it yourself">
+
 <Warning>
 **Review what your AI runs.** AI coding tools execute real commands on your machine. Always read the commands before approving them, and never allow anything you don't understand. If in doubt, use the **Manual** tab and run each command yourself.
 </Warning>
@@ -142,10 +144,10 @@ Tell your AI to add `AGREEMENT_ADDRESS` to `.env` and set `RECOVERY_ADDRESS` to 
 
 ```bash
 just request-attack-mode
-cast send 0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF \
+cast send {{registryModerator}} \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com
+  --rpc-url {{rpcUrl}}
 just check-state
 ```
 
@@ -179,10 +181,10 @@ Copy `AGREEMENT_ADDRESS` into `.env` and set `RECOVERY_ADDRESS` to your wallet a
 
 ```bash
 just request-attack-mode
-cast send 0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF \
+cast send {{registryModerator}} \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com
+  --rpc-url {{rpcUrl}}
 just check-state
 ```
 
@@ -343,19 +345,19 @@ Send a replacement transaction to clear the stuck nonce:
 
 ```bash
 # Get current base fee
-cast gas-price --rpc-url https://testnet.battlechain.com
+cast gas-price --rpc-url {{rpcUrl}}
 
 # Send a replacement with a higher max fee (e.g. 2x the current base fee)
 cast send \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com \
+  --rpc-url {{rpcUrl}} \
   --nonce <stuck-nonce> \
   --max-fee-per-gas <2x-current-base-fee> \
   --value 0 \
   0x0000000000000000000000000000000000000000
 ```
 
-Find your pending nonce: `cast nonce --rpc-url https://testnet.battlechain.com <your-wallet-address>`
+Find your pending nonce with `cast nonce --rpc-url <RPC_URL> <your-wallet-address>` (use the RPC URL for your selected network).
 
 </Tab>
 
@@ -364,3 +366,5 @@ Find your pending nonce: `cast nonce --rpc-url https://testnet.battlechain.com <
 If a `forge script` command fails with a vague error even with `--skip-simulation`, try adding `-g 300` to use 3x the estimated gas.
 
 </Tabs>
+
+</TestnetOnly>

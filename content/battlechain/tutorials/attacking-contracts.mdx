@@ -18,7 +18,7 @@ description: "Find the vulnerability in a BattleChain vault, exploit it, collect
 
 You need a deployed, attackable vault to target. If you completed the [Quickstart](/battlechain/quickstart/deploy-your-contract), you already have one — your `.env` has everything you need.
 
-If you're attacking someone else's vault, you need their `VAULT_ADDRESS` and `TOKEN_ADDRESS` (find these on the [BattleChain explorer](https://explorer.testnet.battlechain.com/) or by querying the `AttackRegistry`).
+If you're attacking someone else's vault, you need their `VAULT_ADDRESS` and `TOKEN_ADDRESS` (find these on the <NetworkValue field="explorer" href label="BattleChain explorer" /> or by querying the `AttackRegistry`).
 
 <Tab title="AI CLI (foundry)">
 
@@ -155,7 +155,7 @@ You've executed a legal reentrancy exploit on BattleChain. The vault is empty, t
 
 ## Step 4 — Verify on the Explorer
 
-Search your `VAULT_ADDRESS` on the [BattleChain explorer](https://explorer.testnet.battlechain.com/). You should see:
+Search your `VAULT_ADDRESS` on the <NetworkValue field="explorer" href label="BattleChain explorer" />. You should see:
 
 - The attack transaction
 - The vault balance dropping to zero

@@ -14,7 +14,7 @@ Contract verification works on both BattleChain networks:
 | Testnet | [https://explorer.testnet.battlechain.com/](https://explorer.testnet.battlechain.com/) | `https://block-explorer-api.testnet.battlechain.com/api` |
 | Mainnet | [https://explorer.mainnet.battlechain.com/](https://explorer.mainnet.battlechain.com/) | `https://block-explorer-api.mainnet.battlechain.com/api` |
 
-The examples below use the testnet endpoints. For mainnet, swap in chain ID `626`, the mainnet verifier API, and `https://mainnet.battlechain.com` as the RPC URL.
+The commands below use the network selected in the **Mainnet / Testnet** toggle at the top of the page — chain ID, verifier API, and RPC URL update automatically.
 
 ## Why Verify
 
@@ -53,33 +53,33 @@ You can also verify manually using `forge verify-contract`:
 
 ```bash
 forge verify-contract <CONTRACT_ADDRESS> <PATH>:<CONTRACT_NAME> \
-  --chain-id 627 \
-  --verifier-url https://block-explorer-api.testnet.battlechain.com/api \
+  --chain-id {{chainId}} \
+  --verifier-url {{explorerApi}}/api \
   --verifier custom \
   --etherscan-api-key "1234" \
-  --rpc-url https://testnet.battlechain.com
+  --rpc-url {{rpcUrl}}
 ```
 
 Replace `<CONTRACT_ADDRESS>` with your deployed address and `<PATH>:<CONTRACT_NAME>` with the source path and contract name (e.g., `src/MyVault.sol:MyVault`).
 
 | Flag | Value | Notes |
 |------|-------|-------|
-| `--chain-id` | `627` | BattleChain testnet |
-| `--verifier-url` | `https://block-explorer-api.testnet.battlechain.com/api` | BattleChain explorer API |
+| `--chain-id` | <NetworkValue field="chainId" /> | BattleChain chain ID |
+| `--verifier-url` | <NetworkValue field="explorerApi" />`/api` | BattleChain explorer API |
 | `--verifier` | `custom` | Required when using a non-Etherscan explorer |
 | `--etherscan-api-key` | `"1234"` | Not validated — any non-empty string works |
-| `--rpc-url` | `https://testnet.battlechain.com` | BattleChain testnet RPC |
+| `--rpc-url` | <NetworkValue field="rpcUrl" /> | BattleChain RPC |
 
 On success you'll see:
 
 ```
-Start verifying contract `0x...` deployed on 627
+Start verifying contract `0x...` deployed on {{chainId}}
 
 Submitting verification for [src/MyVault.sol:MyVault] 0x...
 Submitted contract for verification:
         Response: `OK`
         GUID: `<guid>`
-        URL: https://block-explorer-api.testnet.battlechain.com/address/0x...
+        URL: {{explorerApi}}/address/0x...
 ```
 
 The URL in the response links directly to the contract's verified page on the explorer.
@@ -94,10 +94,10 @@ Add `--verify` to your `forge script` call to verify contracts as they're deploy
 
 ```bash
 forge script script/Deploy.s.sol \
-  --rpc-url https://testnet.battlechain.com \
+  --rpc-url {{rpcUrl}} \
   --broadcast --skip-simulation -g 300 \
   --verify \
-  --verifier-url https://block-explorer-api.testnet.battlechain.com/api \
+  --verifier-url {{explorerApi}}/api \
   --verifier custom \
   --etherscan-api-key 1234
 ```

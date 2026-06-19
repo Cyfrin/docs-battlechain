@@ -20,7 +20,7 @@ require(attackRegistry.isTopLevelContractUnderAttack(target), "Not attackable");
 require(agreement.isContractInScope(target), "Not in scope");
 
 // Get recovery address
-string memory recoveryStr = agreement.getAssetRecoveryAddress("eip155:627");
+string memory recoveryStr = agreement.getAssetRecoveryAddress("{{caip2}}");
 address recovery = parseAddress(recoveryStr);
 
 // Get bounty terms

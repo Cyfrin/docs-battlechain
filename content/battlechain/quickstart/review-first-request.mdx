@@ -23,10 +23,10 @@ description: "Evaluate an attack mode request as a DAO member — check for main
 Watch for `AgreementStateChanged` events where `newState = 2` (`ATTACK_REQUESTED`), or query directly:
 
 ```bash
-cast call 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
+cast call {{attackRegistryProxy}} \
   "getAgreementState(address)(uint8)" \
   $AGREEMENT_ADDRESS \
-  --rpc-url https://testnet.battlechain.com
+  --rpc-url {{rpcUrl}}
 ```
 
 | Value | State |
@@ -101,10 +101,10 @@ for (uint i = 0; i < contracts.length; i++) {
 ### Approve
 
 ```bash
-cast send 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
+cast send {{attackRegistryProxy}} \
   "approveAttack(address)" \
   $AGREEMENT_ADDRESS \
-  --rpc-url https://testnet.battlechain.com \
+  --rpc-url {{rpcUrl}} \
   --account battlechain
 ```
 
@@ -113,10 +113,10 @@ This moves the agreement to `UNDER_ATTACK`, enables Safe Harbor protection, and 
 ### Reject
 
 ```bash
-cast send 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
+cast send {{attackRegistryProxy}} \
   "rejectAttackRequest(address)" \
   $AGREEMENT_ADDRESS \
-  --rpc-url https://testnet.battlechain.com \
+  --rpc-url {{rpcUrl}} \
   --account battlechain
 ```
 

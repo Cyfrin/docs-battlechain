@@ -63,7 +63,9 @@ BattleChain runs as a ZKSync-based L2 to keep attacks isolated from mainnet liqu
 
 BattleChain is designed for AI-assisted development. Deploy contracts, create agreements, and run attacks — all through your AI coding tool.
 
+  
   - [Demo with Claude Desktop](https://docs.battlechain.com/battlechain/quickstart/claude-desktop-demo): Run the full security demo with zero coding — Claude does everything
+  
 
   - [Deploy and Battle-Test](https://docs.battlechain.com/battlechain/quickstart/deploy-your-contract): Deploy a vulnerable vault and open it for attack — with AI or manually
 
@@ -534,7 +536,7 @@ Run these commands yourself in your terminal (each will prompt for your keystore
 just request-attack-mode
 ```
 
-On testnet, the DAO moderator is a permissionless contract — approve your own request immediately:
+The DAO moderator on testnet is a permissionless `MockRegistryModerator` — approve your own request immediately:
 
 ```bash
 cast send 0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF \
@@ -553,8 +555,6 @@ just check-state
 |--------|---------|
 | `2` | `ATTACK_REQUESTED` — waiting for DAO |
 | `3` | `UNDER_ATTACK` — approved, vault is open |
-
-> **Note:** On testnet, the `MockRegistryModerator` lets you approve your own request immediately. On mainnet, this is a real DAO governance action.
 
 > **Check:** Once you see `3`, your vault is live and attackable. Whitehats on BattleChain can now attempt to drain it.
 
@@ -613,7 +613,7 @@ cast send \
   0x0000000000000000000000000000000000000000
 ```
 
-Find your pending nonce: `cast nonce --rpc-url https://testnet.battlechain.com `
+Find your pending nonce with `cast nonce --rpc-url <RPC_URL> ` (use the RPC URL for your selected network).
 
 ### Out-of-gas failures
 
@@ -922,7 +922,7 @@ cast send \
   0x0000000000000000000000000000000000000000
 ```
 
-Find your pending nonce: `cast nonce --rpc-url https://testnet.battlechain.com `
+Find your pending nonce with `cast nonce --rpc-url <RPC_URL> ` (use the RPC URL for your selected network).
 
 ### Out-of-gas failures
 
@@ -1122,12 +1122,12 @@ Transactions can get stuck if the fee is too low for the current base fee. To re
 
 ```bash
 # Get current base fee
-cast gas-price --rpc-url https://testnet.battlechain.com
+cast gas-price --rpc-url https://mainnet.battlechain.com
 
 # Send a replacement with a higher max fee (e.g. 2x the current base fee)
 cast send \
   --account <your-keystore-account> \
-  --rpc-url https://testnet.battlechain.com \
+  --rpc-url https://mainnet.battlechain.com \
   --nonce <stuck-nonce> \
   --max-fee-per-gas <2x-current-base-fee> \
   --value 0 \
@@ -1137,7 +1137,7 @@ cast send \
 Find the stuck nonce via:
 
 ```bash
-cast nonce --rpc-url https://testnet.battlechain.com <your-wallet-address>
+cast nonce --rpc-url https://mainnet.battlechain.com <your-wallet-address>
 ```
 
 ### Deploying Contracts to BattleChain
@@ -1320,7 +1320,7 @@ Source: https://docs.battlechain.com/battlechain/tutorials/attacking-contracts
 
 You need a deployed, attackable vault to target. If you completed the [Quickstart](https://docs.battlechain.com/battlechain/quickstart/deploy-your-contract), you already have one — your `.env` has everything you need.
 
-If you're attacking someone else's vault, you need their `VAULT_ADDRESS` and `TOKEN_ADDRESS` (find these on the [BattleChain explorer](https://explorer.testnet.battlechain.com/) or by querying the `AttackRegistry`).
+If you're attacking someone else's vault, you need their `VAULT_ADDRESS` and `TOKEN_ADDRESS` (find these on the [BattleChain explorer](https://explorer.mainnet.battlechain.com/) or by querying the `AttackRegistry`).
 
 **[AI CLI (foundry)]**
 
@@ -1447,7 +1447,7 @@ Returned to protocol:   900 tokens
 
 ## Step 4 — Verify on the Explorer
 
-Search your `VAULT_ADDRESS` on the [BattleChain explorer](https://explorer.testnet.battlechain.com/). You should see:
+Search your `VAULT_ADDRESS` on the [BattleChain explorer](https://explorer.mainnet.battlechain.com/). You should see:
 
 - The attack transaction
 - The vault balance dropping to zero
@@ -1921,19 +1921,13 @@ Click the button below to add the selected network to MetaMask automatically:
 | Currency | ETH |
 | CAIP-2 ID | `eip155:627` |
 
-If you prefer to add it manually, open MetaMask, click the network selector at the top, choose **Add Network** → **Add a network manually**, enter the details below, and click **Save**:
+If you prefer to add it manually, open MetaMask, click the network selector at the top, choose **Add Network** → **Add a network manually**, enter the details for the network selected in the toggle above, and click **Save**:
 
 - **Network Name**: BattleChain
 - **RPC URL**: `https://mainnet.battlechain.com`
 - **Chain ID**: `626`
 - **Currency Symbol**: `ETH`
 - **Block Explorer URL**: `https://explorer.mainnet.battlechain.com/`
-
-- **Network Name**: BattleChain Testnet
-- **RPC URL**: `https://testnet.battlechain.com`
-- **Chain ID**: `627`
-- **Currency Symbol**: `ETH`
-- **Block Explorer URL**: `https://explorer.testnet.battlechain.com/`
 
 > **Check:** BattleChain is now available in your MetaMask network list.
 
@@ -2166,7 +2160,7 @@ Contract verification works on both BattleChain networks:
 | Testnet | [https://explorer.testnet.battlechain.com/](https://explorer.testnet.battlechain.com/) | `https://block-explorer-api.testnet.battlechain.com/api` |
 | Mainnet | [https://explorer.mainnet.battlechain.com/](https://explorer.mainnet.battlechain.com/) | `https://block-explorer-api.mainnet.battlechain.com/api` |
 
-The examples below use the testnet endpoints. For mainnet, swap in chain ID `626`, the mainnet verifier API, and `https://mainnet.battlechain.com` as the RPC URL.
+The commands below use the network selected in the **Mainnet / Testnet** toggle at the top of the page — chain ID, verifier API, and RPC URL update automatically.
 
 ## Why Verify
 
@@ -2205,33 +2199,33 @@ You can also verify manually using `forge verify-contract`:
 
 ```bash
 forge verify-contract <CONTRACT_ADDRESS> <PATH>:<CONTRACT_NAME> \
-  --chain-id 627 \
-  --verifier-url https://block-explorer-api.testnet.battlechain.com/api \
+  --chain-id 626 \
+  --verifier-url https://block-explorer-api.mainnet.battlechain.com/api \
   --verifier custom \
   --etherscan-api-key "1234" \
-  --rpc-url https://testnet.battlechain.com
+  --rpc-url https://mainnet.battlechain.com
 ```
 
 Replace `<CONTRACT_ADDRESS>` with your deployed address and `:<CONTRACT_NAME>` with the source path and contract name (e.g., `src/MyVault.sol:MyVault`).
 
 | Flag | Value | Notes |
 |------|-------|-------|
-| `--chain-id` | `627` | BattleChain testnet |
-| `--verifier-url` | `https://block-explorer-api.testnet.battlechain.com/api` | BattleChain explorer API |
+| `--chain-id` | `626` | BattleChain chain ID |
+| `--verifier-url` | `https://block-explorer-api.mainnet.battlechain.com``/api` | BattleChain explorer API |
 | `--verifier` | `custom` | Required when using a non-Etherscan explorer |
 | `--etherscan-api-key` | `"1234"` | Not validated — any non-empty string works |
-| `--rpc-url` | `https://testnet.battlechain.com` | BattleChain testnet RPC |
+| `--rpc-url` | `https://mainnet.battlechain.com` | BattleChain RPC |
 
 On success you'll see:
 
 ```
-Start verifying contract `0x...` deployed on 627
+Start verifying contract `0x...` deployed on 626
 
 Submitting verification for [src/MyVault.sol:MyVault] 0x...
 Submitted contract for verification:
         Response: `OK`
         GUID: `<guid>`
-        URL: https://block-explorer-api.testnet.battlechain.com/address/0x...
+        URL: https://block-explorer-api.mainnet.battlechain.com/address/0x...
 ```
 
 The URL in the response links directly to the contract's verified page on the explorer.
@@ -2244,10 +2238,10 @@ Add `--verify` to your `forge script` call to verify contracts as they're deploy
 
 ```bash
 forge script script/Deploy.s.sol \
-  --rpc-url https://testnet.battlechain.com \
+  --rpc-url https://mainnet.battlechain.com \
   --broadcast --skip-simulation -g 300 \
   --verify \
-  --verifier-url https://block-explorer-api.testnet.battlechain.com/api \
+  --verifier-url https://block-explorer-api.mainnet.battlechain.com/api \
   --verifier custom \
   --etherscan-api-key 1234
 ```
@@ -2405,7 +2399,7 @@ accounts[1] = Account({
 
 Chain[] memory chains = new Chain[](1);
 chains[0] = Chain({
-    caip2ChainId: "eip155:627",  // BattleChain Testnet (626 on mainnet)
+    caip2ChainId: "eip155:626",  // BattleChain (eip155:627 testnet, eip155:626 mainnet)
     assetRecoveryAddress: "0xYourRecoveryMultisig",
     accounts: accounts
 });
@@ -2473,7 +2467,7 @@ You can update agreements, with restrictions during commitment:
 // Always allowed
 agreement.setProtocolName("New Name");
 agreement.setContactDetails(newContacts);
-agreement.addAccounts("eip155:627", newAccounts);
+agreement.addAccounts("eip155:626", newAccounts);
 
 // Only favorable changes during commitment
 agreement.setBountyTerms(betterTerms);
@@ -2503,15 +2497,17 @@ Before requesting:
 3. Agreement adopted via `adoptSafeHarbor()`
 4. Commitment window extends at least 7 days
 
+> **Note:** The commands below use the network selected in the **Mainnet / Testnet** toggle at the top of the page — addresses and RPC URLs update automatically.
+
 ## Request Attack Mode
 
 Call `requestUnderAttack` on the `AttackRegistry`:
 
 ```bash
-cast send 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
+cast send 0x24876e481eC7198CAC95af739Df2a852CE65A415 \
   "requestUnderAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com
+  --rpc-url https://mainnet.battlechain.com
 ```
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -2526,7 +2522,7 @@ interface IAttackRegistry {
 
 contract RequestAttackMode is Script {
     IAttackRegistry constant REGISTRY =
-        IAttackRegistry(0x22134e878c409a0Eab7259d873b38e26Ca966d3C);
+        IAttackRegistry(0x24876e481eC7198CAC95af739Df2a852CE65A415);
 
     function run() external {
         address agreement = vm.envAddress("AGREEMENT_ADDRESS");
@@ -2546,7 +2542,7 @@ Run the Foundry script with:
 ```bash
 forge script script/RequestAttackMode.s.sol \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com \
+  --rpc-url https://mainnet.battlechain.com \
   --broadcast
 ```
 
@@ -2561,10 +2557,10 @@ This validates:
 If your contracts weren't deployed via `BattleChainDeployer`, call `requestUnderAttackByNonAuthorized` instead. This must be called by the **agreement owner** — the same address that created the agreement via `AgreementFactory`.
 
 ```bash
-cast send 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
+cast send 0x24876e481eC7198CAC95af739Df2a852CE65A415 \
   "requestUnderAttackByNonAuthorized(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com
+  --rpc-url https://mainnet.battlechain.com
 ```
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -2579,7 +2575,7 @@ interface IAttackRegistry {
 
 contract RequestAttackModeNonAuthorized is Script {
     IAttackRegistry constant REGISTRY =
-        IAttackRegistry(0x22134e878c409a0Eab7259d873b38e26Ca966d3C);
+        IAttackRegistry(0x24876e481eC7198CAC95af739Df2a852CE65A415);
 
     function run() external {
         address agreement = vm.envAddress("AGREEMENT_ADDRESS");
@@ -2599,72 +2595,6 @@ contract RequestAttackModeNonAuthorized is Script {
 ## Skip Attack Mode Entirely
 
 To go directly to production without attack testing:
-
-```bash
-cast send 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
-  "goToProduction(address)" $AGREEMENT_ADDRESS \
-  --account battlechain \
-  --rpc-url https://testnet.battlechain.com
-```
-
-This immediately sets state to `PRODUCTION` with no Safe Harbor protection.
-
-## Check Request Status
-
-```bash
-cast call 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
-  "getAgreementState(address)(uint8)" $AGREEMENT_ADDRESS \
-  --rpc-url https://testnet.battlechain.com
-```
-
-| Output | Meaning |
-|--------|---------|
-| `0` | `NOT_DEPLOYED` — rejected or not requested |
-| `2` | `ATTACK_REQUESTED` — waiting for DAO |
-| `3` | `UNDER_ATTACK` — approved |
-
-## What Happens Next
-
-| Outcome | Timeline |
-|---------|----------|
-| DAO Approves | Immediate → `UNDER_ATTACK` |
-| DAO Rejects | Immediate → `NOT_DEPLOYED` |
-| DAO Takes No Action | 14 days → `PRODUCTION` (auto-promote) |
-
-## Instant Approval (Testnet Only)
-
-On testnet the registry moderator is a `MockRegistryModerator` — a permissionless contract that forwards any `approveAttack` call straight to the `AttackRegistry`. You can approve your own request immediately:
-
-```bash
-cast send 0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF \
-  "approveAttack(address)" $AGREEMENT_ADDRESS \
-  --account battlechain \
-  --rpc-url https://testnet.battlechain.com
-```
-
-## Request Attack Mode
-
-Call `requestUnderAttack` on the `AttackRegistry` (`0x24876e481eC7198CAC95af739Df2a852CE65A415` on mainnet):
-
-```bash
-cast send 0x24876e481eC7198CAC95af739Df2a852CE65A415 \
-  "requestUnderAttack(address)" $AGREEMENT_ADDRESS \
-  --account battlechain \
-  --rpc-url https://mainnet.battlechain.com
-```
-
-## For Non-BattleChainDeployer Contracts
-
-```bash
-cast send 0x24876e481eC7198CAC95af739Df2a852CE65A415 \
-  "requestUnderAttackByNonAuthorized(address)" $AGREEMENT_ADDRESS \
-  --account battlechain \
-  --rpc-url https://mainnet.battlechain.com
-```
-
-> **Warning:** This path requires extra DAO scrutiny since there's no on-chain proof of deployment.
-
-## Skip Attack Mode Entirely
 
 ```bash
 cast send 0x24876e481eC7198CAC95af739Df2a852CE65A415 \
@@ -2696,6 +2626,17 @@ cast call 0x24876e481eC7198CAC95af739Df2a852CE65A415 \
 | DAO Approves | Immediate → `UNDER_ATTACK` |
 | DAO Rejects | Immediate → `NOT_DEPLOYED` |
 | DAO Takes No Action | 14 days → `PRODUCTION` (auto-promote) |
+
+## Instant Approval (Testnet Only)
+
+On testnet the registry moderator is a `MockRegistryModerator` — a permissionless contract that forwards any `approveAttack` call straight to the `AttackRegistry`. You can approve your own request immediately:
+
+```bash
+cast send 0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF \
+  "approveAttack(address)" $AGREEMENT_ADDRESS \
+  --account battlechain \
+  --rpc-url https://testnet.battlechain.com
+```
 
 On mainnet the registry moderator is a controlled DAO role — there is no instant self-approval.
 
@@ -2796,7 +2737,7 @@ Source: https://docs.battlechain.com/battlechain/how-to/find-attackable-contract
 
 The `AttackRegistry` tracks which contracts are in attack mode. This guide shows how to find and verify targets.
 
-You can view agreement statuses and contracts currently under scope on the [BattleChain explorer](https://explorer.testnet.battlechain.com/agreements).
+You can view agreement statuses and contracts currently under scope on the [BattleChain explorer](https://explorer.mainnet.battlechain.com/agreements).
 
 ## Check a Specific Contract
 
@@ -2823,7 +2764,7 @@ If you're already using `BCScript` for the full deploy + agreement flow, `isAtta
 Run with the `--ffi` flag since the function uses `vm.ffi` to call the explorer API:
 
 ```bash
-forge script script/CheckTarget.s.sol --ffi --rpc-url https://testnet.battlechain.com
+forge script script/CheckTarget.s.sol --ffi --rpc-url https://mainnet.battlechain.com
 ```
 
 > **Note:** `isAttackable` requires `--ffi` and `curl` on your PATH. For on-chain-only contexts where `vm.ffi` isn't available, you can use `attackRegistry.isTopLevelContractUnderAttack(address)` — but this only checks top-level contracts and will miss child contracts spawned by in-scope factories.
@@ -2921,7 +2862,7 @@ require(attackRegistry.isTopLevelContractUnderAttack(target), "Not attackable");
 require(agreement.isContractInScope(target), "Not in scope");
 
 // Get recovery address
-string memory recoveryStr = agreement.getAssetRecoveryAddress("eip155:627");
+string memory recoveryStr = agreement.getAssetRecoveryAddress("eip155:626");
 address recovery = parseAddress(recoveryStr);
 
 // Get bounty terms
@@ -3089,7 +3030,7 @@ If multiple whitehats exploit the same issue, they share the aggregate cap propo
 ## Get Recovery Address
 
 ```solidity
-string memory recoveryStr = agreement.getAssetRecoveryAddress("eip155:627");
+string memory recoveryStr = agreement.getAssetRecoveryAddress("eip155:626");
 // Parse to address for transfers
 ```
 
@@ -3288,10 +3229,10 @@ Source: https://docs.battlechain.com/battlechain/quickstart/review-first-request
 Watch for `AgreementStateChanged` events where `newState = 2` (`ATTACK_REQUESTED`), or query directly:
 
 ```bash
-cast call 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
+cast call 0x24876e481eC7198CAC95af739Df2a852CE65A415 \
   "getAgreementState(address)(uint8)" \
   $AGREEMENT_ADDRESS \
-  --rpc-url https://testnet.battlechain.com
+  --rpc-url https://mainnet.battlechain.com
 ```
 
 | Value | State |
@@ -3364,10 +3305,10 @@ for (uint i = 0; i < contracts.length; i++) {
 ### Approve
 
 ```bash
-cast send 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
+cast send 0x24876e481eC7198CAC95af739Df2a852CE65A415 \
   "approveAttack(address)" \
   $AGREEMENT_ADDRESS \
-  --rpc-url https://testnet.battlechain.com \
+  --rpc-url https://mainnet.battlechain.com \
   --account battlechain
 ```
 
@@ -3376,10 +3317,10 @@ This moves the agreement to `UNDER_ATTACK`, enables Safe Harbor protection, and 
 ### Reject
 
 ```bash
-cast send 0x22134e878c409a0Eab7259d873b38e26Ca966d3C \
+cast send 0x24876e481eC7198CAC95af739Df2a852CE65A415 \
   "rejectAttackRequest(address)" \
   $AGREEMENT_ADDRESS \
-  --rpc-url https://testnet.battlechain.com \
+  --rpc-url https://mainnet.battlechain.com \
   --account battlechain
 ```
 
@@ -3719,14 +3660,20 @@ Typed ABIs for all BattleChain contracts are available in [`battlechain-lib`](ht
 import { attackRegistryAbi, registryAbi } from 'battlechain-lib/ts/abi'
 ```
 
-### Mock & Dependency Contracts
+### Dependency Contracts
 Source: https://docs.battlechain.com/battlechain/reference/mock-contracts
 
-*Mock dependency contracts on the BattleChain testnet and Safe infrastructure on both networks*
+*Dependency contracts your protocol can integrate with on BattleChain — mock protocols on testnet, plus Safe and Multicall3 infrastructure.*
 
-BattleChain testnet includes mock versions of common mainnet dependencies and real infrastructure contracts so you can deploy your exact production bytecode — only swapping constructor parameters like oracle addresses.
+Your protocol often depends on external contracts — price oracles, DEXs, lending markets, multisigs. This page lists the dependency contracts available on BattleChain so you can deploy your exact production bytecode, only swapping constructor parameters like oracle addresses.
 
-The mock contracts on this page (tokens, price feeds, and protocol mocks) are deployed on **testnet only** — they are not deployed on BattleChain mainnet. The [Safe contracts](#safe-gnosis-safe) at the bottom of this page are real contracts deployed on both networks.
+On **testnet**, BattleChain provides **mock versions** of common mainnet dependencies (Chainlink feeds, test tokens, Venus, Uniswap, and more) so you can exercise oracle- and protocol-dependent logic without real liquidity. These mocks are deployed on testnet only.
+
+On **mainnet**, point your contracts at the **real** protocol deployments (real Chainlink feeds, real Uniswap, etc.) at their canonical addresses — the mock contracts below exist on testnet only and are not deployed on BattleChain mainnet. The [Safe](#safe-gnosis-safe) infrastructure is deployed on both networks, and [Multicall3](#multicall3) is on mainnet.
+
+The [Safe](#safe-gnosis-safe) and [Multicall3](#multicall3) contracts at the bottom are genuine deployments (not mocks) and are listed for whichever network applies.
+
+> **Note:** The mock dependency contracts below are deployed on **testnet only**. On mainnet, integrate with the real protocol deployments at their own addresses. Switch the toggle to **Testnet** to see the mock addresses and interfaces. The [Safe](#safe-gnosis-safe) and [Multicall3](#multicall3) sections further down apply to mainnet.
 
 ## Mock Chainlink Price Feeds
 
@@ -4408,6 +4355,43 @@ The full [Safe](https://docs.safe.global/) smart account infrastructure is deplo
 | CompatibilityFallbackHandler | 0x2744C4f8336B6e2A8a182495FbB327Db493F303f |
 | ExtensibleFallbackHandler    | 0x115b290ecDe805FD846E0C347f3419A4234Fd673 |
 
+---
+
+## Multicall3
+
+[Multicall3](https://github.com/mds1/multicall3) batches many contract reads into a single `eth_call`, and can aggregate multiple state-changing calls into one transaction. It lives at the same canonical address — `0xcA11bde05977b3631167028862bE2a173976CA11` — on 250+ chains, so libraries like [viem](https://viem.sh), wagmi, ethers, and Foundry detect and use it automatically.
+
+This is the real Multicall3, deployed on **BattleChain mainnet only** at that canonical address. It is intentionally not on testnet: deploying it there exceeds the canonical pre-signed transaction's 1,000,000 gas limit, so the standard address can't be reproduced.
+
+### Deployed Address (Mainnet)
+
+| Contract   | Address                                                 |
+| ---------- | ------------------------------------------------------- |
+| Multicall3 | 0xcA11bde05977b3631167028862bE2a173976CA11 |
+
+Because it sits at the canonical address, most tooling needs no configuration — point your client at BattleChain mainnet and Multicall3 batching works out of the box.
+
+### Interface
+
+`aggregate3` is the usual entry point. The complete ABI — `aggregate`, `tryAggregate`, `aggregate3Value`, and the block/balance helpers — is the standard Multicall3 ABI, available from [multicall3.com](https://multicall3.com).
+
+  
+    ```solidity
+    struct Call3 {
+        address target;     // contract to call
+        bool allowFailure;  // if false, the batch reverts when this call fails
+        bytes callData;     // ABI-encoded calldata
+    }
+
+    struct Result {
+        bool success;
+        bytes returnData;
+    }
+
+    function aggregate3(Call3[] calldata calls)
+        external payable returns (Result[] memory returnData);
+    ```
+
 ### Contract States
 Source: https://docs.battlechain.com/battlechain/reference/contract-states
 
@@ -4825,12 +4809,12 @@ Transactions can get stuck if the fee is too low for the current base fee. Send 
 
 ```bash
 # Get current base fee
-cast gas-price --rpc-url https://testnet.battlechain.com
+cast gas-price --rpc-url https://mainnet.battlechain.com
 
 # Send a replacement with a higher max fee (e.g. 2x the current base fee)
 cast send \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com \
+  --rpc-url https://mainnet.battlechain.com \
   --nonce <stuck-nonce> \
   --max-fee-per-gas <2x-current-base-fee> \
   --value 0 \
@@ -4840,7 +4824,7 @@ cast send \
 Find the stuck nonce:
 
 ```bash
-cast nonce --rpc-url https://testnet.battlechain.com <your-wallet-address>
+cast nonce --rpc-url https://mainnet.battlechain.com <your-wallet-address>
 ```
 
 You can also reset your MetaMask account (Settings → Advanced → Reset Account) to clear pending transactions.

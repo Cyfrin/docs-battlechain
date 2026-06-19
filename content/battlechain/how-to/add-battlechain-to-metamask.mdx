@@ -15,26 +15,13 @@ Click the button below to add the selected network to MetaMask automatically:
 
 <NetworkInfo />
 
-If you prefer to add it manually, open MetaMask, click the network selector at the top, choose **Add Network** → **Add a network manually**, enter the details below, and click **Save**:
+If you prefer to add it manually, open MetaMask, click the network selector at the top, choose **Add Network** → **Add a network manually**, enter the details for the network selected in the toggle above, and click **Save**:
 
-<Network title="Mainnet">
-
-- **Network Name**: BattleChain
-- **RPC URL**: `https://mainnet.battlechain.com`
-- **Chain ID**: `626`
-- **Currency Symbol**: `ETH`
-- **Block Explorer URL**: `https://explorer.mainnet.battlechain.com/`
-
-</Network>
-<Network title="Testnet">
-
-- **Network Name**: BattleChain Testnet
-- **RPC URL**: `https://testnet.battlechain.com`
-- **Chain ID**: `627`
-- **Currency Symbol**: `ETH`
-- **Block Explorer URL**: `https://explorer.testnet.battlechain.com/`
-
-</Network>
+- **Network Name**: <NetworkValue field="name" code={false} />
+- **RPC URL**: <NetworkValue field="rpcUrl" />
+- **Chain ID**: <NetworkValue field="chainId" />
+- **Currency Symbol**: <NetworkValue field="currencySymbol" />
+- **Block Explorer URL**: <NetworkValue field="explorer" />
 
 <Check>
 BattleChain is now available in your MetaMask network list.

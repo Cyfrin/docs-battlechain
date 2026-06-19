@@ -5,6 +5,8 @@ description: "Install the BattleChain MCP server and run the full security demo 
 
 Run the complete BattleChain security demo without writing a line of code. The MCP server wires directly into Claude Desktop — Claude deploys the contracts, creates the safe harbor agreement, and guides you through the exploit step by step. MetaMask handles all transaction signing.
 
+<TestnetOnly noun="demo" activity="deploy and exploit a vault">
+
 ## What You'll Need
 
 **Claude Desktop**
@@ -114,3 +116,5 @@ MetaMask must be installed in the same browser that opened the signing page. Set
 ### Transactions are failing or the demo is stuck
 
 Check that MetaMask is connected to BattleChain Testnet (chain ID `627`) and that your wallet has testnet ETH. If a previous run left partial state, ask Claude to run `prepare_environment` — it resets the demo so you can start fresh.
+
+</TestnetOnly>

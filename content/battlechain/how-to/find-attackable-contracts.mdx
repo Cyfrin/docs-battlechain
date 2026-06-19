@@ -7,7 +7,7 @@ description: "Query the AttackRegistry to discover contracts you can legally att
 
 The `AttackRegistry` tracks which contracts are in attack mode. This guide shows how to find and verify targets.
 
-You can view agreement statuses and contracts currently under scope on the [BattleChain explorer](https://explorer.testnet.battlechain.com/agreements).
+You can view agreement statuses and contracts currently under scope on the <NetworkValue field="explorer" href path="agreements" label="BattleChain explorer" />.
 
 ## Check a Specific Contract
 
@@ -34,7 +34,7 @@ If you're already using `BCScript` for the full deploy + agreement flow, `isAtta
 Run with the `--ffi` flag since the function uses `vm.ffi` to call the explorer API:
 
 ```bash
-forge script script/CheckTarget.s.sol --ffi --rpc-url https://testnet.battlechain.com
+forge script script/CheckTarget.s.sol --ffi --rpc-url {{rpcUrl}}
 ```
 
 <Note>

@@ -5,6 +5,8 @@ description: "Deploy a vulnerable contract to BattleChain, create a Safe Harbor 
 
 Deploy a vulnerable vault, create a Safe Harbor agreement, and open it for whitehat attack — the core BattleChain workflow for protocol teams.
 
+<TestnetOnly activity="deploy and battle-test a vault">
+
 <Warning>
 **Review what your AI runs.** AI coding tools execute real commands on your machine. Always read the commands before approving them, and never allow anything you don't understand. If in doubt, use the **Manual** tab and run each command yourself.
 </Warning>
@@ -213,13 +215,13 @@ Run these commands yourself in your terminal (each will prompt for your keystore
 just request-attack-mode
 ```
 
-On testnet, the DAO moderator is a permissionless contract — approve your own request immediately:
+The DAO moderator on testnet is a permissionless `MockRegistryModerator` — approve your own request immediately:
 
 ```bash
-cast send 0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF \
+cast send {{registryModerator}} \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com
+  --rpc-url {{rpcUrl}}
 ```
 
 Verify the state:
@@ -232,10 +234,6 @@ just check-state
 |--------|---------|
 | `2` | `ATTACK_REQUESTED` — waiting for DAO |
 | `3` | `UNDER_ATTACK` — approved, vault is open |
-
-<Note>
-On testnet, the `MockRegistryModerator` lets you approve your own request immediately. On mainnet, this is a real DAO governance action.
-</Note>
 
 <Check>
 Once you see `3`, your vault is live and attackable. Whitehats on BattleChain can now attempt to drain it.
@@ -296,19 +294,19 @@ Send a replacement transaction to clear the stuck nonce:
 
 ```bash
 # Get current base fee
-cast gas-price --rpc-url https://testnet.battlechain.com
+cast gas-price --rpc-url {{rpcUrl}}
 
 # Send a replacement with a higher max fee (e.g. 2x the current base fee)
 cast send \
   --account battlechain \
-  --rpc-url https://testnet.battlechain.com \
+  --rpc-url {{rpcUrl}} \
   --nonce <stuck-nonce> \
   --max-fee-per-gas <2x-current-base-fee> \
   --value 0 \
   0x0000000000000000000000000000000000000000
 ```
 
-Find your pending nonce: `cast nonce --rpc-url https://testnet.battlechain.com <your-wallet-address>`
+Find your pending nonce with `cast nonce --rpc-url <RPC_URL> <your-wallet-address>` (use the RPC URL for your selected network).
 
 </Tab>
 
@@ -317,3 +315,5 @@ Find your pending nonce: `cast nonce --rpc-url https://testnet.battlechain.com <
 If a `forge script` command fails with a vague error even with `--skip-simulation`, try adding `-g 300` to use 3x the estimated gas.
 
 </Tabs>
+
+</TestnetOnly>
