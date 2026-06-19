@@ -8,14 +8,6 @@ import { getNavigation } from '@/lib/navigation'
 import type { NavDropdown, NavDivider, NavGroup, NavPage } from '@/lib/navigation'
 import { useMobileSidebar } from '@/lib/mobile-sidebar'
 
-// Pages that document a testnet-only flow (e.g. the no-code Claude Desktop demo,
-// which deploys and self-approves via the testnet mock moderator). Their nav
-// entries are hidden on mainnet via the data-network-block CSS in globals.css,
-// matching how the <Network> / <TestnetOnly> components gate page content.
-const TESTNET_ONLY_PAGES = new Set([
-  'battlechain/quickstart/claude-desktop-demo',
-])
-
 export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
@@ -157,10 +149,7 @@ export function Sidebar() {
         ).join(' ') || item
 
         result.push(
-          <li
-            key={`${item}-${index}`}
-            {...(TESTNET_ONLY_PAGES.has(item) ? { 'data-network-block': 'testnet' } : {})}
-          >
+          <li key={`${item}-${index}`}>
             <Link
               href={href}
               onClick={close}

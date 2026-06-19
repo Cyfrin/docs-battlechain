@@ -71,9 +71,7 @@ BattleChain serves three roles — jump to your starting point:
 
 BattleChain is designed for AI-assisted development. Deploy contracts, create agreements, and run attacks — all through your AI coding tool. Start with **[Using BattleChain with AI](https://docs.battlechain.com/battlechain/using-battlechain-with-ai)** — install the skill, connect the MCP server, or point any agent at the machine-readable docs.
 
-  
   - [Demo with Claude Desktop](https://docs.battlechain.com/battlechain/quickstart/claude-desktop-demo): Run the full security demo with zero coding — Claude does everything
-  
 
   - [Deploy and Battle-Test](https://docs.battlechain.com/battlechain/quickstart/deploy-your-contract): Deploy a vulnerable vault and open it for attack — with AI or manually
 
