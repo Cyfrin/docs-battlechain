@@ -54,8 +54,18 @@ function resolveNetworkToken(net: NetworkShape, key: string): string | undefined
   }
   if (key in meta) return meta[key]
 
-  const contract = net.contracts[key]
-  if (contract) return contract.proxy ?? contract.address
+  // A contract key, optionally with a `.proxy` / `.implementation` / `.address`
+  // suffix. Bare key defaults to the interaction address (proxy ?? address).
+  const dot = key.indexOf('.')
+  const contractName = dot === -1 ? key : key.slice(0, dot)
+  const part = dot === -1 ? undefined : key.slice(dot + 1)
+  const contract = net.contracts[contractName]
+  if (contract) {
+    if (part === 'implementation') return contract.implementation
+    if (part === 'proxy') return contract.proxy
+    if (part === 'address') return contract.address
+    return contract.proxy ?? contract.address
+  }
 
   return net.governance?.[key]
 }

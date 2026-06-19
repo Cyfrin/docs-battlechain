@@ -92,36 +92,36 @@ const BLOCK_RE = /\{\/\* deployments:start[\s\S]*?deployments:end \*\/\}/
 
 const code = (addr?: string): string => (addr ? `\`${addr}\`` : '—')
 
-function coreTable(testnet: Network, mainnet: Network): string {
-  const rows: [string, ContractEntry, ContractEntry][] = [
-    ['AttackRegistry (proxy)', testnet.contracts.attackRegistry, mainnet.contracts.attackRegistry],
-    ['SafeHarborRegistry (proxy)', testnet.contracts.safeHarborRegistry, mainnet.contracts.safeHarborRegistry],
-    ['AgreementFactory (proxy)', testnet.contracts.agreementFactory, mainnet.contracts.agreementFactory],
-    ['BattleChainDeployer', testnet.contracts.battleChainDeployer, mainnet.contracts.battleChainDeployer],
-    ['CreateX', testnet.contracts.createX, mainnet.contracts.createX],
+// A table cell that follows the live Mainnet/Testnet toggle. <NetworkValue>
+// resolves `field` against the selected network's deployments entry at render
+// time (and degrades to mainnet in static llms.txt / search output).
+const nv = (field: string): string => `<NetworkValue field="${field}" />`
+
+function coreTable(): string {
+  const rows: [string, string][] = [
+    ['AttackRegistry (proxy)', 'attackRegistry'],
+    ['SafeHarborRegistry (proxy)', 'safeHarborRegistry'],
+    ['AgreementFactory (proxy)', 'agreementFactory'],
+    ['BattleChainDeployer', 'battleChainDeployer'],
+    ['CreateX', 'createX'],
   ]
   return [
-    '| Contract | Testnet | Mainnet |',
-    '|----------|---------|---------|',
-    ...rows.map(
-      ([label, t, m]) =>
-        `| ${label} | ${code(t.proxy ?? t.address)} | ${code(m.proxy ?? m.address)} |`,
-    ),
+    '| Contract | Address |',
+    '|----------|---------|',
+    ...rows.map(([label, field]) => `| ${label} | ${nv(field)} |`),
   ].join('\n')
 }
 
-function implementationsTable(testnet: Network, mainnet: Network): string {
-  const rows: [string, ContractEntry, ContractEntry][] = [
-    ['AttackRegistry', testnet.contracts.attackRegistry, mainnet.contracts.attackRegistry],
-    ['SafeHarborRegistry', testnet.contracts.safeHarborRegistry, mainnet.contracts.safeHarborRegistry],
-    ['AgreementFactory', testnet.contracts.agreementFactory, mainnet.contracts.agreementFactory],
+function implementationsTable(): string {
+  const rows: [string, string][] = [
+    ['AttackRegistry', 'attackRegistry.implementation'],
+    ['SafeHarborRegistry', 'safeHarborRegistry.implementation'],
+    ['AgreementFactory', 'agreementFactory.implementation'],
   ]
   return [
-    '| Contract | Testnet | Mainnet |',
-    '|----------|---------|---------|',
-    ...rows.map(
-      ([label, t, m]) => `| ${label} | ${code(t.implementation)} | ${code(m.implementation)} |`,
-    ),
+    '| Contract | Address |',
+    '|----------|---------|',
+    ...rows.map(([label, field]) => `| ${label} | ${nv(field)} |`),
   ].join('\n')
 }
 
@@ -155,25 +155,29 @@ function sepoliaTable(sepolia: Network): string {
 }
 
 function generateBlock(data: Deployments): string {
-  const { testnet, mainnet, sepolia } = data.networks
-  const moderator = testnet.contracts.mockRegistryModerator?.address
+  const { mainnet, sepolia } = data.networks
 
   return [
     START_MARKER,
     '',
     '## Deployed Addresses',
     '',
+    'Use the **Mainnet / Testnet** toggle in the top bar to choose which network these addresses are for — the tables below show the selected network.',
+    '',
     '<Note>',
-    'Every address on this page comes from a single source of truth and is served as JSON at [`/deployments.json`](https://docs.battlechain.com/deployments.json). Fetch that file from scripts or AI agents instead of scraping these tables.',
+    'Every address comes from a single source of truth and is served as JSON at [`/deployments.json`](https://docs.battlechain.com/deployments.json) (with **both** networks). Fetch that file from scripts or AI agents instead of scraping these tables.',
     '</Note>',
     '',
-    'The **proxy** is the address you interact with. Implementation and Sepolia L1 addresses follow below.',
+    'The **proxy** is the address you interact with. Implementation and L1 addresses follow below.',
     '',
-    coreTable(testnet, mainnet),
+    coreTable(),
     '',
-    moderator
-      ? `**Testnet only** — \`MockRegistryModerator\` at ${code(moderator)}. This permissionless contract lets you approve your own attack request instantly on testnet; mainnet uses the DAO multisig below.`
-      : '',
+    // Testnet-only: the permissionless instant-approval moderator.
+    '<Network title="Testnet">',
+    '',
+    '**Testnet only** — `MockRegistryModerator` at <NetworkValue field="mockRegistryModerator" />. This permissionless contract lets you approve your own attack request instantly on testnet; mainnet uses the DAO multisig.',
+    '',
+    '</Network>',
     '',
     'For mock Chainlink price feeds and test tokens (testnet only), see [Mock Contracts](/battlechain/reference/mock-contracts).',
     '',
@@ -181,17 +185,27 @@ function generateBlock(data: Deployments): string {
     '',
     'The current UUPS implementations behind the proxies above:',
     '',
-    implementationsTable(testnet, mainnet),
+    implementationsTable(),
     '',
-    '### Mainnet governance',
+    // Mainnet-only governance roles.
+    '<Network title="Mainnet">',
+    '',
+    '### Governance',
     '',
     governanceTable(mainnet),
+    '',
+    '</Network>',
+    '',
+    // Sepolia is the L1 settlement layer for the testnet only.
+    '<Network title="Testnet">',
     '',
     '### Sepolia (Testnet L1)',
     '',
     sepolia.role ?? '',
     '',
     sepoliaTable(sepolia),
+    '',
+    '</Network>',
     '',
     END_MARKER,
   ]
