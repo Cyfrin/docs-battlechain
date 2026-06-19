@@ -27,32 +27,23 @@ You need a small amount of ETH on BattleChain Testnet for gas. Use a dedicated t
 
 **3. Bridge to BattleChain** at [portal.battlechain.com/bridge](https://portal.battlechain.com/bridge) — select Sepolia to BattleChain Testnet.
 
-**Python (macOS / Linux) or WSL (Windows)**
-
-On **macOS or Linux**, Python 3.10 or higher is required. Check with `python3 --version`.
-
-On **Windows**, the installer runs inside WSL. If you don't have it, open PowerShell as Administrator and run `wsl --install`, then restart before continuing.
-
 ---
 
-## Step 1 — Install
+## Step 1 — Install the extension
 
-Run the installer for your platform. It installs the BattleChain MCP server and updates Claude Desktop's config automatically.
+Download the BattleChain extension and open it — Claude Desktop installs it in a single click. No terminal, no config files, and nothing else to install: Foundry is set up automatically the first time you run the demo.
 
-<CodeGroup labels="macOS / Linux, Windows (PowerShell)">
-```bash
-curl -fsSL https://raw.githubusercontent.com/Cyfrin/battlechain-mcp/main/install.sh | bash
-```
-```powershell
-irm https://raw.githubusercontent.com/Cyfrin/battlechain-mcp/main/install.ps1 | iex
-```
-</CodeGroup>
+<InstallButton />
 
-Run the Windows command in PowerShell — not inside a WSL terminal.
+Then install it in Claude Desktop:
 
-<Check>
-The installer will confirm that Claude Desktop's configuration was updated when it completes.
-</Check>
+1. Open **Settings → Extensions → Advanced settings → Install Extension…**
+2. Select the downloaded **`battlechain.mcpb`**.
+3. Click **Install**, then continue to Step 2.
+
+<Note>
+`.mcpb` is a new file type, so double-clicking it may not work — Windows won't recognize the extension yet. The **Install Extension…** menu above always works. You can also drag the file onto the Extensions settings page.
+</Note>
 
 ---
 

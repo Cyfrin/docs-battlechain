@@ -18,6 +18,7 @@ import { Tabs, Tab } from '@/components/mdx/Tabs'
 import { Network } from '@/components/mdx/NetworkTabs'
 import { ResponseField } from '@/components/mdx/ResponseField'
 import { SnippetIntro } from '@/components/mdx/SnippetIntro'
+import { InstallButton } from '@/components/mdx/InstallButton'
 import { BattlechainHeroClient } from '@/components/hero/BattlechainHeroClient'
 import { Pre } from '@/components/mdx/Pre'
 import remarkGfm from 'remark-gfm'
@@ -55,6 +56,7 @@ const components = {
   Expandable,
   ResponseField,
   SnippetIntro,
+  InstallButton,
   Tabs,
   Tab,
   Network,

@@ -45,3 +45,7 @@ gen-lang-client-*.json
 battlechain-safe-harbor/
 mintlify-docs/
 .claude/
+
+# MCP bundle is hosted as a GitHub release asset, not committed (see MCPB_HOSTING.md).
+# A local copy under public/downloads/ is fine for offline `npm run dev`.
+public/downloads/*.mcpb
