@@ -4,6 +4,7 @@ export const battlechain = {
     chainId: 627,
     rpcUrl: "https://testnet.battlechain.com",
     explorer: "https://explorer.testnet.battlechain.com/",
+    explorerApi: "https://block-explorer-api.testnet.battlechain.com",
     portal: "https://portal.battlechain.com/bridge",
     currencySymbol: "ETH",
     caip2: "eip155:627",
@@ -16,6 +17,8 @@ export const battlechain = {
       attackRegistryImplementation: "0x4496b7e04b4Dd94153AA0d614708d5f06fc65a13",
       attackRegistryProxy: "0x22134e878c409a0Eab7259d873b38e26Ca966d3C",
       battleChainDeployer: "0x0f75289c6b883b885A1fDF9BCCABE1bbFB094077",
+      // Testnet uses a permissionless MockRegistryModerator for instant self-approval.
+      registryModerator: "0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF",
     },
   },
   mainnet: {
@@ -23,6 +26,7 @@ export const battlechain = {
     chainId: 626,
     rpcUrl: "https://mainnet.battlechain.com",
     explorer: "https://explorer.mainnet.battlechain.com/",
+    explorerApi: "https://block-explorer-api.mainnet.battlechain.com",
     currencySymbol: "ETH",
     caip2: "eip155:626",
     contracts: {
@@ -34,6 +38,7 @@ export const battlechain = {
       attackRegistryImplementation: "0x03A3228A4ce38362289E715bbc26Cac8b98e421B",
       attackRegistryProxy: "0x24876e481eC7198CAC95af739Df2a852CE65A415",
       battleChainDeployer: "0xD12765D21dDba418B8Fc0583c4716763e03Aa078",
+      // Mainnet has no permissionless moderator — instant self-approval is testnet-only.
     },
   },
   links: {

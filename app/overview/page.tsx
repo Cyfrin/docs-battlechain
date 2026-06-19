@@ -11,6 +11,8 @@ import { Latex } from '@/components/mdx/Latex'
 import { Expandable } from '@/components/mdx/Expandable'
 import { ResponseField } from '@/components/mdx/ResponseField'
 import { SnippetIntro } from '@/components/mdx/SnippetIntro'
+import { Network } from '@/components/mdx/NetworkTabs'
+import { NetworkValue } from '@/components/mdx/NetworkValue'
 import { BattlechainHeroClient } from '@/components/hero/BattlechainHeroClient'
 import { Pre } from '@/components/mdx/Pre'
 import remarkGfm from 'remark-gfm'
@@ -36,6 +38,8 @@ const components = {
   Expandable,
   ResponseField,
   SnippetIntro,
+  Network,
+  NetworkValue,
   BattlechainHero: BattlechainHeroClient,
   pre: Pre,
 }

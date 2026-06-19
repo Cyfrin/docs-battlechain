@@ -1,6 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
+import { battlechain } from '@/config/battlechain'
+import { resolveField, substituteTokens } from '@/lib/network-fields'
 
 export interface SearchDocument {
   id: string
@@ -48,6 +50,14 @@ function extractHeadings(content: string): string[] {
 
 function stripMarkdown(content: string): string {
   return content
+    // Resolve <NetworkValue field="..." /> to its value (mainnet default) so
+    // RPC URLs / addresses stay searchable. Done before the generic tag strip.
+    .replace(/<NetworkValue\s+([^/>]*?)\/>/g, (_m, attrs: string) => {
+      const field = attrs.match(/field="([^"]*)"/)?.[1]
+      if (!field) return ''
+      const net = attrs.match(/network="([^"]*)"/)?.[1] === 'testnet' ? 'testnet' : 'mainnet'
+      return resolveField(battlechain[net], field)
+    })
     // Remove MDX components
     .replace(/<[^>]+>/g, '')
     // Remove markdown links but keep text
@@ -66,6 +76,12 @@ function stripMarkdown(content: string): string {
     // Remove extra whitespace
     .replace(/\s+/g, ' ')
     .trim()
+}
+
+// Resolve any {{tokens}} that survive stripping (e.g. inline code) against
+// mainnet so the search index never shows raw placeholders.
+function resolveTokens(content: string): string {
+  return substituteTokens(content, battlechain.mainnet)
 }
 
 export function buildSearchIndex(): SearchDocument[] {
@@ -98,7 +114,7 @@ export function buildSearchIndex(): SearchDocument[] {
       const title = data.title || headings[0] || path.basename(filePath, path.extname(filePath))
 
       // Strip markdown and get clean text content
-      const cleanContent = stripMarkdown(content)
+      const cleanContent = resolveTokens(stripMarkdown(content))
 
       documents.push({
         id: url,

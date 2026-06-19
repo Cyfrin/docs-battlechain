@@ -15,7 +15,8 @@ import { CodeGroup } from '@/components/mdx/CodeGroup'
 import { Latex } from '@/components/mdx/Latex'
 import { Expandable } from '@/components/mdx/Expandable'
 import { Tabs, Tab } from '@/components/mdx/Tabs'
-import { Network } from '@/components/mdx/NetworkTabs'
+import { Network, TestnetOnly } from '@/components/mdx/NetworkTabs'
+import { NetworkValue } from '@/components/mdx/NetworkValue'
 import { ResponseField } from '@/components/mdx/ResponseField'
 import { SnippetIntro } from '@/components/mdx/SnippetIntro'
 import { BattlechainHeroClient } from '@/components/hero/BattlechainHeroClient'
@@ -58,6 +59,8 @@ const components = {
   Tabs,
   Tab,
   Network,
+  TestnetOnly,
+  NetworkValue,
   BattlechainHero: BattlechainHeroClient,
   pre: Pre,
   a: MdxLink,

@@ -62,6 +62,35 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
+              // Resolve the Mainnet/Testnet network before first paint so
+              // network-specific content renders correctly with no flash.
+              // Precedence: URL ?network= > localStorage > cookie > default.
+              (function() {
+                try {
+                  var KEY = 'battlechain-docs-network';
+                  var url = new URL(location.href);
+                  var q = (url.searchParams.get('network') || '').toLowerCase();
+                  var ls = localStorage.getItem(KEY);
+                  var ckMatch = document.cookie.match(/(?:^|; )battlechain-docs-network=([^;]+)/);
+                  var ck = ckMatch ? ckMatch[1] : null;
+                  var n = (q || ls || ck || 'mainnet').toLowerCase();
+                  if (n !== 'testnet' && n !== 'mainnet') n = 'mainnet';
+                  document.documentElement.dataset.network = n;
+                  // A shared ?network= link becomes the sticky preference.
+                  if (q === 'testnet' || q === 'mainnet') {
+                    localStorage.setItem(KEY, n);
+                    document.cookie = KEY + '=' + n + ';path=/;max-age=31536000;samesite=lax';
+                  }
+                } catch (e) {
+                  document.documentElement.dataset.network = 'mainnet';
+                }
+              })();
+            `,
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
               // Aggressive error suppression for crypto wallet extensions
               (function() {
                 const originalError = console.error;

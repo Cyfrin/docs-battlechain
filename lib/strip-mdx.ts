@@ -1,3 +1,6 @@
+import { battlechain } from '@/config/battlechain'
+import { resolveField, substituteTokens } from '@/lib/network-fields'
+
 const BASE_URL = 'https://docs.battlechain.com'
 
 const NETWORK_INFO: Record<string, string> = {
@@ -28,9 +31,20 @@ const NETWORK_INFO: Record<string, string> = {
  * Strips JSX components and replaces them with readable markdown equivalents.
  */
 export function stripMdxToMarkdown(raw: string): string {
+  // Resolve tokens inside testnet-scoped blocks against TESTNET before the
+  // global mainnet pass below. Content wrapped in <Network title="Testnet"> or
+  // <TestnetOnly> is testnet-only (e.g. the MockRegistryModerator command),
+  // so its {{tokens}} must degrade to testnet values, not mainnet — otherwise
+  // testnet-only addresses resolve to empty and RPC URLs point at mainnet.
+  let text = raw.replace(
+    /(<Network\s+title="Testnet"\s*>|<TestnetOnly[^>]*>)([\s\S]*?)(<\/Network>|<\/TestnetOnly>)/g,
+    (_m, open: string, body: string, close: string) =>
+      `${open}${substituteTokens(body, battlechain.testnet)}${close}`,
+  )
+
   // Protect fenced code blocks from tag/brace stripping
   const codeBlocks: string[] = []
-  let text = raw.replace(/```[\s\S]*?```/g, (match) => {
+  text = text.replace(/```[\s\S]*?```/g, (match) => {
     codeBlocks.push(match)
     return `%%CODE${codeBlocks.length - 1}%%`
   })
@@ -55,6 +69,28 @@ export function stripMdxToMarkdown(raw: string): string {
   text = text.replace(
     /<NetworkInfo\s*\/>/g,
     `**Mainnet**\n\n${NETWORK_INFO.mainnet}\n\n**Testnet**\n\n${NETWORK_INFO.testnet}`,
+  )
+
+  // Inline <NetworkValue field="..." /> components. Static markdown has no
+  // toggle, so resolve against the network override if given, else mainnet
+  // (the production default). Done before the generic self-closing-tag strip.
+  text = text.replace(
+    /<NetworkValue\s+([^/>]*?)\/>/g,
+    (_m, attrs: string) => {
+      const field = attrs.match(/field="([^"]*)"/)?.[1]
+      if (!field) return ''
+      const net = attrs.match(/network="([^"]*)"/)?.[1] === 'testnet' ? 'testnet' : 'mainnet'
+      const value = resolveField(battlechain[net], field)
+      const asLink = /\bhref\b/.test(attrs)
+      const asCode = !/code=\{?false\}?/.test(attrs) // code defaults to true
+      if (asLink) {
+        const path = attrs.match(/path="([^"]*)"/)?.[1] ?? ''
+        const url = `${value}${path}`
+        const label = attrs.match(/label="([^"]*)"/)?.[1]
+        return label ? `[${label}](${url})` : url
+      }
+      return asCode ? `\`${value}\`` : value
+    },
   )
 
   // Convert callout components to blockquotes
@@ -149,9 +185,10 @@ export function stripMdxToMarkdown(raw: string): string {
   // Collapse runs of 3+ blank lines into 2
   text = text.replace(/\n{3,}/g, '\n\n')
 
-  // Restore code blocks
+  // Restore code blocks. Resolve any {{tokens}} against mainnet (the production
+  // default) so static markdown shows real values, not raw placeholders.
   text = text.replace(/%%CODE(\d+)%%/g, (_, i) =>
-    codeBlocks[parseInt(i, 10)],
+    substituteTokens(codeBlocks[parseInt(i, 10)], battlechain.mainnet),
   )
 
   return text.trim()
