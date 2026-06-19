@@ -173,7 +173,7 @@ VAULT_ADDRESS=0x...
 ```
 
 <Warning>
-**Forge scripts require `--skip-simulation` on BattleChain.** Forge's local gas estimation doesn't work reliably on BattleChain — add `--skip-simulation` to all `forge script` calls. The starter kit's `justfile` already includes this.
+**Forge scripts require `--skip-simulation` on BattleChain.** Forge's local gas estimation doesn't work reliably on BattleChain — add `--skip-simulation` to all `forge script` calls. The starter kit's `justfile` already includes this. For the full list of BattleChain Foundry flags and how `just` → `battlechain-lib` → `BattleChainDeployer` fit together, see [How Deployment Works](/battlechain/explanation/how-deployment-works).
 </Warning>
 
 <Check>
@@ -218,10 +218,10 @@ just request-attack-mode
 The DAO moderator on testnet is a permissionless `MockRegistryModerator` — approve your own request immediately:
 
 ```bash
-cast send {{registryModerator}} \
+cast send %%testnet.mockRegistryModerator%% \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url {{rpcUrl}}
+  --rpc-url %%testnet.rpc%%
 ```
 
 Verify the state:
@@ -294,19 +294,19 @@ Send a replacement transaction to clear the stuck nonce:
 
 ```bash
 # Get current base fee
-cast gas-price --rpc-url {{rpcUrl}}
+cast gas-price --rpc-url %%testnet.rpc%%
 
 # Send a replacement with a higher max fee (e.g. 2x the current base fee)
 cast send \
   --account battlechain \
-  --rpc-url {{rpcUrl}} \
+  --rpc-url %%testnet.rpc%% \
   --nonce <stuck-nonce> \
   --max-fee-per-gas <2x-current-base-fee> \
   --value 0 \
   0x0000000000000000000000000000000000000000
 ```
 
-Find your pending nonce with `cast nonce --rpc-url <RPC_URL> <your-wallet-address>` (use the RPC URL for your selected network).
+Find your pending nonce: `cast nonce --rpc-url %%testnet.rpc%% <your-wallet-address>`
 
 </Tab>
 

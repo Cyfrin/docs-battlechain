@@ -1,10 +1,19 @@
 name: Check Links
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "content/**"
+      - "config/docs.json"
+      - "scripts/check-links.ts"
+      - "lib/navigation.ts"
   pull_request:
     paths:
       - "content/**"
       - "config/docs.json"
+      - "scripts/check-links.ts"
+      - "lib/navigation.ts"
 
 jobs:
   check-links:

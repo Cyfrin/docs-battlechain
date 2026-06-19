@@ -2,15 +2,16 @@
 
 import { useLayoutEffect, useRef, useState } from 'react'
 import { Copy, Check } from 'lucide-react'
-import { battlechain } from '@/config/battlechain'
-import { substituteTokens } from '@/lib/network-fields'
+import { substituteActiveTokens } from '@/lib/deployments'
 import { useNetwork } from '@/components/mdx/NetworkTabs'
 
 /**
- * Replace `{{token}}` placeholders inside a rendered <pre> with the active
+ * Replace `%%active.*%%` placeholders inside a rendered <pre> with the active
  * network's values. Prism tokenizes code into many text nodes, and a token can
  * straddle several of them, so after a per-node pass we check the concatenated
- * text and, if any braces remain, collapse all text into the first node.
+ * text and, if any markers remain, collapse all text into the first node.
+ * (Build-time substitution has already resolved %%testnet.*%% / %%mainnet.*%%;
+ * only %%active.*%% reaches the client.)
  */
 function substituteInPre(pre: HTMLElement, substitute: (text: string) => string) {
   const walker = document.createTreeWalker(pre, NodeFilter.SHOW_TEXT)
@@ -18,15 +19,15 @@ function substituteInPre(pre: HTMLElement, substitute: (text: string) => string)
   let node: Node | null
   while ((node = walker.nextNode())) nodes.push(node as Text)
   if (nodes.length === 0) return
-  if (!/\{\{/.test(nodes.map((n) => n.data).join(''))) return
+  if (!nodes.map((n) => n.data).join('').includes('%%active.')) return
 
   // Per-node fast path: most tokens sit inside a single Prism token.
   for (const n of nodes) {
-    if (n.data.includes('{{')) n.data = substitute(n.data)
+    if (n.data.includes('%%active.')) n.data = substitute(n.data)
   }
 
-  // If a token spanned multiple nodes, braces survive — collapse into node[0].
-  if (/\{\{/.test(nodes.map((n) => n.data).join(''))) {
+  // If a token spanned multiple nodes, markers survive — collapse into node[0].
+  if (nodes.map((n) => n.data).join('').includes('%%active.')) {
     nodes[0].data = substitute(nodes.map((n) => n.data).join(''))
     for (let i = 1; i < nodes.length; i++) nodes[i].data = ''
   }
@@ -37,12 +38,12 @@ export function Pre({ children, ...props }: React.HTMLAttributes<HTMLPreElement>
   const [copied, setCopied] = useState(false)
   const { network } = useNetwork()
 
-  // Substitute before paint so there's no flash of raw {{tokens}} or the wrong
-  // network's values. Re-runs when the toggle changes.
+  // Substitute before paint so there's no flash of raw %%active%% tokens or the
+  // wrong network's values. Re-runs when the toggle changes.
   useLayoutEffect(() => {
     const pre = preRef.current
     if (!pre) return
-    substituteInPre(pre, (text) => substituteTokens(text, battlechain[network]))
+    substituteInPre(pre, (text) => substituteActiveTokens(text, network))
   }, [network, children])
 
   const handleCopy = async () => {

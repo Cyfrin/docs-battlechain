@@ -1,29 +1,39 @@
-import { battlechain } from '@/config/battlechain'
-import { resolveField, substituteTokens } from '@/lib/network-fields'
+import deployments from '../config/deployments.json'
+import {
+  substituteDeploymentTokens,
+  substituteActiveTokens,
+  resolveActiveField,
+} from './deployments'
 
 const BASE_URL = 'https://docs.battlechain.com'
 
+interface NetworkMeta {
+  name: string
+  chainId: number
+  rpcUrl: string
+  explorer: string
+  currencySymbol: string
+  caip2: string
+}
+
+// Network details rendered into llms-full.txt are derived from the single
+// source of truth in config/deployments.json (same data the live site shows).
+function networkInfoTable(net: NetworkMeta): string {
+  return [
+    '| Field | Value |',
+    '|-------|-------|',
+    `| Network Name | ${net.name} |`,
+    `| Chain ID | \`${net.chainId}\` |`,
+    `| RPC URL | \`${net.rpcUrl}\` |`,
+    `| Explorer | ${net.explorer} |`,
+    `| Currency | ${net.currencySymbol} |`,
+    `| CAIP-2 ID | \`${net.caip2}\` |`,
+  ].join('\n')
+}
+
 const NETWORK_INFO: Record<string, string> = {
-  testnet: [
-    '| Field | Value |',
-    '|-------|-------|',
-    '| Network Name | BattleChain Testnet |',
-    '| Chain ID | `627` |',
-    '| RPC URL | `https://testnet.battlechain.com` |',
-    '| Explorer | https://explorer.testnet.battlechain.com/ |',
-    '| Currency | ETH |',
-    '| CAIP-2 ID | `eip155:627` |',
-  ].join('\n'),
-  mainnet: [
-    '| Field | Value |',
-    '|-------|-------|',
-    '| Network Name | BattleChain |',
-    '| Chain ID | `626` |',
-    '| RPC URL | `https://mainnet.battlechain.com` |',
-    '| Explorer | https://explorer.mainnet.battlechain.com/ |',
-    '| Currency | ETH |',
-    '| CAIP-2 ID | `eip155:626` |',
-  ].join('\n'),
+  testnet: networkInfoTable(deployments.networks.testnet),
+  mainnet: networkInfoTable(deployments.networks.mainnet),
 }
 
 /**
@@ -31,16 +41,23 @@ const NETWORK_INFO: Record<string, string> = {
  * Strips JSX components and replaces them with readable markdown equivalents.
  */
 export function stripMdxToMarkdown(raw: string): string {
-  // Resolve tokens inside testnet-scoped blocks against TESTNET before the
-  // global mainnet pass below. Content wrapped in <Network title="Testnet"> or
-  // <TestnetOnly> is testnet-only (e.g. the MockRegistryModerator command),
-  // so its {{tokens}} must degrade to testnet values, not mainnet — otherwise
-  // testnet-only addresses resolve to empty and RPC URLs point at mainnet.
-  let text = raw.replace(
+  // %%active.*%% follows the live toggle on the site; static markdown has no
+  // toggle. Inside testnet-scoped blocks (<Network title="Testnet"> /
+  // <TestnetOnly>) it must degrade to TESTNET (e.g. the mockRegistryModerator
+  // command), elsewhere to MAINNET (the production default). Resolve the
+  // testnet-scoped blocks first, then let the global pass below handle the rest.
+  raw = raw.replace(
     /(<Network\s+title="Testnet"\s*>|<TestnetOnly[^>]*>)([\s\S]*?)(<\/Network>|<\/TestnetOnly>)/g,
     (_m, open: string, body: string, close: string) =>
-      `${open}${substituteTokens(body, battlechain.testnet)}${close}`,
+      `${open}${substituteActiveTokens(body, 'testnet')}${close}`,
   )
+  // Remaining %%active.*%% (outside testnet blocks) degrade to mainnet.
+  raw = substituteActiveTokens(raw, 'mainnet')
+
+  // Resolve the static %%testnet.*%% / %%mainnet.*%% tokens to real values.
+  raw = substituteDeploymentTokens(raw)
+
+  let text = raw
 
   // Protect fenced code blocks from tag/brace stripping
   const codeBlocks: string[] = []
@@ -80,7 +97,7 @@ export function stripMdxToMarkdown(raw: string): string {
       const field = attrs.match(/field="([^"]*)"/)?.[1]
       if (!field) return ''
       const net = attrs.match(/network="([^"]*)"/)?.[1] === 'testnet' ? 'testnet' : 'mainnet'
-      const value = resolveField(battlechain[net], field)
+      const value = resolveActiveField(net, field)
       const asLink = /\bhref\b/.test(attrs)
       const asCode = !/code=\{?false\}?/.test(attrs) // code defaults to true
       if (asLink) {
@@ -185,11 +202,8 @@ export function stripMdxToMarkdown(raw: string): string {
   // Collapse runs of 3+ blank lines into 2
   text = text.replace(/\n{3,}/g, '\n\n')
 
-  // Restore code blocks. Resolve any {{tokens}} against mainnet (the production
-  // default) so static markdown shows real values, not raw placeholders.
-  text = text.replace(/%%CODE(\d+)%%/g, (_, i) =>
-    substituteTokens(codeBlocks[parseInt(i, 10)], battlechain.mainnet),
-  )
+  // Restore code blocks (all %%tokens%% were already resolved up-front).
+  text = text.replace(/%%CODE(\d+)%%/g, (_, i) => codeBlocks[parseInt(i, 10)])
 
   return text.trim()
 }

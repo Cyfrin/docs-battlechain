@@ -1,8 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
-import { battlechain } from '@/config/battlechain'
-import { resolveField, substituteTokens } from '@/lib/network-fields'
+import { substituteDeploymentTokens, substituteActiveTokens } from './deployments'
 
 export interface SearchDocument {
   id: string
@@ -50,14 +49,6 @@ function extractHeadings(content: string): string[] {
 
 function stripMarkdown(content: string): string {
   return content
-    // Resolve <NetworkValue field="..." /> to its value (mainnet default) so
-    // RPC URLs / addresses stay searchable. Done before the generic tag strip.
-    .replace(/<NetworkValue\s+([^/>]*?)\/>/g, (_m, attrs: string) => {
-      const field = attrs.match(/field="([^"]*)"/)?.[1]
-      if (!field) return ''
-      const net = attrs.match(/network="([^"]*)"/)?.[1] === 'testnet' ? 'testnet' : 'mainnet'
-      return resolveField(battlechain[net], field)
-    })
     // Remove MDX components
     .replace(/<[^>]+>/g, '')
     // Remove markdown links but keep text
@@ -78,12 +69,6 @@ function stripMarkdown(content: string): string {
     .trim()
 }
 
-// Resolve any {{tokens}} that survive stripping (e.g. inline code) against
-// mainnet so the search index never shows raw placeholders.
-function resolveTokens(content: string): string {
-  return substituteTokens(content, battlechain.mainnet)
-}
-
 export function buildSearchIndex(): SearchDocument[] {
   const contentDir = path.join(process.cwd(), 'content')
   const documents: SearchDocument[] = []
@@ -97,7 +82,11 @@ export function buildSearchIndex(): SearchDocument[] {
     }
     try {
       const fileContent = fs.readFileSync(filePath, 'utf-8')
-      const { data, content } = matter(fileContent)
+      const { data, content: rawContent } = matter(fileContent)
+      // %%active.*%% has no toggle in the static index — degrade to mainnet.
+      const content = substituteDeploymentTokens(
+        substituteActiveTokens(rawContent, 'mainnet'),
+      )
 
       // Get the relative path from content directory
       const relativePath = path.relative(contentDir, filePath)
@@ -114,7 +103,7 @@ export function buildSearchIndex(): SearchDocument[] {
       const title = data.title || headings[0] || path.basename(filePath, path.extname(filePath))
 
       // Strip markdown and get clean text content
-      const cleanContent = resolveTokens(stripMarkdown(content))
+      const cleanContent = stripMarkdown(content)
 
       documents.push({
         id: url,

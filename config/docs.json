@@ -37,34 +37,55 @@
             "dropdown": "BattleChain",
             "icon": "/images/product-logos/battlechain.svg",
             "pages": [
-              "overview",
-              "battlechain/using-battlechain-with-ai",
               {
-                "divider": true
-              },
-              {
-                "group": "Quickstart",
+                "group": "Get Started",
                 "pages": [
-                  "battlechain/quickstart/claude-desktop-demo",
-                  "battlechain/quickstart/deploy-your-contract",
-                  "battlechain/quickstart/execute-first-attack"
+                  "overview",
+                  "battlechain/using-battlechain-with-ai",
+                  {
+                    "group": "Quickstart",
+                    "pages": [
+                      "battlechain/quickstart/claude-desktop-demo",
+                      "battlechain/quickstart/deploy-your-contract",
+                      "battlechain/quickstart/execute-first-attack"
+                    ]
+                  }
                 ]
               },
               {
-                "group": "Tutorials",
+                "group": "For Protocols",
                 "pages": [
                   "battlechain/tutorials/going-attackable",
                   "battlechain/tutorials/deploying-contracts",
-                  "battlechain/tutorials/attacking-contracts",
-                  "battlechain/tutorials/approving-requests",
+                  "battlechain/how-to/create-agreement",
+                  "battlechain/how-to/request-attack-mode",
+                  "battlechain/how-to/promote-to-production",
                   "battlechain/tutorials/prediction-market"
                 ]
               },
               {
-                "group": "How-to Guides",
+                "group": "For Whitehats",
                 "pages": [
-                  "battlechain/how-to/configure-ai-tools",
+                  "battlechain/how-to/find-attackable-contracts",
+                  "battlechain/tutorials/attacking-contracts",
+                  "battlechain/how-to/execute-attack",
+                  "battlechain/how-to/claim-bounties"
+                ]
+              },
+              {
+                "group": "For the DAO",
+                "pages": [
+                  "battlechain/quickstart/review-first-request",
+                  "battlechain/how-to/approve-reject-requests",
+                  "battlechain/how-to/instant-promotion",
+                  "battlechain/tutorials/approving-requests"
+                ]
+              },
+              {
+                "group": "Tools & Explorer",
+                "pages": [
                   "battlechain/how-to/add-battlechain-to-metamask",
+                  "battlechain/how-to/configure-ai-tools",
                   {
                     "group": "Block Explorer",
                     "pages": [
@@ -72,52 +93,31 @@
                       "battlechain/how-to/managing-agreements-in-explorer",
                       "battlechain/how-to/verifying-contracts"
                     ]
-                  },
-                  {
-                    "group": "For Protocols",
-                    "pages": [
-                      "battlechain/how-to/create-agreement",
-                      "battlechain/how-to/request-attack-mode",
-                      "battlechain/how-to/promote-to-production"
-                    ]
-                  },
-                  {
-                    "group": "For Whitehats",
-                    "pages": [
-                      "battlechain/how-to/find-attackable-contracts",
-                      "battlechain/how-to/execute-attack",
-                      "battlechain/how-to/claim-bounties"
-                    ]
-                  },
-                  {
-                    "group": "For the DAO",
-                    "pages": [
-                      "battlechain/how-to/approve-reject-requests",
-                      "battlechain/how-to/instant-promotion",
-                      "battlechain/quickstart/review-first-request"
-                    ]
                   }
                 ]
               },
               {
                 "group": "Reference",
                 "pages": [
-                  "battlechain/reference/architecture",
+                  "battlechain/explanation/how-deployment-works",
                   "battlechain/reference/contracts",
                   "battlechain/reference/mock-contracts",
                   "battlechain/reference/contract-states",
                   "battlechain/reference/bounty-terms",
+                  "battlechain/reference/architecture",
                   "battlechain/reference/identity-requirements",
                   "battlechain/reference/governance-parameters"
                 ]
               },
               {
-                "divider": true
-              },
-              "battlechain/faq",
-              "battlechain/explanation/contract-lifecycle",
-              "battlechain/explanation/safe-harbor",
-              "battlechain/explanation/best-practices"
+                "group": "Explanation",
+                "pages": [
+                  "battlechain/explanation/contract-lifecycle",
+                  "battlechain/explanation/safe-harbor",
+                  "battlechain/explanation/best-practices",
+                  "battlechain/faq"
+                ]
+              }
             ]
           }
         ]

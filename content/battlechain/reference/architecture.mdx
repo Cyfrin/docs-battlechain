@@ -83,7 +83,7 @@ Call `requestL2TransactionDirect` on the Sepolia Bridgehub. `chainId` is BattleC
 // L1 (Sepolia)
 import {IBridgehub, L2TransactionRequestDirect} from "@matterlabs/zksync-contracts/contracts/bridgehub/IBridgehub.sol";
 
-IBridgehub bridgehub = IBridgehub(0xcea5c0ade89389dd5fc461f69ccbd812cfb7fbd8);
+IBridgehub bridgehub = IBridgehub(%%sepolia.bridgehub%%);
 
 uint256 l2GasLimit = 1_000_000;
 uint256 l2GasPerPubdataByteLimit = 800;
@@ -114,7 +114,7 @@ bytes32 l2TxHash = bridgehub.requestL2TransactionDirect{value: baseCost + valueT
 Equivalent call from the command line:
 
 ```bash
-cast send 0xcea5c0ade89389dd5fc461f69ccbd812cfb7fbd8 \
+cast send %%sepolia.bridgehub%% \
   "requestL2TransactionDirect((uint256,uint256,address,uint256,bytes,uint256,uint256,bytes[],address))" \
   "(627,$BASE_COST,$L2_TARGET,0,$CALLDATA,1000000,800,[],$REFUND_RECIPIENT)" \
   --value $BASE_COST \

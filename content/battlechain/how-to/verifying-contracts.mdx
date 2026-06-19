@@ -53,11 +53,11 @@ You can also verify manually using `forge verify-contract`:
 
 ```bash
 forge verify-contract <CONTRACT_ADDRESS> <PATH>:<CONTRACT_NAME> \
-  --chain-id {{chainId}} \
-  --verifier-url {{explorerApi}}/api \
+  --chain-id %%active.chainId%% \
+  --verifier-url %%active.explorerApi%%/api \
   --verifier custom \
   --etherscan-api-key "1234" \
-  --rpc-url {{rpcUrl}}
+  --rpc-url %%active.rpc%%
 ```
 
 Replace `<CONTRACT_ADDRESS>` with your deployed address and `<PATH>:<CONTRACT_NAME>` with the source path and contract name (e.g., `src/MyVault.sol:MyVault`).
@@ -68,18 +68,18 @@ Replace `<CONTRACT_ADDRESS>` with your deployed address and `<PATH>:<CONTRACT_NA
 | `--verifier-url` | <NetworkValue field="explorerApi" />`/api` | BattleChain explorer API |
 | `--verifier` | `custom` | Required when using a non-Etherscan explorer |
 | `--etherscan-api-key` | `"1234"` | Not validated — any non-empty string works |
-| `--rpc-url` | <NetworkValue field="rpcUrl" /> | BattleChain RPC |
+| `--rpc-url` | <NetworkValue field="rpc" /> | BattleChain RPC |
 
 On success you'll see:
 
 ```
-Start verifying contract `0x...` deployed on {{chainId}}
+Start verifying contract `0x...` deployed on %%active.chainId%%
 
 Submitting verification for [src/MyVault.sol:MyVault] 0x...
 Submitted contract for verification:
         Response: `OK`
         GUID: `<guid>`
-        URL: {{explorerApi}}/address/0x...
+        URL: %%active.explorerApi%%/address/0x...
 ```
 
 The URL in the response links directly to the contract's verified page on the explorer.
@@ -94,10 +94,10 @@ Add `--verify` to your `forge script` call to verify contracts as they're deploy
 
 ```bash
 forge script script/Deploy.s.sol \
-  --rpc-url {{rpcUrl}} \
+  --rpc-url %%active.rpc%% \
   --broadcast --skip-simulation -g 300 \
   --verify \
-  --verifier-url {{explorerApi}}/api \
+  --verifier-url %%active.explorerApi%%/api \
   --verifier custom \
   --etherscan-api-key 1234
 ```

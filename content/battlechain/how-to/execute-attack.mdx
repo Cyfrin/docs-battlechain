@@ -20,7 +20,7 @@ require(attackRegistry.isTopLevelContractUnderAttack(target), "Not attackable");
 require(agreement.isContractInScope(target), "Not in scope");
 
 // Get recovery address
-string memory recoveryStr = agreement.getAssetRecoveryAddress("{{caip2}}");
+string memory recoveryStr = agreement.getAssetRecoveryAddress("%%active.caip2%%");
 address recovery = parseAddress(recoveryStr);
 
 // Get bounty terms
@@ -86,15 +86,7 @@ IERC721(nft).transferFrom(address(this), recovery, tokenId);
 
 ## Bounty Calculation
 
-```
-Bounty = min(RecoveredValue x BountyPercentage%, BountyCapUsd)
-```
-
-Example:
-- Recovered: \$10M
-- Percentage: 10%
-- Cap: \$5M
-- **Your Bounty**: min(\$1M, \$5M) = **\$1M**
+How the bounty is calculated — the formula, the USD cap, and retainable vs return-all settlement — is defined in **[Bounty Terms → Calculation and Settlement](/battlechain/reference/bounty-terms#bounty-calculation-and-settlement)**.
 
 ## After the Attack
 

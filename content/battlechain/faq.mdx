@@ -11,12 +11,12 @@ Transactions can get stuck if the fee is too low for the current base fee. Send 
 
 ```bash
 # Get current base fee
-cast gas-price --rpc-url {{rpcUrl}}
+cast gas-price --rpc-url %%active.rpc%%
 
 # Send a replacement with a higher max fee (e.g. 2x the current base fee)
 cast send \
   --account battlechain \
-  --rpc-url {{rpcUrl}} \
+  --rpc-url %%active.rpc%% \
   --nonce <stuck-nonce> \
   --max-fee-per-gas <2x-current-base-fee> \
   --value 0 \
@@ -26,12 +26,14 @@ cast send \
 Find the stuck nonce:
 
 ```bash
-cast nonce --rpc-url {{rpcUrl}} <your-wallet-address>
+cast nonce --rpc-url %%active.rpc%% <your-wallet-address>
 ```
 
 You can also reset your MetaMask account (Settings → Advanced → Reset Account) to clear pending transactions.
 
 ## Deploying Contracts
+
+For how the deploy stack fits together and the full flag list, see [How Deployment Works](/battlechain/explanation/how-deployment-works).
 
 ### Forge scripts failing
 
@@ -69,7 +71,7 @@ This usually means your contract exceeds the size limit. Try splitting it into s
 
 ### Cannot connect to RPC
 
-Ensure the RPC URL is entered exactly as `https://testnet.battlechain.com` (testnet) or `https://mainnet.battlechain.com` (mainnet).
+Ensure the RPC URL is entered exactly as `%%testnet.rpc%%` (testnet) or `%%mainnet.rpc%%` (mainnet).
 
 ### Wrong chain ID
 

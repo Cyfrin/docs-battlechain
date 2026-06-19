@@ -26,10 +26,10 @@ Call `requestUnderAttack` on the `AttackRegistry`:
 
 <CodeGroup labels="cast, Foundry script">
 ```bash
-cast send {{attackRegistryProxy}} \
+cast send %%active.attackRegistry%% \
   "requestUnderAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url {{rpcUrl}}
+  --rpc-url %%active.rpc%%
 ```
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -44,7 +44,7 @@ interface IAttackRegistry {
 
 contract RequestAttackMode is Script {
     IAttackRegistry constant REGISTRY =
-        IAttackRegistry({{attackRegistryProxy}});
+        IAttackRegistry(%%active.attackRegistry%%);
 
     function run() external {
         address agreement = vm.envAddress("AGREEMENT_ADDRESS");
@@ -65,7 +65,7 @@ Run the Foundry script with:
 ```bash
 forge script script/RequestAttackMode.s.sol \
   --account battlechain \
-  --rpc-url {{rpcUrl}} \
+  --rpc-url %%active.rpc%% \
   --broadcast
 ```
 
@@ -81,10 +81,10 @@ If your contracts weren't deployed via `BattleChainDeployer`, call `requestUnder
 
 <CodeGroup labels="cast, Foundry script">
 ```bash
-cast send {{attackRegistryProxy}} \
+cast send %%active.attackRegistry%% \
   "requestUnderAttackByNonAuthorized(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url {{rpcUrl}}
+  --rpc-url %%active.rpc%%
 ```
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -99,7 +99,7 @@ interface IAttackRegistry {
 
 contract RequestAttackModeNonAuthorized is Script {
     IAttackRegistry constant REGISTRY =
-        IAttackRegistry({{attackRegistryProxy}});
+        IAttackRegistry(%%active.attackRegistry%%);
 
     function run() external {
         address agreement = vm.envAddress("AGREEMENT_ADDRESS");
@@ -124,10 +124,10 @@ This path requires extra DAO scrutiny since there's no on-chain proof of deploym
 To go directly to production without attack testing:
 
 ```bash
-cast send {{attackRegistryProxy}} \
+cast send %%active.attackRegistry%% \
   "goToProduction(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url {{rpcUrl}}
+  --rpc-url %%active.rpc%%
 ```
 
 This immediately sets state to `PRODUCTION` with no Safe Harbor protection.
@@ -135,9 +135,9 @@ This immediately sets state to `PRODUCTION` with no Safe Harbor protection.
 ## Check Request Status
 
 ```bash
-cast call {{attackRegistryProxy}} \
+cast call %%active.attackRegistry%% \
   "getAgreementState(address)(uint8)" $AGREEMENT_ADDRESS \
-  --rpc-url {{rpcUrl}}
+  --rpc-url %%active.rpc%%
 ```
 
 | Output | Meaning |
@@ -161,10 +161,10 @@ cast call {{attackRegistryProxy}} \
 On testnet the registry moderator is a `MockRegistryModerator` — a permissionless contract that forwards any `approveAttack` call straight to the `AttackRegistry`. You can approve your own request immediately:
 
 ```bash
-cast send {{registryModerator}} \
+cast send %%testnet.mockRegistryModerator%% \
   "approveAttack(address)" $AGREEMENT_ADDRESS \
   --account battlechain \
-  --rpc-url {{rpcUrl}}
+  --rpc-url %%testnet.rpc%%
 ```
 
 </Network>

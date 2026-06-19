@@ -158,6 +158,19 @@ function buildLlmsTxt(groups: NavGroup[]): string {
     lines.push('')
   }
 
+  lines.push('## Machine-readable resources')
+  lines.push('')
+  lines.push(
+    `- [Deployments JSON](${BASE_URL}/deployments.json): All BattleChain networks, chain IDs, RPC/explorer URLs, and contract addresses as structured JSON`,
+  )
+  lines.push(
+    `- [Full docs as markdown](${BASE_URL}/llms-full.txt): Complete text of every page in one file`,
+  )
+  lines.push(
+    `- [Docs MCP server](${BASE_URL}/api/mcp): Streamable HTTP MCP endpoint exposing search_docs, read_page, and list_pages`,
+  )
+  lines.push('')
+
   return lines.join('\n').trim() + '\n'
 }
 

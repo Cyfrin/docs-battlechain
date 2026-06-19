@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
+import { substituteDeploymentTokens } from './deployments'
 
 export interface MDXFrontmatter {
   title?: string
@@ -67,7 +68,7 @@ export function getMDXContent(directory: string, slug: string | string[]): MDXCo
   const { data, content } = matter(fileContents)
 
   return {
-    content,
+    content: substituteDeploymentTokens(content),
     frontmatter: data as MDXFrontmatter,
     slug: slugPath,
   }
@@ -94,7 +95,7 @@ export function getMDXContentByPath(filePath: string): MDXContent | null {
   const { data, content } = matter(fileContents)
 
   return {
-    content,
+    content: substituteDeploymentTokens(content),
     frontmatter: data as MDXFrontmatter,
     slug: filePath.replace(/\.(mdx|md)$/, ''),
   }
