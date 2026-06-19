@@ -3634,7 +3634,7 @@ Source: https://docs.battlechain.com/battlechain/reference/dependency-contracts
 
 Your protocol often depends on external contracts — price oracles, DEXs, lending markets, multisigs. This page lists the dependency contracts available on BattleChain so you can deploy your exact production bytecode, only swapping constructor parameters like oracle addresses.
 
-Use the **Mainnet / Testnet** toggle in the top bar to switch networks. The [Safe](#safe-gnosis-safe) and [Multicall3](#multicall3) contracts toward the bottom are genuine deployments (not mocks).
+Use the **Mainnet / Testnet** toggle in the top bar to switch networks. The [Safe](#safe-gnosis-safe) contracts toward the bottom are genuine deployments (not mocks) on both networks.
 
 On **testnet**, BattleChain provides **mock versions** of common mainnet dependencies (Chainlink feeds, test tokens, Venus, Uniswap, and more) so you can exercise oracle- and protocol-dependent logic without real liquidity. These mocks are deployed on testnet only.
 
