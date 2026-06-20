@@ -152,15 +152,16 @@ You should see `battlechain` listed. From here on, you'll enter the keystore pas
 ## Step 3 — Deploy
 
 ```bash
-just setup
+just deploy-protocol
 ```
 
 Enter your keystore password when prompted. Expected output:
 
 ```
-MockToken deployed: 0x...
-VulnerableVault deployed: 0x...
-Vault seeded with 1000 tokens
+VulnerableVault deployed — it deploys and seeds its own token (1,000 tokens)
+
+VAULT_ADDRESS=0x...
+TOKEN_ADDRESS=0x...
 ```
 
 Copy both addresses into your `.env`:
@@ -190,8 +191,6 @@ Expected output:
 
 ```
 Agreement created: 0x...
-Commitment window extended 30 days
-Safe Harbor adopted
 ```
 
 Copy `AGREEMENT_ADDRESS` into your `.env` and set `RECOVERY_ADDRESS` to your wallet address:
@@ -201,25 +200,23 @@ AGREEMENT_ADDRESS=0x...
 RECOVERY_ADDRESS=0x...your_wallet_address...
 ```
 
-This creates an on-chain agreement that defines the rules of engagement: 10% bounty, 30-day commitment window, your wallet as the recovery address for returned funds.
+Then lock the agreement's commitment window and adopt it:
+
+```bash
+just set-commitment-window
+just adopt-agreement
+```
+
+Together these define the rules of engagement (10% bounty, your wallet as the recovery address), lock the terms for a 30-day commitment window — **required** before attack mode can be requested — and register the agreement so it's live.
 
 ---
 
-## Step 5 — Open for Attack
+## Step 5 — Request Attack Mode
 
-Run these commands yourself in your terminal (each will prompt for your keystore password):
+Request attack mode for the agreement (you'll be prompted for your keystore password):
 
 ```bash
 just request-attack-mode
-```
-
-On testnet, the DAO moderator is a permissionless contract — approve your own request immediately:
-
-```bash
-cast send %%testnet.mockRegistryModerator%% \
-  "approveAttack(address)" $AGREEMENT_ADDRESS \
-  --account battlechain \
-  --rpc-url %%testnet.rpc%%
 ```
 
 Verify the state:
@@ -230,15 +227,15 @@ just check-state
 
 | Output | Meaning |
 |--------|---------|
-| `2` | `ATTACK_REQUESTED` — waiting for DAO |
-| `3` | `UNDER_ATTACK` — approved, vault is open |
+| `2` | `ATTACK_REQUESTED` — open for whitehats |
+| `3` | `UNDER_ATTACK` — a whitehat has approved and is exploiting |
 
 <Note>
-On testnet, the `MockRegistryModerator` lets you approve your own request immediately. On mainnet, this is a real DAO governance action.
+You stop at `2` (`ATTACK_REQUESTED`). On testnet the `MockRegistryModerator` is permissionless, so a whitehat's exploit approves the request and drains the vault in a single transaction (state `3`) — see [Execute Your First Attack](/battlechain/quickstart/execute-first-attack). On mainnet, approval is a real DAO governance action.
 </Note>
 
 <Check>
-Once you see `3`, your vault is live and attackable. Whitehats on BattleChain can now attempt to drain it.
+Once you see `2`, your vault is requested for attack and open to whitehats on BattleChain.
 </Check>
 
 ---
