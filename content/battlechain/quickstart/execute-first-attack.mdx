@@ -129,7 +129,7 @@ Then run these yourself in your terminal (each prompts for your keystore passwor
 
 ```bash
 cast wallet import battlechain --interactive
-just setup
+just deploy-protocol
 ```
 
 Tell your AI to add `TOKEN_ADDRESS` and `VAULT_ADDRESS` from the output to `.env`, then continue:
@@ -138,18 +138,16 @@ Tell your AI to add `TOKEN_ADDRESS` and `VAULT_ADDRESS` from the output to `.env
 just create-agreement
 ```
 
-Tell your AI to add `AGREEMENT_ADDRESS` to `.env` and set `RECOVERY_ADDRESS` to your wallet address, then:
+Tell your AI to add `AGREEMENT_ADDRESS` to `.env` and set `RECOVERY_ADDRESS` to your wallet address, then lock the commitment window, adopt the agreement, and request attack mode:
 
 ```bash
+just set-commitment-window
+just adopt-agreement
 just request-attack-mode
-cast send %%testnet.mockRegistryModerator%% \
-  "approveAttack(address)" $AGREEMENT_ADDRESS \
-  --account battlechain \
-  --rpc-url %%testnet.rpc%%
 just check-state
 ```
 
-You need to see `3` (`UNDER_ATTACK`).
+You need to see `2` (`ATTACK_REQUESTED`). That's all the setup — the exploit in Step 4 approves attack mode and drains the vault in one transaction.
 
 </Tab>
 
@@ -166,7 +164,7 @@ Set `SENDER_ADDRESS` in `.env` to your wallet address, then:
 
 ```bash
 cast wallet import battlechain --interactive
-just setup
+just deploy-protocol
 ```
 
 Copy `TOKEN_ADDRESS` and `VAULT_ADDRESS` into `.env`, then:
@@ -175,18 +173,16 @@ Copy `TOKEN_ADDRESS` and `VAULT_ADDRESS` into `.env`, then:
 just create-agreement
 ```
 
-Copy `AGREEMENT_ADDRESS` into `.env` and set `RECOVERY_ADDRESS` to your wallet address. Then:
+Copy `AGREEMENT_ADDRESS` into `.env` and set `RECOVERY_ADDRESS` to your wallet address. Then lock the commitment window, adopt the agreement, and request attack mode:
 
 ```bash
+just set-commitment-window
+just adopt-agreement
 just request-attack-mode
-cast send %%testnet.mockRegistryModerator%% \
-  "approveAttack(address)" $AGREEMENT_ADDRESS \
-  --account battlechain \
-  --rpc-url %%testnet.rpc%%
 just check-state
 ```
 
-You need to see `3` (`UNDER_ATTACK`). If you see `2`, the approval hasn't been processed yet.
+You need to see `2` (`ATTACK_REQUESTED`). The exploit in Step 4 approves attack mode and drains the vault in one transaction.
 
 </Tab>
 
@@ -215,6 +211,8 @@ You can view all agreement details on the [BattleChain explorer](https://explore
 ## Step 3 — Understand the Exploit
 
 Open `src/Attacker.sol` in the starter repo. The attack exploits two things working together: the CEI violation in `VulnerableVault` and the hook system in `MockToken`.
+
+`just attack` deploys a thin `Exploit` wrapper (`src/Exploit.sol`) whose constructor deploys this `Attacker`, approves attack mode via the testnet moderator, and runs the exploit — all in one transaction.
 
 **MockToken's hook system:** Any address can register a hook contract via `setTransferHook(address hook)`. When tokens are transferred *to* that address, the token calls `hook.onTokenTransfer()` after the transfer completes.
 
@@ -261,13 +259,13 @@ Expected output:
 
 ```
 Vault balance before: 1000 tokens
-Deploying attacker...
+Deploying exploit (approves attack mode, then drains)...
 
 --- Vault drained ---
 Vault before:          1000 tokens
 Vault after:              0 tokens
-Bounty kept:            100 tokens
-Returned to protocol:   900 tokens
+Bounty kept:            110 tokens
+Returned to protocol:   990 tokens
 ```
 
 ---

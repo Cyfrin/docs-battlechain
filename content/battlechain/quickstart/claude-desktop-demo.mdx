@@ -78,8 +78,8 @@ Claude narrates each step and opens a signing page in your browser when transact
 
 | Step | What Claude does |
 |------|-----------------|
-| 1 — Deploy | Deploys `BCToken` and `VulnerableVault` to BattleChain Testnet, seeds the vault with 1,000 tokens |
-| 2 — Safe Harbor | Creates an on-chain safe harbor agreement defining bounty terms and recovery rules |
+| 1 — Deploy | Deploys `VulnerableVault` to BattleChain Testnet, which deploys and seeds its own token with 1,000 tokens |
+| 2 — Safe Harbor | Creates the on-chain safe harbor agreement (bounty terms + recovery rules), locks its commitment window, and adopts it |
 | 3 — Attack Mode | Submits an attack mode request and immediately approves it via the testnet DAO moderator |
 | 4 — Exploit | Deploys an Attacker contract that drains the vault via reentrancy, then splits proceeds: 90% returned to the protocol, 10% kept as the whitehat bounty |
 
