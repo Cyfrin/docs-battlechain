@@ -6,7 +6,8 @@
 
 - [BattleChain](https://docs.battlechain.com/overview): PvP Security Blockchain - Trial by Fire
 - [Using BattleChain with AI](https://docs.battlechain.com/battlechain/using-battlechain-with-ai): Give your AI coding agent full BattleChain context — skills, machine-readable docs, and MCP server
-- [Demo with Claude Desktop](https://docs.battlechain.com/battlechain/quickstart/claude-desktop-demo): Install the BattleChain MCP server and run the full security demo through Claude Desktop — no coding required.
+- [One-Prompt Demo](https://docs.battlechain.com/battlechain/quickstart/one-prompt-demo): Watch the full BattleChain security flow in one prompt — Claude Code deploys a vulnerable vault, opens it for attack, and exploits it. No coding required.
+- [Security Demo (Claude Desktop)](https://docs.battlechain.com/battlechain/quickstart/claude-desktop-demo): Run the full BattleChain security demo in the Claude Desktop chat app via the MCP server — Claude deploys and exploits a vault, you sign in MetaMask. No coding required.
 - [Deploy and Battle-Test Your Contract](https://docs.battlechain.com/battlechain/quickstart/deploy-your-contract): Deploy a vulnerable contract to BattleChain, create a Safe Harbor agreement, and open it for whitehat attack.
 - [Attack a Contract](https://docs.battlechain.com/battlechain/quickstart/execute-first-attack): Find an attackable contract on BattleChain, exploit it, collect your bounty, and walk away clean under Safe Harbor.
 

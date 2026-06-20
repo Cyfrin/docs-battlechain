@@ -71,7 +71,7 @@ BattleChain serves three roles — jump to your starting point:
 
 BattleChain is designed for AI-assisted development. Deploy contracts, create agreements, and run attacks — all through your AI coding tool. Start with **[Using BattleChain with AI](https://docs.battlechain.com/battlechain/using-battlechain-with-ai)** — install the skill, connect the MCP server, or point any agent at the machine-readable docs.
 
-  - [Demo with Claude Desktop](https://docs.battlechain.com/battlechain/quickstart/claude-desktop-demo): Run the full security demo with zero coding — Claude does everything
+  - [One-Prompt Demo](https://docs.battlechain.com/battlechain/quickstart/one-prompt-demo): Run the full security demo with zero coding in Claude Code or Claude Desktop — Claude does everything
 
   - [Deploy and Battle-Test](https://docs.battlechain.com/battlechain/quickstart/deploy-your-contract): Deploy a vulnerable vault and open it for attack — with AI or manually
 
@@ -85,6 +85,13 @@ Source: https://docs.battlechain.com/battlechain/using-battlechain-with-ai
 *Give your AI coding agent full BattleChain context — skills, machine-readable docs, and MCP server*
 
 BattleChain is built for AI-native development. Whether you're using Claude Code, Cursor, or any tool with a built-in chat, you can give your agent full BattleChain context in seconds.
+
+## Run the Whole Workflow Through Your Agent
+
+You can do **everything** on BattleChain through your AI agent — deploy contracts, create a Safe Harbor agreement, go attackable, execute attacks, and claim bounties — **without writing code yourself**. Your agent reads these docs, runs the commands, and pauses for you to approve each step.
+
+- **Just want to watch it work?** The [no-code demo](https://docs.battlechain.com/battlechain/quickstart/one-prompt-demo) deploys a vulnerable vault and exploits it end to end from a single prompt in Claude Code — nothing to install.
+- **Building for real?** Install the skill below, then tell your agent *"deploy my contracts to BattleChain"* and it runs the full lifecycle with you — deploy, agreement, attack mode, and promotion.
 
 ## The BattleChain Skill
 
@@ -240,84 +247,46 @@ messages = [
 
 Want your AI agent to deploy to BattleChain by default and set up Safe Harbor automatically? See [Configure Your AI Tools](https://docs.battlechain.com/battlechain/how-to/configure-ai-tools) for the deployment prompt block and per-tool config file paths (`CLAUDE.md`, `.cursor/rules`, `AGENTS.md`, and others).
 
-### Demo with Claude Desktop
-Source: https://docs.battlechain.com/battlechain/quickstart/claude-desktop-demo
+### One-Prompt Demo
+Source: https://docs.battlechain.com/battlechain/quickstart/one-prompt-demo
 
-*Install the BattleChain MCP server and run the full security demo through Claude Desktop — no coding required.*
+*Watch the full BattleChain security flow in one prompt — Claude Code deploys a vulnerable vault, opens it for attack, and exploits it. No coding required.*
 
-Run the complete BattleChain security demo without writing a line of code. The MCP server wires directly into Claude Desktop — Claude deploys the contracts, creates the safe harbor agreement, and guides you through the exploit step by step. MetaMask handles all transaction signing.
+> **Note:** This is the **Claude Code** version (works in the terminal, the desktop app, or IDE extensions). On the **claude.ai chat app (Claude Desktop)** instead? See [Security Demo (Claude Desktop)](https://docs.battlechain.com/battlechain/quickstart/claude-desktop-demo), which uses an MCP server.
+
+See BattleChain end to end from a single prompt. **Claude Code** deploys a deliberately vulnerable vault, creates a Safe Harbor agreement, opens it for whitehat attack, then exploits it — and you watch the bounty split at the end. You don't write any code; you just approve each step.
+
+Works in any Claude Code surface — the **terminal**, the **desktop app**, or the **VS Code / JetBrains** extensions. Claude runs the commands itself.
 
 ## What You'll Need
 
-**Claude Desktop**
+- **[Claude Code](https://claude.com/product/claude-code)** — any surface (terminal, desktop app, or IDE extension).
+- **A wallet for BattleChain Testnet** — either one you already have (MetaMask, Trezor, etc.) or one Claude creates for you. Either way it needs a little testnet ETH for gas; the prompt walks you through funding it. If you bring your own wallet, add the network first with the one-click button on [Add BattleChain to MetaMask](https://docs.battlechain.com/battlechain/how-to/add-battlechain-to-metamask).
 
-Download and install [Claude Desktop](https://claude.ai/download) and sign in with your Anthropic account. This is the desktop application — not the Claude.ai web app or Claude Code CLI.
+> **Warning:** Use a **dedicated test wallet** — never one that holds real funds. Claude runs real commands on your machine: read each step before approving it, and never paste a private key into the chat.
 
-**MetaMask**
+## Run It
 
-Install the [MetaMask browser extension](https://metamask.io/download/) in Chrome, Firefox, or Brave. Claude opens a local signing page for each step — MetaMask handles approvals directly in your browser.
-
-**A test wallet with BattleChain Testnet ETH**
-
-You need a small amount of ETH on BattleChain Testnet for gas. Use a dedicated test wallet — do not use a wallet that holds real funds.
-
-**1. Add BattleChain to your wallet**
-
-| Field | Value |
-|-------|-------|
-| Network Name | BattleChain Testnet |
-| Chain ID | `627` |
-| RPC URL | `https://testnet.battlechain.com` |
-| Explorer | https://explorer.testnet.battlechain.com/ |
-| Currency | ETH |
-| CAIP-2 ID | `eip155:627` |
-
-**2. Get free Sepolia ETH** from the [Google Cloud faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia) — 0.05 ETH is plenty.
-
-**3. Bridge to BattleChain** at [portal.battlechain.com/bridge](https://portal.battlechain.com/bridge) — select Sepolia to BattleChain Testnet.
-
-**Python (macOS / Linux) or WSL (Windows)**
-
-On **macOS or Linux**, Python 3.10 or higher is required. Check with `python3 --version`.
-
-On **Windows**, the installer runs inside WSL. If you don't have it, open PowerShell as Administrator and run `wsl --install`, then restart before continuing.
-
----
-
-## Step 1 — Install
-
-Run the installer for your platform. It installs the BattleChain MCP server and updates Claude Desktop's config automatically.
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/Cyfrin/battlechain-mcp/main/install.sh | bash
-```
-```powershell
-irm https://raw.githubusercontent.com/Cyfrin/battlechain-mcp/main/install.ps1 | iex
-```
-
-Run the Windows command in PowerShell — not inside a WSL terminal.
-
-> **Check:** The installer will confirm that Claude Desktop's configuration was updated when it completes.
-
----
-
-## Step 2 — Restart Claude Desktop
-
-Fully quit Claude Desktop and reopen it. New MCP servers are not loaded until the application restarts.
-
----
-
-## Step 3 — Start the Demo
-
-Open a new conversation in Claude Desktop and send:
+Paste this into Claude Code:
 
 ```
-Run the BattleChain security demo.
+Run the BattleChain security demo end to end, explaining each step as you go.
+
+1. Read https://docs.battlechain.com/llms-full.txt for context on BattleChain.
+2. If I don't have them, install Foundry (https://getfoundry.sh) and just (https://just.systems). Then clone https://github.com/Cyfrin/battlechain-starter-foundry and run `forge install`.
+3. Ask me how I'll sign transactions, and set it up:
+   - My own wallet (MetaMask, Trezor, etc.): I've already added BattleChain Testnet to it. Use the Foundry browser wallet (https://github.com/foundry-rs/foundry-browser-wallet) via the starter's browser `just` targets (e.g. `just setup-browser`) so I approve each transaction in my own wallet. Ask which wallet I use.
+   - Or make one for me: run `cast wallet new`, show me the address, and sign via a keystore. Never ask me to paste a private key.
+4. Make sure that wallet has BattleChain Testnet ETH. If it's empty, walk me through getting Sepolia ETH from the faucet (https://cloud.google.com/application/web3/faucet/ethereum/sepolia) and bridging it to BattleChain (https://portal.battlechain.com/bridge) — and do as much of it for me as you safely can.
+5. Deploy the MockToken and VulnerableVault, create a Safe Harbor agreement, request and approve attack mode, then deploy an Attacker that drains the vault via reentrancy.
+6. Finish by showing me the bounty split — 90% returned to the protocol, 10% kept as the bounty.
+
+If the browser wallet ever stalls on "Waiting for receipt" after I've signed but a transaction hash is shown, the transaction went through — confirm it on https://explorer.testnet.battlechain.com and keep going; never re-send the same transaction.
 ```
 
-Claude will narrate each step and open a signing page in your browser when transactions are ready. Approve them in MetaMask, then return to Claude Desktop to continue.
+Claude will pause for you to approve each command, and to sign in your wallet (browser wallet) or enter your keystore password.
 
----
+> **Tip:** Want this available without pasting a prompt — so you can just say "deploy to BattleChain" in any project? Install the BattleChain skill; see [Using BattleChain with AI](https://docs.battlechain.com/battlechain/using-battlechain-with-ai).
 
 ## What Happens
 
@@ -333,6 +302,112 @@ Claude will narrate each step and open a signing page in your browser when trans
   - [Deploy and Battle-Test](https://docs.battlechain.com/battlechain/quickstart/deploy-your-contract): The full protocol workflow with AI CLI or manual commands
   - [Attack a Contract](https://docs.battlechain.com/battlechain/quickstart/execute-first-attack): The whitehat path — find targets, exploit, and collect bounties
   - [Going Attackable](https://docs.battlechain.com/battlechain/tutorials/going-attackable): Understand the full attack mode process in depth
+
+## Troubleshooting
+
+### A `forge` command fails
+
+Tell Claude to add `--skip-simulation` to the failing `forge script` call (the starter kit's `justfile` already includes it). For the full flag list and how the deploy stack fits together, see [How Deployment Works](https://docs.battlechain.com/battlechain/explanation/how-deployment-works) and the [FAQ](https://docs.battlechain.com/battlechain/faq).
+
+### The browser wallet is stuck on "Waiting for receipt"
+
+If you signed and a transaction hash appeared, the transaction went through — the browser wallet's receipt display can lag on BattleChain. Confirm the hash on the [explorer](https://explorer.testnet.battlechain.com) and continue. If the wallet won't advance to the next transaction in the script, use the **keystore** option instead (Claude can import a key with `cast wallet import`) — it's the most reliable path today.
+
+### Transactions are failing or the demo is stuck
+
+Check that you're on BattleChain Testnet (chain ID `627`) and that your wallet has testnet ETH. If a deploy fails with a vague error, ask Claude to retry with `-g 300` (triples the gas estimate).
+
+### Security Demo (Claude Desktop)
+Source: https://docs.battlechain.com/battlechain/quickstart/claude-desktop-demo
+
+*Run the full BattleChain security demo in the Claude Desktop chat app via the MCP server — Claude deploys and exploits a vault, you sign in MetaMask. No coding required.*
+
+> **Note:** Using **Claude Code** (terminal, desktop app, or IDE)? Use the [One-Prompt Demo](https://docs.battlechain.com/battlechain/quickstart/one-prompt-demo) instead — it runs from a single prompt with nothing to install. **This page** is for the **claude.ai chat app (Claude Desktop)**, which can't run a terminal, so it drives the demo through an MCP server.
+
+Run the complete BattleChain security demo from the Claude Desktop chat app — without writing a line of code. The BattleChain MCP server wires into Claude Desktop: Claude deploys the contracts, creates the safe harbor agreement, and guides you through the exploit step by step. MetaMask handles all transaction signing.
+
+## What You'll Need
+
+**Claude Desktop**
+
+Download and install [Claude Desktop](https://claude.ai/download) (the claude.ai chat app) and sign in. This is the chat application — not Claude Code.
+
+**MetaMask**
+
+Install the [MetaMask browser extension](https://metamask.io/download/) in Chrome, Firefox, or Brave. Claude opens a local signing page for each step — MetaMask handles approvals in your browser.
+
+**A test wallet with BattleChain Testnet ETH**
+
+Use a dedicated test wallet — **never one that holds real funds**.
+
+| Field | Value |
+|-------|-------|
+| Network Name | BattleChain Testnet |
+| Chain ID | `627` |
+| RPC URL | `https://testnet.battlechain.com` |
+| Explorer | https://explorer.testnet.battlechain.com/ |
+| Currency | ETH |
+| CAIP-2 ID | `eip155:627` |
+
+**1. Get free Sepolia ETH** from the [Google Cloud faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia) — 0.05 ETH is plenty.
+
+**2. Bridge to BattleChain** at [portal.battlechain.com/bridge](https://portal.battlechain.com/bridge) — select Sepolia to BattleChain Testnet.
+
+**Python (macOS / Linux) or WSL (Windows)**
+
+On macOS or Linux, Python 3.10+ is required (`python3 --version`). On Windows, the installer runs inside WSL — `wsl --install` from an admin PowerShell, then restart.
+
+---
+
+## Step 1 — Install the MCP Server
+
+The installer adds the `battlechain-mcp` server and updates Claude Desktop's config automatically.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Cyfrin/battlechain-mcp/main/install.sh | bash
+```
+```powershell
+irm https://raw.githubusercontent.com/Cyfrin/battlechain-mcp/main/install.ps1 | iex
+```
+
+Run the Windows command in PowerShell — not inside a WSL terminal.
+
+> **Check:** The installer confirms when Claude Desktop's configuration has been updated.
+
+---
+
+## Step 2 — Restart Claude Desktop
+
+Fully quit Claude Desktop and reopen it. New MCP servers load only on restart.
+
+---
+
+## Step 3 — Start the Demo
+
+Open a new conversation and send:
+
+```
+Run the BattleChain security demo.
+```
+
+Claude narrates each step and opens a signing page in your browser when transactions are ready. Approve them in MetaMask, then return to Claude Desktop to continue.
+
+---
+
+## What Happens
+
+| Step | What Claude does |
+|------|-----------------|
+| 1 — Deploy | Deploys `BCToken` and `VulnerableVault` to BattleChain Testnet, seeds the vault with 1,000 tokens |
+| 2 — Safe Harbor | Creates an on-chain safe harbor agreement defining bounty terms and recovery rules |
+| 3 — Attack Mode | Submits an attack mode request and immediately approves it via the testnet DAO moderator |
+| 4 — Exploit | Deploys an Attacker contract that drains the vault via reentrancy, then splits proceeds: 90% returned to the protocol, 10% kept as the whitehat bounty |
+
+> **Note:** In this demo you are both the protocol owner and the whitehat, so both the 90% recovery and the 10% bounty arrive in the same wallet. The vault holds 1,000 tokens; the Attacker deposits an additional 100-token seed to open its vault position, so you end up with 1,100 tokens total.
+
+  - [One-Prompt Demo (Claude Code)](https://docs.battlechain.com/battlechain/quickstart/one-prompt-demo): The same demo from a single prompt in Claude Code — no MCP, no install
+  - [Deploy and Battle-Test](https://docs.battlechain.com/battlechain/quickstart/deploy-your-contract): The full protocol workflow with AI CLI or manual commands
+  - [Attack a Contract](https://docs.battlechain.com/battlechain/quickstart/execute-first-attack): The whitehat path — find targets, exploit, and collect bounties
 
 ---
 
@@ -1075,7 +1150,11 @@ Your contracts are now in `ATTACK_REQUESTED` state. The DAO will review and chec
 
 Once approved, state moves to `UNDER_ATTACK` and whitehats can begin testing.
 
-> **Note:** **On testnet**, approval is instant via the `MockRegistryModerator` — a permissionless contract you can call yourself rather than waiting for a real DAO action. See [How to Request Attack Mode](https://docs.battlechain.com/battlechain/how-to/request-attack-mode#testnet-instant-approval) for the command.
+Approval works differently depending on the network:
+
+> **Note:** **Testnet:** approval is instant — the `MockRegistryModerator` is a permissionless contract you call yourself instead of waiting for a real DAO action. See [How to Request Attack Mode](https://docs.battlechain.com/battlechain/how-to/request-attack-mode#testnet-instant-approval) for the exact command.
+
+> **Note:** **Mainnet:** the BattleChain DAO reviews and approves the request — there is no self-approval. Approval is a governance action by the registry moderator, so expect a review period before your contracts enter `UNDER_ATTACK`.
 
 See [How to Request Attack Mode](https://docs.battlechain.com/battlechain/how-to/request-attack-mode) for full details and troubleshooting.
 
@@ -1213,6 +1292,12 @@ contract Deploy is BCDeploy {
 On BattleChain, `bcDeployCreate*` calls go through `BattleChainDeployer`, which wraps CreateX and auto-registers your contracts with the `AttackRegistry`. On any other supported chain (190+ EVM chains), the same functions route directly through [CreateX](https://github.com/pcaversaccio/createx) (`0xba5Ed...`), giving you deterministic addresses without any code changes.
 
 > **Tip:** Use `bcDeployCreate2` when you need deterministic addresses. On the 190+ chains that share the canonical CreateX deployment (`0xba5Ed...`), the same salt + bytecode produces the same address everywhere. BattleChain's CreateX and BattleChainDeployer live at different addresses, so addresses computed on BattleChain differ from those chains — and between BattleChain mainnet and testnet.
+
+Your contracts' constructor parameters (oracles, tokens, external protocols) point at network-specific dependencies:
+
+Point them at the [mock dependency contracts](https://docs.battlechain.com/battlechain/reference/mock-contracts) — they share the same interfaces as the real ones, so you can deploy your exact production bytecode and only swap the addresses.
+
+Use the real dependency addresses, exactly as you would on Ethereum mainnet.
 
 ### Available deploy helpers
 

@@ -1,0 +1,97 @@
+---
+title: "One-Prompt Demo"
+description: "Watch the full BattleChain security flow in one prompt — Claude Code deploys a vulnerable vault, opens it for attack, and exploits it. No coding required."
+---
+
+<Note>
+This is the **Claude Code** version (works in the terminal, the desktop app, or IDE extensions). On the **claude.ai chat app (Claude Desktop)** instead? See [Security Demo (Claude Desktop)](/battlechain/quickstart/claude-desktop-demo), which uses an MCP server.
+</Note>
+
+See BattleChain end to end from a single prompt. **Claude Code** deploys a deliberately vulnerable vault, creates a Safe Harbor agreement, opens it for whitehat attack, then exploits it — and you watch the bounty split at the end. You don't write any code; you just approve each step.
+
+Works in any Claude Code surface — the **terminal**, the **desktop app**, or the **VS Code / JetBrains** extensions. Claude runs the commands itself.
+
+## What You'll Need
+
+- **[Claude Code](https://claude.com/product/claude-code)** — any surface (terminal, desktop app, or IDE extension).
+- **A wallet for BattleChain Testnet** — the demo signs with **your own wallet (MetaMask)** by default. You'll need **Foundry nightly** (the prompt installs it) and BattleChain Testnet added to MetaMask — one click at [Add BattleChain to MetaMask](/battlechain/how-to/add-battlechain-to-metamask). The wallet needs a little testnet ETH for gas; the prompt walks you through funding it. Don't want MetaMask? Claude can make a local **keystore** wallet instead — no MetaMask needed.
+
+<Warning>
+Use a **dedicated test wallet** — never one that holds real funds. Claude runs real commands on your machine: read each step before approving it, and never paste a private key into the chat.
+</Warning>
+
+## Run It
+
+Paste this into Claude Code:
+
+```
+Run the BattleChain security demo end to end, explaining each step as you go.
+
+1. Read https://docs.battlechain.com/llms-full.txt for context on BattleChain.
+
+2. Make a fresh folder for this demo so it stays out of my current project — e.g. `mkdir -p ~/battlechain-demo && cd ~/battlechain-demo` — and do all the work there. Make sure I have `just` (https://just.systems) and Foundry on the NIGHTLY channel — run `foundryup -i nightly` (browser-wallet signing needs nightly). Then clone https://github.com/Cyfrin/battlechain-starter-foundry, cd into it, and run `forge install`.
+
+3. Set up signing — default to my own wallet (MetaMask):
+   - Confirm I've added BattleChain Testnet to MetaMask (chain ID 627). If not, point me to the one-click button at https://docs.battlechain.com/battlechain/how-to/add-battlechain-to-metamask.
+   - Ask me for my wallet address, and set both SENDER_ADDRESS and RECOVERY_ADDRESS to it in `.env`.
+   - (Don't want MetaMask? Instead run `just generate-key`, set SENDER_ADDRESS to the address it prints, and use the non-browser targets — `just deploy-protocol`, `create-agreement`, `adopt-agreement`, `request-attack-mode`, `attack`. Never ask me to paste a private key.)
+
+4. Make sure that wallet has BattleChain Testnet ETH for gas. If it's empty, walk me through getting Sepolia ETH (https://cloud.google.com/application/web3/faucet/ethereum/sepolia) and bridging it (https://portal.battlechain.com/bridge).
+
+5. Run the demo ONE STEP AT A TIME, in order. Each browser step opens my wallet and BLOCKS until I sign, so for EVERY one: run it in the FOREGROUND, then tell me "approve it in your wallet now," and WAIT for the command to finish on its own. Never run a `-browser` command in the background, never add `&`, never poll its output, never move on until it returns. After each, explain what the transaction did and give me the explorer link (https://explorer.testnet.battlechain.com/tx/HASH).
+   a. `just deploy-protocol-browser` — deploys the vulnerable vault, which deploys + seeds its own token. When done, read the deployed VulnerableVault address from the receipt's logs (`cast receipt <hash> --rpc-url https://testnet.battlechain.com` shows them — it's the ContractCreation event), set VAULT_ADDRESS in `.env`, then run `cast call $VAULT_ADDRESS "TOKEN()(address)" --rpc-url https://testnet.battlechain.com` and set TOKEN_ADDRESS. Run `just verify-protocol-browser` (verifies by address — the browser deploy writes no broadcast file) and show me both contracts on the explorer.
+   b. `just create-agreement-browser` — registers the Safe Harbor agreement scoping the vault. Read the new agreement address from the receipt, set AGREEMENT_ADDRESS in `.env`, and show it on the explorer.
+   c. `just set-commitment-window-browser` — locks the agreement's terms ~30 days out. REQUIRED: the AttackRegistry rejects an attack-mode request until the commitment window is set (you'd see `AttackRegistry__InsufficientCommitment` otherwise).
+   d. `just adopt-agreement-browser` — adopts the agreement (makes it live for attack mode).
+   e. `just request-attack-mode-browser` — requests attack mode for the agreement.
+   f. `just attack-browser` — deploys the Exploit, which approves attack mode and drains the vault via reentrancy, all in one transaction.
+
+6. Finish by showing me the bounty split — 90% returned to my recovery address, 10% kept as the whitehat bounty — with the final balances on the explorer.
+
+Remember: every `-browser` step opens my wallet and blocks until I sign. Always run them in the foreground and wait — never in the background.
+```
+
+Claude pauses for you to approve each command, and each transaction pops up in your wallet (MetaMask) to sign — or, with a keystore, it asks for your password.
+
+<Tip>
+Want this available without pasting a prompt — so you can just say "deploy to BattleChain" in any project? Install the BattleChain skill; see [Using BattleChain with AI](/battlechain/using-battlechain-with-ai).
+</Tip>
+
+## What Happens
+
+| Step | What Claude does |
+|------|-----------------|
+| 1 — Deploy | Deploys `VulnerableVault`, which deploys + seeds its own token with 1,000 tokens (one transaction) |
+| 2 — Safe Harbor | Registers an on-chain safe harbor agreement scoping the vault, locks its commitment window, and adopts it (three transactions) |
+| 3 — Attack mode | Requests attack mode for the agreement |
+| 4 — Exploit | Deploys the `Exploit` — one transaction that approves attack mode (via the testnet moderator) and drains the vault via reentrancy, then splits proceeds: 90% returned to the protocol, 10% kept as the whitehat bounty |
+
+<Note>
+In this demo you are both the protocol owner and the whitehat, so both the 90% recovery and the 10% bounty arrive in the same wallet. The vault holds 1,000 tokens; the Attacker deposits an additional 100-token seed to open its vault position, so you end up with 1,100 tokens total.
+</Note>
+
+<CardGroup cols={3}>
+  <Card title="Deploy and Battle-Test" icon="rocket" href="/battlechain/quickstart/deploy-your-contract">
+    The full protocol workflow with AI CLI or manual commands
+  </Card>
+  <Card title="Attack a Contract" icon="sword" href="/battlechain/quickstart/execute-first-attack">
+    The whitehat path — find targets, exploit, and collect bounties
+  </Card>
+  <Card title="Going Attackable" icon="shield" href="/battlechain/tutorials/going-attackable">
+    Understand the full attack mode process in depth
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+### A `forge` command fails
+
+Tell Claude to add `--skip-simulation` to the failing `forge script` call (the starter kit's `justfile` already includes it). For the full flag list and how the deploy stack fits together, see [How Deployment Works](/battlechain/explanation/how-deployment-works) and the [FAQ](/battlechain/faq).
+
+### MetaMask signing stalls on "Waiting for receipt"
+
+Each step uses `cast send --browser`, not `forge script --browser` (which hangs waiting on the wallet to report the receipt). `cast` takes the transaction hash and confirms against the chain itself, so it shouldn't stall. If it does: make sure you're on **Foundry nightly** (`foundryup -i nightly`) — the `--browser` flag only exists there. If a transaction hash appeared, the transaction went through regardless (confirm on the [explorer](https://explorer.testnet.battlechain.com)). Still stuck? Fall back to the **keystore** path (`just generate-key` + the non-browser targets) — no wallet popup at all.
+
+### Transactions are failing or the demo is stuck
+
+Check that you're on BattleChain Testnet (chain ID `627`) and that your wallet has testnet ETH. If a deploy fails with a vague error, ask Claude to retry with `-g 300` (triples the gas estimate).

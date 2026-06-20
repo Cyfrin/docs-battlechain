@@ -1,43 +1,43 @@
 ---
-title: "Demo with Claude Desktop"
-description: "Install the BattleChain MCP server and run the full security demo through Claude Desktop — no coding required."
+title: "Security Demo (Claude Desktop)"
+description: "Run the full BattleChain security demo in the Claude Desktop chat app via the MCP server — Claude deploys and exploits a vault, you sign in MetaMask. No coding required."
 ---
 
-Run the complete BattleChain security demo without writing a line of code. The MCP server wires directly into Claude Desktop — Claude deploys the contracts, creates the safe harbor agreement, and guides you through the exploit step by step. MetaMask handles all transaction signing.
+<Note>
+Using **Claude Code** (terminal, desktop app, or IDE)? Use the [One-Prompt Demo](/battlechain/quickstart/one-prompt-demo) instead — it runs from a single prompt with nothing to install. **This page** is for the **claude.ai chat app (Claude Desktop)**, which can't run a terminal, so it drives the demo through an MCP server.
+</Note>
+
+Run the complete BattleChain security demo from the Claude Desktop chat app — without writing a line of code. The BattleChain MCP server wires into Claude Desktop: Claude deploys the contracts, creates the safe harbor agreement, and guides you through the exploit step by step. MetaMask handles all transaction signing.
 
 ## What You'll Need
 
 **Claude Desktop**
 
-Download and install [Claude Desktop](https://claude.ai/download) and sign in with your Anthropic account. This is the desktop application — not the Claude.ai web app or Claude Code CLI.
+Download and install [Claude Desktop](https://claude.ai/download) (the claude.ai chat app) and sign in. This is the chat application — not Claude Code.
 
 **MetaMask**
 
-Install the [MetaMask browser extension](https://metamask.io/download/) in Chrome, Firefox, or Brave. Claude opens a local signing page for each step — MetaMask handles approvals directly in your browser.
+Install the [MetaMask browser extension](https://metamask.io/download/) in Chrome, Firefox, or Brave. Claude opens a local signing page for each step — MetaMask handles approvals in your browser.
 
 **A test wallet with BattleChain Testnet ETH**
 
-You need a small amount of ETH on BattleChain Testnet for gas. Use a dedicated test wallet — do not use a wallet that holds real funds.
-
-**1. Add BattleChain to your wallet**
+Use a dedicated test wallet — **never one that holds real funds**.
 
 <NetworkInfo network="testnet" />
 
-**2. Get free Sepolia ETH** from the [Google Cloud faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia) — 0.05 ETH is plenty.
+**1. Get free Sepolia ETH** from the [Google Cloud faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia) — 0.05 ETH is plenty.
 
-**3. Bridge to BattleChain** at [portal.battlechain.com/bridge](https://portal.battlechain.com/bridge) — select Sepolia to BattleChain Testnet.
+**2. Bridge to BattleChain** at [portal.battlechain.com/bridge](https://portal.battlechain.com/bridge) — select Sepolia to BattleChain Testnet.
 
 **Python (macOS / Linux) or WSL (Windows)**
 
-On **macOS or Linux**, Python 3.10 or higher is required. Check with `python3 --version`.
-
-On **Windows**, the installer runs inside WSL. If you don't have it, open PowerShell as Administrator and run `wsl --install`, then restart before continuing.
+On macOS or Linux, Python 3.10+ is required (`python3 --version`). On Windows, the installer runs inside WSL — `wsl --install` from an admin PowerShell, then restart.
 
 ---
 
-## Step 1 — Install
+## Step 1 — Install the MCP Server
 
-Run the installer for your platform. It installs the BattleChain MCP server and updates Claude Desktop's config automatically.
+The installer adds the `battlechain-mcp` server and updates Claude Desktop's config automatically.
 
 <CodeGroup labels="macOS / Linux, Windows (PowerShell)">
 ```bash
@@ -51,26 +51,26 @@ irm https://raw.githubusercontent.com/Cyfrin/battlechain-mcp/main/install.ps1 | 
 Run the Windows command in PowerShell — not inside a WSL terminal.
 
 <Check>
-The installer will confirm that Claude Desktop's configuration was updated when it completes.
+The installer confirms when Claude Desktop's configuration has been updated.
 </Check>
 
 ---
 
 ## Step 2 — Restart Claude Desktop
 
-Fully quit Claude Desktop and reopen it. New MCP servers are not loaded until the application restarts.
+Fully quit Claude Desktop and reopen it. New MCP servers load only on restart.
 
 ---
 
 ## Step 3 — Start the Demo
 
-Open a new conversation in Claude Desktop and send:
+Open a new conversation and send:
 
 ```
 Run the BattleChain security demo.
 ```
 
-Claude will narrate each step and open a signing page in your browser when transactions are ready. Approve them in MetaMask, then return to Claude Desktop to continue.
+Claude narrates each step and opens a signing page in your browser when transactions are ready. Approve them in MetaMask, then return to Claude Desktop to continue.
 
 ---
 
@@ -88,14 +88,14 @@ In this demo you are both the protocol owner and the whitehat, so both the 90% r
 </Note>
 
 <CardGroup cols={3}>
+  <Card title="One-Prompt Demo (Claude Code)" icon="sparkles" href="/battlechain/quickstart/one-prompt-demo">
+    The same demo from a single prompt in Claude Code — no MCP, no install
+  </Card>
   <Card title="Deploy and Battle-Test" icon="rocket" href="/battlechain/quickstart/deploy-your-contract">
     The full protocol workflow with AI CLI or manual commands
   </Card>
   <Card title="Attack a Contract" icon="sword" href="/battlechain/quickstart/execute-first-attack">
     The whitehat path — find targets, exploit, and collect bounties
-  </Card>
-  <Card title="Going Attackable" icon="shield" href="/battlechain/tutorials/going-attackable">
-    Understand the full attack mode process in depth
   </Card>
 </CardGroup>
 

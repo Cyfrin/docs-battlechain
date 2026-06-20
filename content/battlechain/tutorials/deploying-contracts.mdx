@@ -1,6 +1,7 @@
 ---
 title: "Deploying Contracts to BattleChain"
 description: "Learn how to deploy smart contracts using BattleChainDeployer and understand deployment options"
+networkAware: true
 ---
 
 This tutorial teaches you how to deploy contracts to BattleChain and why the deployment method matters for the attack mode workflow.
@@ -71,6 +72,16 @@ On BattleChain, `bcDeployCreate*` calls go through `BattleChainDeployer`, which 
 <Tip>
 Use `bcDeployCreate2` when you need deterministic addresses. On the 190+ chains that share the canonical CreateX deployment (`0xba5Ed...`), the same salt + bytecode produces the same address everywhere. BattleChain's CreateX and BattleChainDeployer live at different addresses, so addresses computed on BattleChain differ from those chains — and between BattleChain mainnet and testnet.
 </Tip>
+
+Your contracts' constructor parameters (oracles, tokens, external protocols) point at network-specific dependencies:
+
+<Network title="Testnet">
+Point them at the [mock dependency contracts](/battlechain/reference/mock-contracts) — they share the same interfaces as the real ones, so you can deploy your exact production bytecode and only swap the addresses.
+</Network>
+
+<Network title="Mainnet">
+Use the real dependency addresses, exactly as you would on Ethereum mainnet.
+</Network>
 
 ### Available deploy helpers
 
