@@ -7,6 +7,11 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: '/battlechain/quickstart/security-demo',
+        destination: '/battlechain/quickstart/one-prompt-demo',
+        permanent: true,
+      },
+      {
         source: '/battlechain/quickstart/ai-quickstart',
         destination: '/battlechain/quickstart/deploy-your-contract',
         permanent: true,

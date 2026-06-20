@@ -1,6 +1,7 @@
 ---
 title: "Going Attackable: End-to-End Protocol Tutorial"
 description: "A complete tutorial for protocols to deploy, configure, and enter attack mode on BattleChain"
+networkAware: true
 ---
 
 This tutorial covers the full journey of taking your protocol from deployment to attack mode on BattleChain. You'll learn not just the mechanics, but *why* each step matters for your security.
@@ -143,9 +144,19 @@ Your contracts are now in `ATTACK_REQUESTED` state. The DAO will review and chec
 
 Once approved, state moves to `UNDER_ATTACK` and whitehats can begin testing.
 
+Approval works differently depending on the network:
+
+<Network title="Testnet">
 <Note>
-**On testnet**, approval is instant via the `MockRegistryModerator` — a permissionless contract you can call yourself rather than waiting for a real DAO action. See [How to Request Attack Mode](/battlechain/how-to/request-attack-mode#testnet-instant-approval) for the command.
+**Testnet:** approval is instant — the `MockRegistryModerator` is a permissionless contract you call yourself instead of waiting for a real DAO action. See [How to Request Attack Mode](/battlechain/how-to/request-attack-mode#testnet-instant-approval) for the exact command.
 </Note>
+</Network>
+
+<Network title="Mainnet">
+<Note>
+**Mainnet:** the BattleChain DAO reviews and approves the request — there is no self-approval. Approval is a governance action by the registry moderator, so expect a review period before your contracts enter `UNDER_ATTACK`.
+</Note>
+</Network>
 
 See [How to Request Attack Mode](/battlechain/how-to/request-attack-mode) for full details and troubleshooting.
 

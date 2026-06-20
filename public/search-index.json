@@ -266,13 +266,13 @@
   },
   {
     "id": "/battlechain/quickstart/claude-desktop-demo",
-    "title": "Demo with Claude Desktop",
-    "content": "Run the complete BattleChain security demo without writing a line of code. The MCP server wires directly into Claude Desktop — Claude deploys the contracts, creates the safe harbor agreement, and guides you through the exploit step by step. MetaMask handles all transaction signing. What You'll Need Claude Desktop Download and install Claude Desktop and sign in with your Anthropic account. This is the desktop application — not the Claude.ai web app or Claude Code CLI. MetaMask Install the MetaMask browser extension in Chrome, Firefox, or Brave. Claude opens a local signing page for each step — MetaMask handles approvals directly in your browser. A test wallet with BattleChain Testnet ETH You need a small amount of ETH on BattleChain Testnet for gas. Use a dedicated test wallet — do not use a wallet that holds real funds. 1. Add BattleChain to your wallet 2. Get free Sepolia ETH from the Google Cloud faucet — 0.05 ETH is plenty. 3. Bridge to BattleChain at portal.battlechain.com/bridge —",
+    "title": "Security Demo (Claude Desktop)",
+    "content": "Using Claude Code (terminal, desktop app, or IDE)? Use the One-Prompt Demo instead — it runs from a single prompt with nothing to install. This page is for the claude.ai chat app (Claude Desktop), which can't run a terminal, so it drives the demo through an MCP server. Run the complete BattleChain security demo from the Claude Desktop chat app — without writing a line of code. The BattleChain MCP server wires into Claude Desktop: Claude deploys the contracts, creates the safe harbor agreement, and guides you through the exploit step by step. MetaMask handles all transaction signing. What You'll Need Claude Desktop Download and install Claude Desktop (the claude.ai chat app) and sign in. This is the chat application — not Claude Code. MetaMask Install the MetaMask browser extension in Chrome, Firefox, or Brave. Claude opens a local signing page for each step — MetaMask handles approvals in your browser. A test wallet with BattleChain Testnet ETH Use a dedicated test wallet — never one t",
     "url": "/battlechain/quickstart/claude-desktop-demo",
     "category": "battlechain",
     "headings": [
       "What You'll Need",
-      "Step 1 — Install",
+      "Step 1 — Install the MCP Server",
       "Step 2 — Restart Claude Desktop",
       "Step 3 — Start the Demo",
       "What Happens"
@@ -304,6 +304,20 @@
       "Step 1 — Find an Attackable Contract",
       "Step 2 — Check the Terms",
       "Step 3 — Understand the Exploit"
+    ]
+  },
+  {
+    "id": "/battlechain/quickstart/one-prompt-demo",
+    "title": "One-Prompt Demo",
+    "content": "This is the Claude Code version (works in the terminal, the desktop app, or IDE extensions). On the claude.ai chat app (Claude Desktop) instead? See Security Demo (Claude Desktop), which uses an MCP server. See BattleChain end to end from a single prompt. Claude Code deploys a deliberately vulnerable vault, creates a Safe Harbor agreement, opens it for whitehat attack, then exploits it — and you watch the bounty split at the end. You don't write any code; you just approve each step. Works in any Claude Code surface — the terminal, the desktop app, or the VS Code / JetBrains extensions. Claude runs the commands itself. What You'll Need - Claude Code — any surface (terminal, desktop app, or IDE extension). - A wallet for BattleChain Testnet — either one you already have (MetaMask, Trezor, etc.) or one Claude creates for you. Either way it needs a little testnet ETH for gas; the prompt walks you through funding it. If you bring your own wallet, add the network first with the one-click but",
+    "url": "/battlechain/quickstart/one-prompt-demo",
+    "category": "battlechain",
+    "headings": [
+      "What You'll Need",
+      "Run It",
+      "What Happens",
+      "Troubleshooting",
+      "A `forge` command fails"
     ]
   },
   {
@@ -490,15 +504,15 @@
   {
     "id": "/battlechain/using-battlechain-with-ai",
     "title": "Using BattleChain with AI",
-    "content": "BattleChain is built for AI-native development. Whether you're using Claude Code, Cursor, or any tool with a built-in chat, you can give your agent full BattleChain context in seconds. The BattleChain Skill The fastest way to give your AI agent BattleChain context is to install the Cyfrin skills package: This installs three skills: | Skill | What it does | |-------|-------------| | solidity | Production-grade Solidity standards: code quality, testing, security, Foundry workflows | | battlechain | BattleChain reference: deploying, Safe Harbor, whitehat attacks, contract lifecycle | | battlechain-tutorial | Interactive wizard: scans your project, asks guided questions, generates all scripts | Once installed, tell your agent \"Deploy my contracts to BattleChain\" and battlechain-tutorial will walk you through the full process. The skills are open source at github.com/Cyfrin/solskill. Claude Code Plugin If you use Claude Code, the same skills are also published as a plugin marketplace. This ",
+    "content": "BattleChain is built for AI-native development. Whether you're using Claude Code, Cursor, or any tool with a built-in chat, you can give your agent full BattleChain context in seconds. Run the Whole Workflow Through Your Agent You can do everything on BattleChain through your AI agent — deploy contracts, create a Safe Harbor agreement, go attackable, execute attacks, and claim bounties — without writing code yourself. Your agent reads these docs, runs the commands, and pauses for you to approve each step. - Just want to watch it work? The no-code demo deploys a vulnerable vault and exploits it end to end from a single prompt in Claude Code — nothing to install. - Building for real? Install the skill below, then tell your agent \"deploy my contracts to BattleChain\" and it runs the full lifecycle with you — deploy, agreement, attack mode, and promotion. The BattleChain Skill The fastest way to give your AI agent BattleChain context is to install the Cyfrin skills package: This installs th",
     "url": "/battlechain/using-battlechain-with-ai",
     "category": "battlechain",
     "headings": [
+      "Run the Whole Workflow Through Your Agent",
       "The BattleChain Skill",
       "Claude Code Plugin",
       "Read the Docs as Markdown",
-      "Cursor",
-      "MCP Server"
+      "Cursor"
     ]
   },
   {

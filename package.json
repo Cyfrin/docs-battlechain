@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build-deployments": "tsx scripts/build-deployments.ts",
-    "prebuild": "tsx scripts/build-deployments.ts && tsx scripts/build-search-index.ts && tsx scripts/build-llms-txt.ts",
+    "prebuild": "tsx scripts/build-deployments.ts && tsx scripts/build-network-aware.ts && tsx scripts/build-search-index.ts && tsx scripts/build-llms-txt.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
