@@ -62,6 +62,34 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
+              // Resolve the Mainnet/Testnet network before first paint and write
+              // it to <html data-network> so network-specific content (the CSS
+              // in globals.css that hides the inactive <Network> block) renders
+              // correctly with no flash. Precedence: URL ?network= > localStorage
+              // > cookie > default. A shared ?network= link becomes sticky.
+              (function() {
+                try {
+                  var KEY = 'battlechain-docs-network';
+                  var q = (new URL(location.href).searchParams.get('network') || '').toLowerCase();
+                  var ls = localStorage.getItem(KEY);
+                  var ck = (document.cookie.match(/(?:^|; )battlechain-docs-network=([^;]+)/) || [])[1];
+                  var n = (q || ls || ck || 'mainnet').toLowerCase();
+                  if (n !== 'testnet' && n !== 'mainnet') n = 'mainnet';
+                  document.documentElement.dataset.network = n;
+                  if (q === 'testnet' || q === 'mainnet') {
+                    localStorage.setItem(KEY, n);
+                    document.cookie = KEY + '=' + n + ';path=/;max-age=31536000;samesite=lax';
+                  }
+                } catch (e) {
+                  document.documentElement.dataset.network = 'mainnet';
+                }
+              })();
+            `,
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
               // Aggressive error suppression for crypto wallet extensions
               (function() {
                 const originalError = console.error;

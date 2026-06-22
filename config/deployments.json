@@ -15,7 +15,7 @@
       "caip2": "eip155:627",
       "rpcUrl": "https://testnet.battlechain.com",
       "explorer": "https://explorer.testnet.battlechain.com/",
-      "explorerApi": "https://block-explorer-api.testnet.battlechain.com/api",
+      "explorerApi": "https://block-explorer-api.testnet.battlechain.com",
       "currencySymbol": "ETH",
       "isTestnet": true,
       "settlementLayer": "sepolia",
@@ -49,8 +49,10 @@
       "caip2": "eip155:626",
       "rpcUrl": "https://mainnet.battlechain.com",
       "explorer": "https://explorer.mainnet.battlechain.com/",
+      "explorerApi": "https://block-explorer-api.mainnet.battlechain.com",
       "currencySymbol": "ETH",
       "isTestnet": false,
+      "settlementLayer": "ethereum",
       "contracts": {
         "attackRegistry": {
           "proxy": "0x24876e481eC7198CAC95af739Df2a852CE65A415",
@@ -94,6 +96,26 @@
         },
         "validatorTimelock": {
           "address": "0x8C2a0b3C86CaA986f5dCd71f053c63Ac8324EA6f"
+        }
+      }
+    },
+    "ethereum": {
+      "name": "Ethereum",
+      "chainId": 1,
+      "caip2": "eip155:1",
+      "role": "Settlement layer (L1) for BattleChain (chain 626)",
+      "contracts": {
+        "bridgehub": {
+          "address": "0x6f85C08e2DabB6b0B8B3587D3628FCfb5b10BE19"
+        },
+        "zkChain": {
+          "address": "0xB44d26D227e0bD028d893BEc16DC1C7B168eCdE3"
+        },
+        "chainTypeManager": {
+          "address": "0x4Ee4EA87b909ea3E1C36d9fcbf6C0e535165f96D"
+        },
+        "validatorTimelock": {
+          "address": "0x313E1E05b967aB18cCb6aAaAE19E616b7b99a01a"
         }
       }
     }

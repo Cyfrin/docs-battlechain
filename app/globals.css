@@ -1013,3 +1013,15 @@ body.product-profiles h2 {
     font-size: 2rem;
   }
 }
+
+/* ========================================
+   NETWORK TOGGLE (Mainnet/Testnet)
+   ======================================== */
+
+/* <Network> renders both blocks; hide the one that isn't active. The
+   data-network attribute is set before paint by the inline script in
+   app/layout.tsx, so the correct block shows with no flash. */
+html[data-network='mainnet'] [data-network-block='testnet'],
+html[data-network='testnet'] [data-network-block='mainnet'] {
+  display: none;
+}

@@ -139,11 +139,11 @@ function governanceTable(mainnet: Network): string {
   ].join('\n')
 }
 
-function sepoliaTable(sepolia: Network): string {
-  const c = sepolia.contracts
+function l1Table(net: Network, zkChainLabel: string): string {
+  const c = net.contracts
   const rows: [string, ContractEntry | undefined][] = [
     ['Bridgehub', c.bridgehub],
-    ['ZK Chain (627)', c.zkChain],
+    [zkChainLabel, c.zkChain],
     ['Chain Type Manager', c.chainTypeManager],
     ['Validator Timelock', c.validatorTimelock],
   ]
@@ -155,7 +155,7 @@ function sepoliaTable(sepolia: Network): string {
 }
 
 function generateBlock(data: Deployments): string {
-  const { testnet, mainnet, sepolia } = data.networks
+  const { testnet, mainnet, sepolia, ethereum } = data.networks
   const moderator = testnet.contracts.mockRegistryModerator?.address
 
   return [
@@ -191,8 +191,18 @@ function generateBlock(data: Deployments): string {
     '',
     sepolia.role ?? '',
     '',
-    sepoliaTable(sepolia),
+    l1Table(sepolia, 'ZK Chain (627)'),
     '',
+    ...(ethereum
+      ? [
+          '### Ethereum (Mainnet L1)',
+          '',
+          ethereum.role ?? '',
+          '',
+          l1Table(ethereum, 'ZK Chain (626)'),
+          '',
+        ]
+      : []),
     END_MARKER,
   ]
     .join('\n')

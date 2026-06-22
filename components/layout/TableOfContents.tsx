@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { useNetwork } from '@/components/mdx/NetworkTabs'
 
 interface Heading {
   id: string
@@ -11,6 +12,7 @@ interface Heading {
 
 export function TableOfContents() {
   const pathname = usePathname()
+  const { network } = useNetwork()
   const [headings, setHeadings] = useState<Heading[]>([])
   const [activeId, setActiveId] = useState<string>('')
 
@@ -26,6 +28,14 @@ export function TableOfContents() {
     headingElements.forEach((heading) => {
       // Skip headings marked to ignore (like card titles)
       if (heading.hasAttribute('data-toc-ignore')) {
+        return
+      }
+
+      // Skip headings inside the CSS-hidden half of a <Network> block (both
+      // networks' blocks are in the DOM; only the active one is visible).
+      // offsetParent is null when an ancestor is display:none, so the TOC
+      // lists only the selected network's headings instead of doubling them.
+      if ((heading as HTMLElement).offsetParent === null) {
         return
       }
 
@@ -86,7 +96,7 @@ export function TableOfContents() {
         }
       })
     }
-  }, [pathname])
+  }, [pathname, network])
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault()
