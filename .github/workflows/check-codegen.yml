@@ -1,0 +1,64 @@
+name: Check Codegen
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "config/deployments.json"
+      - "config/deployments.generated.json"
+      - "config/mock-contracts.json"
+      - "public/deployments.json"
+      - "public/mock-contracts.json"
+      - "content/battlechain/reference/contracts.mdx"
+      - "scripts/build-deployments.ts"
+      - "package.json"
+      - "package-lock.json"
+  pull_request:
+    paths:
+      - "config/deployments.json"
+      - "config/deployments.generated.json"
+      - "config/mock-contracts.json"
+      - "public/deployments.json"
+      - "public/mock-contracts.json"
+      - "content/battlechain/reference/contracts.mdx"
+      - "scripts/build-deployments.ts"
+      - "package.json"
+      - "package-lock.json"
+
+permissions:
+  contents: read
+
+jobs:
+  check-codegen:
+    runs-on: ubuntu-latest
+    steps:
+      # Contract addresses are sourced from @cyfrin/battlechain-lib, installed
+      # via `file:../battlechain-lib`. Check that repo out as a sibling so the
+      # dependency resolves the same way it does in the monorepo.
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          path: docs-battlechain
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: Cyfrin/battlechain-lib
+          persist-credentials: false
+          path: battlechain-lib
+
+      - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: 22
+
+      - run: npm ci --ignore-scripts
+        working-directory: docs-battlechain
+
+      - name: Regenerate deployment artifacts
+        run: npx tsx scripts/build-deployments.ts
+        working-directory: docs-battlechain
+
+      - name: Fail if generated artifacts drift from source
+        working-directory: docs-battlechain
+        run: |
+          git add --intent-to-add -A
+          git diff --exit-code
