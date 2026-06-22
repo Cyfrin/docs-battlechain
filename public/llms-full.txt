@@ -905,14 +905,15 @@ attack()
 Once the vault is drained, the Safe Harbor settlement runs automatically:
 
 ```solidity
-uint256 total = TOKEN.balanceOf(address(this));
-uint256 bounty = (total * BOUNTY_BPS) / 10_000; // 10%
+uint256 total = TOKEN.balanceOf(address(this));     // 1,100 = vault's 1,000 + your 100 seed
+uint256 recovered = total - SEED_AMOUNT;            // 1,000 — the protocol's funds only
+uint256 bounty = (recovered * BOUNTY_BPS) / 10_000; // 10% of recovered = 100
 
-TOKEN.transfer(RECOVERY_ADDRESS, total - bounty); // return 90% to protocol
-TOKEN.transfer(OWNER, bounty);                    // keep 10%
+TOKEN.transfer(RECOVERY_ADDRESS, recovered - bounty); // return 900 to the protocol
+TOKEN.transfer(BENEFICIARY, bounty + SEED_AMOUNT);    // keep 100 bounty + your 100 seed
 ```
 
-You're not stealing. The protocol gets the majority of funds back minus the agreed bounty. Everyone knew the rules when the agreement was signed.
+The bounty is taken on the protocol's recovered funds only — you don't earn a bounty on the seed you deposited, and you get that seed back. You're not stealing. The protocol gets the majority of funds back minus the agreed bounty. Everyone knew the rules when the agreement was signed.
 
 ---
 
@@ -928,13 +929,13 @@ Expected output:
 
 ```
 Vault balance before: 1000 tokens
-Deploying exploit (approves attack mode, then drains)...
+Deploying Exploit (approves attack mode + drains in one tx)...
 
 --- Vault drained ---
-Vault before:          1000 tokens
-Vault after:              0 tokens
-Bounty kept:            110 tokens
-Returned to protocol:   990 tokens
+Vault before:        1000 tokens
+Vault after:         0 tokens
+Returned to protocol: 900 tokens
+Bounty kept (yours): 100 tokens (plus your reclaimed seed)
 ```
 
 ---
@@ -945,10 +946,12 @@ Returned to protocol:   990 tokens
 
 ### Verify the math
 
-The agreement set a 10% bounty (`BOUNTY_BPS = 1_000`). The vault had 1,000 seeded tokens plus your 100 seed tokens = 1,100 total.
+The agreement set a 10% bounty (`BOUNTY_BPS = 1_000`). To drive the reentrancy, the exploit first deposits 100 tokens of its own as seed, so 1,100 gets drained (the vault's 1,000 + your 100 seed). The bounty is 10% of the **recovered protocol funds** — you don't earn a bounty on your own seed:
 
-- Bounty: `1,100 × 10% = 110 tokens`
-- Returned: `1,100 - 110 = 990 tokens`
+- Recovered (protocol funds): `1,100 − 100 seed = 1,000 tokens`
+- Bounty (yours): `1,000 × 10% = 100 tokens`
+- Returned to protocol: `1,000 − 100 = 900 tokens`
+- Your 100-token seed is returned to you on top, so your wallet nets **+100**.
 
 If the numbers don't look right, check that `RECOVERY_ADDRESS` in your `.env` matches the address in the agreement — that's where the returned funds go.
 
@@ -1804,6 +1807,8 @@ cast call 0x24876e481eC7198CAC95af739Df2a852CE65A415 \
 
 On mainnet the registry moderator is a controlled DAO role — there is no instant self-approval.
 
+> **Note:** Track your request without scripting on the **[Approvals dashboard](https://approvals.battlechain.com)** — your agreement appears there as soon as it's requested, showing its current state and full details for moderators to review.
+
 ## Troubleshooting
 
 | Error | Solution |
@@ -1905,7 +1910,7 @@ Source: https://docs.battlechain.com/battlechain/how-to/find-attackable-contract
 
 The `AttackRegistry` tracks which contracts are in attack mode. This guide shows how to find and verify targets.
 
-You can browse agreement statuses and contracts under scope on the [BattleChain explorer](https://explorer.testnet.battlechain.com/agreements), or enumerate them programmatically with the API below.
+You can browse agreement statuses and contracts under scope on the [BattleChain explorer](https://explorer.testnet.battlechain.com/agreements) or the [Approvals dashboard](https://approvals.battlechain.com) — filter to **Under Attack** to see what's currently live, with bounty terms shown per request — or enumerate them programmatically with the API below.
 
 ## List Attackable Contracts (HTTP API)
 
@@ -2151,14 +2156,15 @@ attack()
 Once the vault is drained, the Safe Harbor settlement runs automatically:
 
 ```solidity
-uint256 total = TOKEN.balanceOf(address(this));
-uint256 bounty = (total * BOUNTY_BPS) / 10_000; // 10%
+uint256 total = TOKEN.balanceOf(address(this));     // 1,100 = vault's 1,000 + your 100 seed
+uint256 recovered = total - SEED_AMOUNT;            // 1,000 — the protocol's funds only
+uint256 bounty = (recovered * BOUNTY_BPS) / 10_000; // 10% of recovered = 100
 
-TOKEN.transfer(RECOVERY_ADDRESS, total - bounty); // return 90% to protocol
-TOKEN.transfer(OWNER, bounty);                    // keep 10%
+TOKEN.transfer(RECOVERY_ADDRESS, recovered - bounty); // return 900 to the protocol
+TOKEN.transfer(BENEFICIARY, bounty + SEED_AMOUNT);    // keep 100 bounty + your 100 seed
 ```
 
-You're not stealing. The protocol gets the majority of funds back minus the agreed bounty. Everyone knew the rules when the agreement was signed.
+The bounty is taken on the protocol's recovered funds only — you don't earn a bounty on the seed you deposited, and you get that seed back. You're not stealing. The protocol gets the majority of funds back minus the agreed bounty. Everyone knew the rules when the agreement was signed.
 
 ---
 
@@ -2174,13 +2180,13 @@ Watch the output:
 
 ```
 Vault balance before: 1000 tokens
-Deploying attacker...
+Deploying Exploit (approves attack mode + drains in one tx)...
 
 --- Vault drained ---
-Vault before:          1000 tokens
-Vault after:              0 tokens
-Bounty kept:            100 tokens
-Returned to protocol:   900 tokens
+Vault before:        1000 tokens
+Vault after:         0 tokens
+Returned to protocol: 900 tokens
+Bounty kept (yours): 100 tokens (plus your reclaimed seed)
 ```
 
 > **Check:** You've executed a legal reentrancy exploit on BattleChain. The vault is empty, the protocol has their funds back minus your bounty, and you're protected under Safe Harbor.
@@ -2198,10 +2204,12 @@ Search your `VAULT_ADDRESS` on the [BattleChain explorer](https://explorer.testn
 
 ### Check the Math
 
-The agreement set a 10% bounty (`BOUNTY_BPS = 1_000`). The vault had 1,000 seeded tokens plus your 100 seed tokens = 1,100 total.
+The agreement set a 10% bounty (`BOUNTY_BPS = 1_000`). To drive the reentrancy, the exploit first deposits 100 tokens of its own as seed, so 1,100 gets drained (the vault's 1,000 + your 100 seed). The bounty is 10% of the **recovered protocol funds** — your own seed doesn't earn a bounty:
 
-- **Bounty (yours):** 1,100 x 10% = 110 tokens
-- **Returned to protocol:** 1,100 - 110 = 990 tokens
+- **Recovered (protocol funds):** 1,100 − 100 seed = 1,000 tokens
+- **Bounty (yours):** 1,000 × 10% = 100 tokens
+- **Returned to protocol:** 1,000 − 100 = 900 tokens
+- Your 100-token seed comes back to you on top, so your wallet nets **+100**.
 
 If the numbers don't look right, check that `RECOVERY_ADDRESS` in your `.env` matches the address in the agreement.
 
@@ -2434,6 +2442,8 @@ Source: https://docs.battlechain.com/battlechain/quickstart/review-first-request
 
 > **Note:** **Prerequisites**: You must be the registry moderator or part of the DAO multisig to approve or reject requests.
 
+> **Tip:** Prefer a UI? The **[Approvals dashboard](https://approvals.battlechain.com)** lists every pending request with full protocol details, and lets you approve or reject directly once you connect the moderator Safe — no `cast` needed. The steps below show the equivalent on-chain calls.
+
 ---
 
 ## Find Pending Requests
@@ -2565,6 +2575,14 @@ Source: https://docs.battlechain.com/battlechain/how-to/approve-reject-requests
 ## Overview
 
 As the registry moderator, you review attack requests and decide whether to approve or reject them.
+
+## Approvals Dashboard (recommended)
+
+The easiest way to do this is the **[Approvals dashboard](https://approvals.battlechain.com)** — a public index of every attack-mode request and its state. Browsing requires no wallet; each request links through to the protocol's details, bounty terms, contracts in scope, and a verification flag for the agreement's terms URI.
+
+To act on a request, connect the **registry-moderator Safe** (the dashboard supports WalletConnect, so you can pair the Safe from your wallet of choice). Once connected as the moderator, each pending request shows **Approve** and **Reject** buttons that submit the same calls below through the Safe — no `cast` or scripting required.
+
+> **Note:** The dashboard is the recommended path. The contract calls below remain available for scripting, batch processing, or programmatic workflows.
 
 ## Approve a Request
 
@@ -2737,6 +2755,8 @@ This tutorial teaches DAO members how to evaluate attack mode requests, make app
 > **Note:** **Audience**: AttackRegistry DAO members and registry moderators.
 > 
 > **Prerequisites**: You must be the registry moderator or part of the DAO multisig.
+
+> **Tip:** The **[Approvals dashboard](https://approvals.battlechain.com)** packages the monitoring, review, and decision steps below into one UI: it indexes every request, surfaces protocol details and bounty terms, and — once you connect the moderator Safe — approves or rejects with a click. This tutorial covers the underlying flow so you understand what the dashboard does on your behalf.
 
 ## Your Role
 
