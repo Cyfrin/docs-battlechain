@@ -1,21 +1,34 @@
 import fs from 'fs'
 import path from 'path'
 
+import canonical from '@cyfrin/battlechain-lib/deployments.json'
+
 /**
  * Single-source-of-truth build step for BattleChain deployments.
  *
- * Reads config/deployments.json (the only place addresses are maintained),
- * validates it, then emits two derived artifacts:
+ * Contract ADDRESSES come from @cyfrin/battlechain-lib/deployments.json (the
+ * canonical source generated from the Solidity sources). config/deployments.json
+ * is a docs-owned presentation OVERLAY: it supplies links, network metadata
+ * (rpc/explorer/labels), the field-mapping rules that project canonical
+ * addresses onto the docs' proxy/implementation structure, and docs-only
+ * networks/roles the canonical lib does not provide (e.g. L1 settlement layers).
+ *
+ * This script merges the two, validates the result, then emits the derived
+ * artifacts:
  *   1. public/deployments.json — the public, machine-readable endpoint
  *      (https://docs.battlechain.com/deployments.json).
- *   2. The address tables inside content/battlechain/reference/contracts.mdx,
+ *   2. config/deployments.generated.json — the merged, address-resolved data
+ *      that the runtime consumers (lib/deployments.ts, config/battlechain.ts)
+ *      import. Regenerated here so runtime never reads the overlay directly.
+ *   3. The address tables inside content/battlechain/reference/contracts.mdx,
  *      regenerated between the `deployments:start`/`deployments:end` markers so
  *      the human docs and llms-full.txt never drift from the JSON.
  */
 
 const ROOT = process.cwd()
-const SOURCE = path.join(ROOT, 'config', 'deployments.json')
+const OVERLAY_SOURCE = path.join(ROOT, 'config', 'deployments.json')
 const PUBLIC_OUT = path.join(ROOT, 'public', 'deployments.json')
+const GENERATED_OUT = path.join(ROOT, 'config', 'deployments.generated.json')
 const CONTRACTS_MDX = path.join(
   ROOT,
   'content',
@@ -29,6 +42,52 @@ const MOCK_PUBLIC_OUT = path.join(ROOT, 'public', 'mock-contracts.json')
 const ADDRESS_RE = /^0x[0-9a-fA-F]{40}$/
 const ID_RE = /^0x[0-9a-fA-F]{64}$/
 
+interface CanonicalNetwork {
+  chainId: number
+  caip2: string
+  [field: string]: string | number
+}
+
+interface Canonical {
+  networks: Record<string, CanonicalNetwork>
+}
+
+// Overlay shapes — addresses are never literal here; they reference a canonical
+// field via *From keys, except docs-only networks (no canonicalChainId) which
+// carry literal addresses the canonical lib does not provide.
+interface OverlayContract {
+  proxyFrom?: string
+  implementationFrom?: string
+  addressFrom?: string
+  proxy?: string
+  implementation?: string
+  address?: string
+}
+
+type OverlayGovernanceValue = string | { addressFrom: string }
+
+interface OverlayNetwork {
+  name: string
+  canonicalChainId?: number
+  chainId: number
+  caip2: string
+  rpcUrl?: string
+  explorer?: string
+  explorerApi?: string
+  currencySymbol?: string
+  isTestnet?: boolean
+  settlementLayer?: string
+  role?: string
+  contracts: Record<string, OverlayContract>
+  governance?: Record<string, OverlayGovernanceValue>
+}
+
+interface Overlay {
+  links: Record<string, string>
+  networks: Record<string, OverlayNetwork>
+}
+
+// Resolved (merged) shapes — what runtime + public artifacts consume.
 interface ContractEntry {
   proxy?: string
   implementation?: string
@@ -41,12 +100,17 @@ interface Network {
   caip2: string
   rpcUrl?: string
   explorer?: string
+  explorerApi?: string
+  currencySymbol?: string
+  isTestnet?: boolean
+  settlementLayer?: string
   role?: string
   contracts: Record<string, ContractEntry>
   governance?: Record<string, string>
 }
 
 interface Deployments {
+  links: Record<string, string>
   networks: Record<string, Network>
 }
 
@@ -58,6 +122,82 @@ function assertAddress(value: string, where: string): void {
   if (!ADDRESS_RE.test(value)) {
     fail(`invalid address at ${where}: "${value}" (expected 0x + 40 hex chars)`)
   }
+}
+
+const canonicalData = canonical as unknown as Canonical
+
+function canonicalField(chainId: number, field: string, where: string): string {
+  const net = canonicalData.networks[String(chainId)]
+  if (!net) {
+    fail(`overlay references canonical chainId ${chainId} (${where}) but it is not in @cyfrin/battlechain-lib/deployments.json`)
+  }
+  const value = net[field]
+  if (typeof value !== 'string') {
+    fail(`canonical chainId ${chainId} is missing string field "${field}" (needed by ${where})`)
+  }
+  return value
+}
+
+function resolveContracts(
+  net: OverlayNetwork,
+  netKey: string,
+): Record<string, ContractEntry> {
+  const out: Record<string, ContractEntry> = {}
+  for (const [name, entry] of Object.entries(net.contracts)) {
+    const where = `${netKey}.contracts.${name}`
+    if (net.canonicalChainId === undefined) {
+      // Docs-only network: addresses are literal in the overlay.
+      out[name] = { proxy: entry.proxy, implementation: entry.implementation, address: entry.address }
+      continue
+    }
+    const resolved: ContractEntry = {}
+    if (entry.proxyFrom) resolved.proxy = canonicalField(net.canonicalChainId, entry.proxyFrom, `${where}.proxy`)
+    if (entry.implementationFrom)
+      resolved.implementation = canonicalField(net.canonicalChainId, entry.implementationFrom, `${where}.implementation`)
+    if (entry.addressFrom) resolved.address = canonicalField(net.canonicalChainId, entry.addressFrom, `${where}.address`)
+    out[name] = resolved
+  }
+  return out
+}
+
+function resolveGovernance(
+  net: OverlayNetwork,
+  netKey: string,
+): Record<string, string> | undefined {
+  if (!net.governance) return undefined
+  const out: Record<string, string> = {}
+  for (const [role, value] of Object.entries(net.governance)) {
+    if (typeof value === 'string') {
+      out[role] = value
+    } else {
+      out[role] = canonicalField(net.canonicalChainId!, value.addressFrom, `${netKey}.governance.${role}`)
+    }
+  }
+  return out
+}
+
+function merge(overlay: Overlay): Deployments {
+  const networks: Record<string, Network> = {}
+  for (const [netKey, net] of Object.entries(overlay.networks)) {
+    networks[netKey] = {
+      name: net.name,
+      chainId: net.chainId,
+      caip2: net.caip2,
+      ...(net.rpcUrl !== undefined ? { rpcUrl: net.rpcUrl } : {}),
+      ...(net.explorer !== undefined ? { explorer: net.explorer } : {}),
+      ...(net.explorerApi !== undefined ? { explorerApi: net.explorerApi } : {}),
+      ...(net.currencySymbol !== undefined ? { currencySymbol: net.currencySymbol } : {}),
+      ...(net.isTestnet !== undefined ? { isTestnet: net.isTestnet } : {}),
+      ...(net.settlementLayer !== undefined ? { settlementLayer: net.settlementLayer } : {}),
+      ...(net.role !== undefined ? { role: net.role } : {}),
+      contracts: resolveContracts(net, netKey),
+      ...((): { governance?: Record<string, string> } => {
+        const g = resolveGovernance(net, netKey)
+        return g ? { governance: g } : {}
+      })(),
+    }
+  }
+  return { links: overlay.links, networks }
 }
 
 function validate(data: Deployments): void {
@@ -86,7 +226,7 @@ function validate(data: Deployments): void {
 }
 
 const START_MARKER =
-  '{/* deployments:start — generated from config/deployments.json by scripts/build-deployments.ts. Do not edit by hand. */}'
+  '{/* deployments:start — generated from config/deployments.json + @cyfrin/battlechain-lib by scripts/build-deployments.ts. Do not edit by hand. */}'
 const END_MARKER = '{/* deployments:end */}'
 const BLOCK_RE = /\{\/\* deployments:start[\s\S]*?deployments:end \*\/\}/
 
@@ -211,11 +351,12 @@ function generateBlock(data: Deployments): string {
 
 // ── Main ──────────────────────────────────────────────────────────
 
-const raw = fs.readFileSync(SOURCE, 'utf-8')
-const data: Deployments = JSON.parse(raw)
+const overlay: Overlay = JSON.parse(fs.readFileSync(OVERLAY_SOURCE, 'utf-8'))
+const data = merge(overlay)
 validate(data)
 
 fs.writeFileSync(PUBLIC_OUT, JSON.stringify(data, null, 2) + '\n')
+fs.writeFileSync(GENERATED_OUT, JSON.stringify(data, null, 2) + '\n')
 
 const mdx = fs.readFileSync(CONTRACTS_MDX, 'utf-8')
 if (!BLOCK_RE.test(mdx)) {
@@ -258,6 +399,8 @@ validateMocks(mock, 'mock')
 fs.writeFileSync(MOCK_PUBLIC_OUT, JSON.stringify(mock, null, 2) + '\n')
 
 const networkCount = Object.keys(data.networks).length
+console.log(`✓ Merged canonical @cyfrin/battlechain-lib addresses with docs overlay`)
 console.log(`✓ Wrote public/deployments.json (${networkCount} networks)`)
+console.log('✓ Wrote config/deployments.generated.json')
 console.log('✓ Regenerated address tables in content/battlechain/reference/contracts.mdx')
 console.log('✓ Wrote public/mock-contracts.json')

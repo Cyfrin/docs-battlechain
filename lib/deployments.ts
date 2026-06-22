@@ -1,7 +1,10 @@
-import deployments from '../config/deployments.json'
+import deployments from '../config/deployments.generated.json'
 import mockContracts from '../config/mock-contracts.json'
 
-// Single source of truth for BattleChain addresses and network metadata.
+// Addresses come from @cyfrin/battlechain-lib (canonical); docs presentation
+// comes from config/deployments.json (overlay). config/deployments.generated.json
+// is the merged result produced by scripts/build-deployments.ts — never edit it
+// by hand. Single source of truth for BattleChain addresses and network metadata.
 // `substituteDeploymentTokens` replaces `%%token%%` placeholders in MDX content
 // with real values at build/render time, so docs never hardcode an address.
 //
@@ -15,6 +18,10 @@ import mockContracts from '../config/mock-contracts.json'
 //   battleChainDeployer, createX, mockRegistryModerator, bridgehub, zkChain,
 //   chainTypeManager, validatorTimelock), or governance role (owner,
 //   registryModerator, treasury).
+//
+// To change an address, edit @cyfrin/battlechain-lib's deployments.json; to
+// change docs presentation, edit config/deployments.json. Then run
+// `pnpm build-deployments`.
 
 export { deployments }
 
