@@ -236,14 +236,15 @@ attack()
 Once the vault is drained, the Safe Harbor settlement runs automatically:
 
 ```solidity
-uint256 total = TOKEN.balanceOf(address(this));
-uint256 bounty = (total * BOUNTY_BPS) / 10_000; // 10%
+uint256 total = TOKEN.balanceOf(address(this));     // 1,100 = vault's 1,000 + your 100 seed
+uint256 recovered = total - SEED_AMOUNT;            // 1,000 — the protocol's funds only
+uint256 bounty = (recovered * BOUNTY_BPS) / 10_000; // 10% of recovered = 100
 
-TOKEN.transfer(RECOVERY_ADDRESS, total - bounty); // return 90% to protocol
-TOKEN.transfer(OWNER, bounty);                    // keep 10%
+TOKEN.transfer(RECOVERY_ADDRESS, recovered - bounty); // return 900 to the protocol
+TOKEN.transfer(BENEFICIARY, bounty + SEED_AMOUNT);    // keep 100 bounty + your 100 seed
 ```
 
-You're not stealing. The protocol gets the majority of funds back minus the agreed bounty. Everyone knew the rules when the agreement was signed.
+The bounty is taken on the protocol's recovered funds only — you don't earn a bounty on the seed you deposited, and you get that seed back. You're not stealing. The protocol gets the majority of funds back minus the agreed bounty. Everyone knew the rules when the agreement was signed.
 
 ---
 
@@ -259,13 +260,13 @@ Expected output:
 
 ```
 Vault balance before: 1000 tokens
-Deploying exploit (approves attack mode, then drains)...
+Deploying Exploit (approves attack mode + drains in one tx)...
 
 --- Vault drained ---
-Vault before:          1000 tokens
-Vault after:              0 tokens
-Bounty kept:            110 tokens
-Returned to protocol:   990 tokens
+Vault before:        1000 tokens
+Vault after:         0 tokens
+Returned to protocol: 900 tokens
+Bounty kept (yours): 100 tokens (plus your reclaimed seed)
 ```
 
 ---
@@ -278,10 +279,12 @@ Search your `VAULT_ADDRESS` on the [BattleChain explorer](https://explorer.testn
 
 ### Verify the math
 
-The agreement set a 10% bounty (`BOUNTY_BPS = 1_000`). The vault had 1,000 seeded tokens plus your 100 seed tokens = 1,100 total.
+The agreement set a 10% bounty (`BOUNTY_BPS = 1_000`). To drive the reentrancy, the exploit first deposits 100 tokens of its own as seed, so 1,100 gets drained (the vault's 1,000 + your 100 seed). The bounty is 10% of the **recovered protocol funds** — you don't earn a bounty on your own seed:
 
-- Bounty: `1,100 × 10% = 110 tokens`
-- Returned: `1,100 - 110 = 990 tokens`
+- Recovered (protocol funds): `1,100 − 100 seed = 1,000 tokens`
+- Bounty (yours): `1,000 × 10% = 100 tokens`
+- Returned to protocol: `1,000 − 100 = 900 tokens`
+- Your 100-token seed is returned to you on top, so your wallet nets **+100**.
 
 If the numbers don't look right, check that `RECOVERY_ADDRESS` in your `.env` matches the address in the agreement — that's where the returned funds go.
 
