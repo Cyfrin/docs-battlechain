@@ -55,15 +55,15 @@
       "contracts": {
         "attackRegistry": {
           "proxy": "0x24876e481eC7198CAC95af739Df2a852CE65A415",
-          "implementation": "0x03A3228A4ce38362289E715bbc26Cac8b98e421B"
+          "implementation": "0x2d226C9f76748C3759F640Ee527Ad0D1A312fbB2"
         },
         "safeHarborRegistry": {
           "proxy": "0xd229f4EE1bAE432010b72a9d1bD682570F4C6eBe",
-          "implementation": "0xBFF0ec94740c287932B50E64c2e8b380129B99a1"
+          "implementation": "0x96d9cCEf1C2eBD19Cc4D3293Bd726c335F9523d7"
         },
         "agreementFactory": {
           "proxy": "0xCdB7F5C0F708baBaabE82afE1DbA8362023AcFdd",
-          "implementation": "0x8d4fEDF4462E3876Ae7C70CC0C5cebA482003Ad5"
+          "implementation": "0xF52b4B00E6c33ED327886fc64c205a9F2DEc3623"
         },
         "battleChainDeployer": {
           "address": "0xD12765D21dDba418B8Fc0583c4716763e03Aa078"
