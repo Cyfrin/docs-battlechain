@@ -36,13 +36,22 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
   const [network, setNetworkState] = useState<NetworkId>(DEFAULT_NETWORK)
 
   useEffect(() => {
-    const stored = normalize(localStorage.getItem(STORAGE_KEY))
-    if (stored) setNetworkState(stored)
+    // The pre-paint script in app/layout.tsx already resolved the network
+    // (URL > localStorage > cookie > default) into <html data-network>. Adopt
+    // it so React state matches what CSS has already painted. Initial state
+    // stays DEFAULT_NETWORK on both SSR and first client render, so there's no
+    // hydration mismatch; CSS-driven <Network> blocks are correct before paint.
+    const resolved = normalize(document.documentElement.dataset.network ?? null)
+    if (resolved) setNetworkState(resolved)
   }, [])
 
   const setNetwork = useCallback((next: NetworkId) => {
     setNetworkState(next)
+    // Keep all signals in sync so the next load (and the pre-paint script) sees
+    // the choice and the CSS-driven blocks update immediately.
+    document.documentElement.dataset.network = next
     localStorage.setItem(STORAGE_KEY, next)
+    document.cookie = `${STORAGE_KEY}=${next};path=/;max-age=31536000;samesite=lax`
   }, [])
 
   return (
@@ -89,7 +98,11 @@ interface NetworkProps {
 }
 
 export function Network({ title, children }: NetworkProps) {
-  const { network } = useNetwork()
-  if (title.toLowerCase() !== network) return null
-  return <div>{children}</div>
+  // Render both networks' blocks and let CSS (keyed on <html data-network>, set
+  // before first paint by the script in app/layout.tsx) hide the inactive one.
+  // This keeps SSR and client markup identical (no hydration mismatch) and
+  // avoids a flash on these statically-generated pages, where the selected
+  // network is only known client-side. TableOfContents skips the hidden block's
+  // headings so the on-page TOC isn't doubled.
+  return <div data-network-block={title.toLowerCase()}>{children}</div>
 }

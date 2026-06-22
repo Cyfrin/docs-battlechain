@@ -30,7 +30,7 @@
   {
     "id": "/battlechain/explanation/how-deployment-works",
     "title": "How Deployment Works",
-    "content": "When you deploy to BattleChain you're using a layered stack. Each layer is a thin wrapper over the one below it — so the just setup you run in the quickstart and the bcDeployCreate(...) you write in your own script are the same path, just entered at different heights. The stack | Layer | What it is | When you touch it | |-------|-----------|-------------------| | just recipes | Convenience aliases in the starter kit that run forge script with the right flags | Quickstart / fastest path | | battlechain-lib | The library you install (BCDeploy, BCSafeHarbor, BCScript) exposing bcDeployCreate*, createAndAdoptAgreement, requestAttackMode | Writing your own deploy + agreement scripts | | BattleChainDeployer | On-chain deployer that wraps CreateX and auto-registers each deployment with the AttackRegistry (so contracts are attackable) | Reference / direct calls | | CreateX | Standard CREATE/CREATE2/CREATE3 factory used under the hood | Rarely directly | The key reason deployments go through Ba",
+    "content": "When you deploy to BattleChain you're using a layered stack. Each layer is a thin wrapper over the one below it — so the just deploy-protocol you run in the quickstart and the bcDeployCreate(...) you write in your own script are the same path, just entered at different heights. The stack | Layer | What it is | When you touch it | |-------|-----------|-------------------| | just recipes | Convenience aliases in the starter kit that run forge script with the right flags | Quickstart / fastest path | | battlechain-lib | The library you install (BCDeploy, BCSafeHarbor, BCScript) exposing bcDeployCreate*, createAndAdoptAgreement, requestAttackMode | Writing your own deploy + agreement scripts | | BattleChainDeployer | On-chain deployer that wraps CreateX and auto-registers each deployment with the AttackRegistry (so contracts are attackable) | Reference / direct calls | | CreateX | Standard CREATE/CREATE2/CREATE3 factory used under the hood | Rarely directly | The key reason deployments go ",
     "url": "/battlechain/explanation/how-deployment-works",
     "category": "battlechain",
     "headings": [
@@ -309,7 +309,7 @@
   {
     "id": "/battlechain/quickstart/one-prompt-demo",
     "title": "One-Prompt Demo",
-    "content": "This is the Claude Code version (works in the terminal, the desktop app, or IDE extensions). On the claude.ai chat app (Claude Desktop) instead? See Security Demo (Claude Desktop), which uses an MCP server. See BattleChain end to end from a single prompt. Claude Code deploys a deliberately vulnerable vault, creates a Safe Harbor agreement, opens it for whitehat attack, then exploits it — and you watch the bounty split at the end. You don't write any code; you just approve each step. Works in any Claude Code surface — the terminal, the desktop app, or the VS Code / JetBrains extensions. Claude runs the commands itself. What You'll Need - Claude Code — any surface (terminal, desktop app, or IDE extension). - A wallet for BattleChain Testnet — either one you already have (MetaMask, Trezor, etc.) or one Claude creates for you. Either way it needs a little testnet ETH for gas; the prompt walks you through funding it. If you bring your own wallet, add the network first with the one-click but",
+    "content": "This is the Claude Code version (works in the terminal, the desktop app, or IDE extensions). On the claude.ai chat app (Claude Desktop) instead? See Security Demo (Claude Desktop), which uses an MCP server. See BattleChain end to end from a single prompt. Claude Code deploys a deliberately vulnerable vault, creates a Safe Harbor agreement, opens it for whitehat attack, then exploits it — and you watch the bounty split at the end. You don't write any code; you just approve each step. Works in any Claude Code surface — the terminal, the desktop app, or the VS Code / JetBrains extensions. Claude runs the commands itself. What You'll Need - Claude Code — any surface (terminal, desktop app, or IDE extension). - A wallet for BattleChain Testnet — the demo signs with your own wallet (MetaMask) by default. You'll need Foundry nightly (the prompt installs it) and BattleChain Testnet added to MetaMask — one click at Add BattleChain to MetaMask. The wallet needs a little testnet ETH for gas; the ",
     "url": "/battlechain/quickstart/one-prompt-demo",
     "category": "battlechain",
     "headings": [
@@ -387,7 +387,7 @@
       "Implementation addresses",
       "Mainnet governance",
       "Sepolia (Testnet L1)",
-      "AttackRegistry"
+      "Ethereum (Mainnet L1)"
     ]
   },
   {

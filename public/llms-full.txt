@@ -261,7 +261,7 @@ Works in any Claude Code surface — the **terminal**, the **desktop app**, or t
 ## What You'll Need
 
 - **[Claude Code](https://claude.com/product/claude-code)** — any surface (terminal, desktop app, or IDE extension).
-- **A wallet for BattleChain Testnet** — either one you already have (MetaMask, Trezor, etc.) or one Claude creates for you. Either way it needs a little testnet ETH for gas; the prompt walks you through funding it. If you bring your own wallet, add the network first with the one-click button on [Add BattleChain to MetaMask](https://docs.battlechain.com/battlechain/how-to/add-battlechain-to-metamask).
+- **A wallet for BattleChain Testnet** — the demo signs with **your own wallet (MetaMask)** by default. You'll need **Foundry nightly** (the prompt installs it) and BattleChain Testnet added to MetaMask — one click at [Add BattleChain to MetaMask](https://docs.battlechain.com/battlechain/how-to/add-battlechain-to-metamask). The wallet needs a little testnet ETH for gas; the prompt walks you through funding it. Don't want MetaMask? Claude can make a local **keystore** wallet instead — no MetaMask needed.
 
 > **Warning:** Use a **dedicated test wallet** — never one that holds real funds. Claude runs real commands on your machine: read each step before approving it, and never paste a private key into the chat.
 
@@ -273,18 +273,30 @@ Paste this into Claude Code:
 Run the BattleChain security demo end to end, explaining each step as you go.
 
 1. Read https://docs.battlechain.com/llms-full.txt for context on BattleChain.
-2. If I don't have them, install Foundry (https://getfoundry.sh) and just (https://just.systems). Then clone https://github.com/Cyfrin/battlechain-starter-foundry and run `forge install`.
-3. Ask me how I'll sign transactions, and set it up:
-   - My own wallet (MetaMask, Trezor, etc.): I've already added BattleChain Testnet to it. Use the Foundry browser wallet (https://github.com/foundry-rs/foundry-browser-wallet) via the starter's browser `just` targets (e.g. `just setup-browser`) so I approve each transaction in my own wallet. Ask which wallet I use.
-   - Or make one for me: run `cast wallet new`, show me the address, and sign via a keystore. Never ask me to paste a private key.
-4. Make sure that wallet has BattleChain Testnet ETH. If it's empty, walk me through getting Sepolia ETH from the faucet (https://cloud.google.com/application/web3/faucet/ethereum/sepolia) and bridging it to BattleChain (https://portal.battlechain.com/bridge) — and do as much of it for me as you safely can.
-5. Deploy the MockToken and VulnerableVault, create a Safe Harbor agreement, request and approve attack mode, then deploy an Attacker that drains the vault via reentrancy.
-6. Finish by showing me the bounty split — 90% returned to the protocol, 10% kept as the bounty.
 
-If the browser wallet ever stalls on "Waiting for receipt" after I've signed but a transaction hash is shown, the transaction went through — confirm it on https://explorer.testnet.battlechain.com and keep going; never re-send the same transaction.
+2. Make a fresh folder for this demo so it stays out of my current project — e.g. `mkdir -p ~/battlechain-demo && cd ~/battlechain-demo` — and do all the work there. Make sure I have `just` (https://just.systems) and Foundry on the NIGHTLY channel — run `foundryup -i nightly` (browser-wallet signing needs nightly). Then clone https://github.com/Cyfrin/battlechain-starter-foundry, cd into it, and run `forge install`.
+
+3. Set up signing — default to my own wallet (MetaMask):
+   - Confirm I've added BattleChain Testnet to MetaMask (chain ID 627). If not, point me to the one-click button at https://docs.battlechain.com/battlechain/how-to/add-battlechain-to-metamask.
+   - Ask me for my wallet address, and set both SENDER_ADDRESS and RECOVERY_ADDRESS to it in `.env`.
+   - (Don't want MetaMask? Instead run `just generate-key`, set SENDER_ADDRESS to the address it prints, and use the non-browser targets — `just deploy-protocol`, `create-agreement`, `adopt-agreement`, `request-attack-mode`, `attack`. Never ask me to paste a private key.)
+
+4. Make sure that wallet has BattleChain Testnet ETH for gas. If it's empty, walk me through getting Sepolia ETH (https://cloud.google.com/application/web3/faucet/ethereum/sepolia) and bridging it (https://portal.battlechain.com/bridge).
+
+5. Run the demo ONE STEP AT A TIME, in order. Each browser step opens my wallet and BLOCKS until I sign, so for EVERY one: run it in the FOREGROUND, then tell me "approve it in your wallet now," and WAIT for the command to finish on its own. Never run a `-browser` command in the background, never add `&`, never poll its output, never move on until it returns. After each, explain what the transaction did and give me the explorer link (https://explorer.testnet.battlechain.com/tx/HASH).
+   a. `just deploy-protocol-browser` — deploys the vulnerable vault, which deploys + seeds its own token. When done, read the deployed VulnerableVault address from the receipt's logs (`cast receipt <hash> --rpc-url https://testnet.battlechain.com` shows them — it's the ContractCreation event), set VAULT_ADDRESS in `.env`, then run `cast call $VAULT_ADDRESS "TOKEN()(address)" --rpc-url https://testnet.battlechain.com` and set TOKEN_ADDRESS. Run `just verify-protocol-browser` (verifies by address — the browser deploy writes no broadcast file) and show me both contracts on the explorer.
+   b. `just create-agreement-browser` — registers the Safe Harbor agreement scoping the vault. Read the new agreement address from the receipt, set AGREEMENT_ADDRESS in `.env`, and show it on the explorer.
+   c. `just set-commitment-window-browser` — locks the agreement's terms ~30 days out. REQUIRED: the AttackRegistry rejects an attack-mode request until the commitment window is set (you'd see `AttackRegistry__InsufficientCommitment` otherwise).
+   d. `just adopt-agreement-browser` — adopts the agreement (makes it live for attack mode).
+   e. `just request-attack-mode-browser` — requests attack mode for the agreement.
+   f. `just attack-browser` — deploys the Exploit, which approves attack mode and drains the vault via reentrancy, all in one transaction.
+
+6. Finish by showing me the bounty split — 90% returned to my recovery address, 10% kept as the whitehat bounty — with the final balances on the explorer.
+
+Remember: every `-browser` step opens my wallet and blocks until I sign. Always run them in the foreground and wait — never in the background.
 ```
 
-Claude will pause for you to approve each command, and to sign in your wallet (browser wallet) or enter your keystore password.
+Claude pauses for you to approve each command, and each transaction pops up in your wallet (MetaMask) to sign — or, with a keystore, it asks for your password.
 
 > **Tip:** Want this available without pasting a prompt — so you can just say "deploy to BattleChain" in any project? Install the BattleChain skill; see [Using BattleChain with AI](https://docs.battlechain.com/battlechain/using-battlechain-with-ai).
 
@@ -292,10 +304,10 @@ Claude will pause for you to approve each command, and to sign in your wallet (b
 
 | Step | What Claude does |
 |------|-----------------|
-| 1 — Deploy | Deploys `BCToken` and `VulnerableVault` to BattleChain Testnet, seeds the vault with 1,000 tokens |
-| 2 — Safe Harbor | Creates an on-chain safe harbor agreement defining bounty terms and recovery rules |
-| 3 — Attack Mode | Submits an attack mode request and immediately approves it via the testnet DAO moderator |
-| 4 — Exploit | Deploys an Attacker contract that drains the vault via reentrancy, then splits proceeds: 90% returned to the protocol, 10% kept as the whitehat bounty |
+| 1 — Deploy | Deploys `VulnerableVault`, which deploys + seeds its own token with 1,000 tokens (one transaction) |
+| 2 — Safe Harbor | Registers an on-chain safe harbor agreement scoping the vault, locks its commitment window, and adopts it (three transactions) |
+| 3 — Attack mode | Requests attack mode for the agreement |
+| 4 — Exploit | Deploys the `Exploit` — one transaction that approves attack mode (via the testnet moderator) and drains the vault via reentrancy, then splits proceeds: 90% returned to the protocol, 10% kept as the whitehat bounty |
 
 > **Note:** In this demo you are both the protocol owner and the whitehat, so both the 90% recovery and the 10% bounty arrive in the same wallet. The vault holds 1,000 tokens; the Attacker deposits an additional 100-token seed to open its vault position, so you end up with 1,100 tokens total.
 
@@ -309,9 +321,9 @@ Claude will pause for you to approve each command, and to sign in your wallet (b
 
 Tell Claude to add `--skip-simulation` to the failing `forge script` call (the starter kit's `justfile` already includes it). For the full flag list and how the deploy stack fits together, see [How Deployment Works](https://docs.battlechain.com/battlechain/explanation/how-deployment-works) and the [FAQ](https://docs.battlechain.com/battlechain/faq).
 
-### The browser wallet is stuck on "Waiting for receipt"
+### MetaMask signing stalls on "Waiting for receipt"
 
-If you signed and a transaction hash appeared, the transaction went through — the browser wallet's receipt display can lag on BattleChain. Confirm the hash on the [explorer](https://explorer.testnet.battlechain.com) and continue. If the wallet won't advance to the next transaction in the script, use the **keystore** option instead (Claude can import a key with `cast wallet import`) — it's the most reliable path today.
+Each step uses `cast send --browser`, not `forge script --browser` (which hangs waiting on the wallet to report the receipt). `cast` takes the transaction hash and confirms against the chain itself, so it shouldn't stall. If it does: make sure you're on **Foundry nightly** (`foundryup -i nightly`) — the `--browser` flag only exists there. If a transaction hash appeared, the transaction went through regardless (confirm on the [explorer](https://explorer.testnet.battlechain.com)). Still stuck? Fall back to the **keystore** path (`just generate-key` + the non-browser targets) — no wallet popup at all.
 
 ### Transactions are failing or the demo is stuck
 
@@ -398,8 +410,8 @@ Claude narrates each step and opens a signing page in your browser when transact
 
 | Step | What Claude does |
 |------|-----------------|
-| 1 — Deploy | Deploys `BCToken` and `VulnerableVault` to BattleChain Testnet, seeds the vault with 1,000 tokens |
-| 2 — Safe Harbor | Creates an on-chain safe harbor agreement defining bounty terms and recovery rules |
+| 1 — Deploy | Deploys `VulnerableVault` to BattleChain Testnet, which deploys and seeds its own token with 1,000 tokens |
+| 2 — Safe Harbor | Creates the on-chain safe harbor agreement (bounty terms + recovery rules), locks its commitment window, and adopts it |
 | 3 — Attack Mode | Submits an attack mode request and immediately approves it via the testnet DAO moderator |
 | 4 — Exploit | Deploys an Attacker contract that drains the vault via reentrancy, then splits proceeds: 90% returned to the protocol, 10% kept as the whitehat bounty |
 
@@ -556,15 +568,16 @@ You should see `battlechain` listed. From here on, you'll enter the keystore pas
 ## Step 3 — Deploy
 
 ```bash
-just setup
+just deploy-protocol
 ```
 
 Enter your keystore password when prompted. Expected output:
 
 ```
-MockToken deployed: 0x...
-VulnerableVault deployed: 0x...
-Vault seeded with 1000 tokens
+VulnerableVault deployed — it deploys and seeds its own token (1,000 tokens)
+
+VAULT_ADDRESS=0x...
+TOKEN_ADDRESS=0x...
 ```
 
 Copy both addresses into your `.env`:
@@ -590,8 +603,6 @@ Expected output:
 
 ```
 Agreement created: 0x...
-Commitment window extended 30 days
-Safe Harbor adopted
 ```
 
 Copy `AGREEMENT_ADDRESS` into your `.env` and set `RECOVERY_ADDRESS` to your wallet address:
@@ -601,25 +612,23 @@ AGREEMENT_ADDRESS=0x...
 RECOVERY_ADDRESS=0x...your_wallet_address...
 ```
 
-This creates an on-chain agreement that defines the rules of engagement: 10% bounty, 30-day commitment window, your wallet as the recovery address for returned funds.
+Then lock the agreement's commitment window and adopt it:
+
+```bash
+just set-commitment-window
+just adopt-agreement
+```
+
+Together these define the rules of engagement (10% bounty, your wallet as the recovery address), lock the terms for a 30-day commitment window — **required** before attack mode can be requested — and register the agreement so it's live.
 
 ---
 
-## Step 5 — Open for Attack
+## Step 5 — Request Attack Mode
 
-Run these commands yourself in your terminal (each will prompt for your keystore password):
+Request attack mode for the agreement (you'll be prompted for your keystore password):
 
 ```bash
 just request-attack-mode
-```
-
-On testnet, the DAO moderator is a permissionless contract — approve your own request immediately:
-
-```bash
-cast send 0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF \
-  "approveAttack(address)" $AGREEMENT_ADDRESS \
-  --account battlechain \
-  --rpc-url https://testnet.battlechain.com
 ```
 
 Verify the state:
@@ -630,12 +639,12 @@ just check-state
 
 | Output | Meaning |
 |--------|---------|
-| `2` | `ATTACK_REQUESTED` — waiting for DAO |
-| `3` | `UNDER_ATTACK` — approved, vault is open |
+| `2` | `ATTACK_REQUESTED` — open for whitehats |
+| `3` | `UNDER_ATTACK` — a whitehat has approved and is exploiting |
 
-> **Note:** On testnet, the `MockRegistryModerator` lets you approve your own request immediately. On mainnet, this is a real DAO governance action.
+> **Note:** You stop at `2` (`ATTACK_REQUESTED`). On testnet the `MockRegistryModerator` is permissionless, so a whitehat's exploit approves the request and drains the vault in a single transaction (state `3`) — see [Execute Your First Attack](https://docs.battlechain.com/battlechain/quickstart/execute-first-attack). On mainnet, approval is a real DAO governance action.
 
-> **Check:** Once you see `3`, your vault is live and attackable. Whitehats on BattleChain can now attempt to drain it.
+> **Check:** Once you see `2`, your vault is requested for attack and open to whitehats on BattleChain.
 
 ---
 
@@ -797,7 +806,7 @@ Then run these yourself in your terminal (each prompts for your keystore passwor
 
 ```bash
 cast wallet import battlechain --interactive
-just setup
+just deploy-protocol
 ```
 
 Tell your AI to add `TOKEN_ADDRESS` and `VAULT_ADDRESS` from the output to `.env`, then continue:
@@ -806,18 +815,16 @@ Tell your AI to add `TOKEN_ADDRESS` and `VAULT_ADDRESS` from the output to `.env
 just create-agreement
 ```
 
-Tell your AI to add `AGREEMENT_ADDRESS` to `.env` and set `RECOVERY_ADDRESS` to your wallet address, then:
+Tell your AI to add `AGREEMENT_ADDRESS` to `.env` and set `RECOVERY_ADDRESS` to your wallet address, then lock the commitment window, adopt the agreement, and request attack mode:
 
 ```bash
+just set-commitment-window
+just adopt-agreement
 just request-attack-mode
-cast send 0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF \
-  "approveAttack(address)" $AGREEMENT_ADDRESS \
-  --account battlechain \
-  --rpc-url https://testnet.battlechain.com
 just check-state
 ```
 
-You need to see `3` (`UNDER_ATTACK`).
+You need to see `2` (`ATTACK_REQUESTED`). That's all the setup — the exploit in Step 4 approves attack mode and drains the vault in one transaction.
 
 **[Manual (foundry)]**
 
@@ -832,7 +839,7 @@ Set `SENDER_ADDRESS` in `.env` to your wallet address, then:
 
 ```bash
 cast wallet import battlechain --interactive
-just setup
+just deploy-protocol
 ```
 
 Copy `TOKEN_ADDRESS` and `VAULT_ADDRESS` into `.env`, then:
@@ -841,18 +848,16 @@ Copy `TOKEN_ADDRESS` and `VAULT_ADDRESS` into `.env`, then:
 just create-agreement
 ```
 
-Copy `AGREEMENT_ADDRESS` into `.env` and set `RECOVERY_ADDRESS` to your wallet address. Then:
+Copy `AGREEMENT_ADDRESS` into `.env` and set `RECOVERY_ADDRESS` to your wallet address. Then lock the commitment window, adopt the agreement, and request attack mode:
 
 ```bash
+just set-commitment-window
+just adopt-agreement
 just request-attack-mode
-cast send 0x3DdA228A38b4d7438bBF5D5137c8D1090DcaF6bF \
-  "approveAttack(address)" $AGREEMENT_ADDRESS \
-  --account battlechain \
-  --rpc-url https://testnet.battlechain.com
 just check-state
 ```
 
-You need to see `3` (`UNDER_ATTACK`). If you see `2`, the approval hasn't been processed yet.
+You need to see `2` (`ATTACK_REQUESTED`). The exploit in Step 4 approves attack mode and drains the vault in one transaction.
 
 ---
 
@@ -875,6 +880,8 @@ Key things to check:
 ## Step 3 — Understand the Exploit
 
 Open `src/Attacker.sol` in the starter repo. The attack exploits two things working together: the CEI violation in `VulnerableVault` and the hook system in `MockToken`.
+
+`just attack` deploys a thin `Exploit` wrapper (`src/Exploit.sol`) whose constructor deploys this `Attacker`, approves attack mode via the testnet moderator, and runs the exploit — all in one transaction.
 
 **MockToken's hook system:** Any address can register a hook contract via `setTransferHook(address hook)`. When tokens are transferred *to* that address, the token calls `hook.onTokenTransfer()` after the transfer completes.
 
@@ -921,13 +928,13 @@ Expected output:
 
 ```
 Vault balance before: 1000 tokens
-Deploying attacker...
+Deploying exploit (approves attack mode, then drains)...
 
 --- Vault drained ---
 Vault before:          1000 tokens
 Vault after:              0 tokens
-Bounty kept:            100 tokens
-Returned to protocol:   900 tokens
+Bounty kept:            110 tokens
+Returned to protocol:   990 tokens
 ```
 
 ---
@@ -3497,7 +3504,7 @@ Source: https://docs.battlechain.com/battlechain/explanation/how-deployment-work
 
 *The BattleChain deploy stack — how just recipes, battlechain-lib, BattleChainDeployer, and CreateX fit together, plus the Foundry flags you need*
 
-When you deploy to BattleChain you're using a **layered stack**. Each layer is a thin wrapper over the one below it — so the `just setup` you run in the quickstart and the `bcDeployCreate(...)` you write in your own script are the *same path*, just entered at different heights.
+When you deploy to BattleChain you're using a **layered stack**. Each layer is a thin wrapper over the one below it — so the `just deploy-protocol` you run in the quickstart and the `bcDeployCreate(...)` you write in your own script are the *same path*, just entered at different heights.
 
 ## The stack
 
@@ -3613,6 +3620,17 @@ Settlement layer (L1) for BattleChain Testnet (chain 627)
 | ZK Chain (627) | `0x564ca3000EfF59D9a647A1B8c871f27236201D1D` |
 | Chain Type Manager | `0x3F9A46ec287C93b74D4f144712bDb4EEdEEEEC74` |
 | Validator Timelock | `0x8C2a0b3C86CaA986f5dCd71f053c63Ac8324EA6f` |
+
+### Ethereum (Mainnet L1)
+
+Settlement layer (L1) for BattleChain (chain 626)
+
+| Contract | Address |
+|----------|---------|
+| Bridgehub | `0x6f85C08e2DabB6b0B8B3587D3628FCfb5b10BE19` |
+| ZK Chain (626) | `0xB44d26D227e0bD028d893BEc16DC1C7B168eCdE3` |
+| Chain Type Manager | `0x4Ee4EA87b909ea3E1C36d9fcbf6C0e535165f96D` |
+| Validator Timelock | `0x313E1E05b967aB18cCb6aAaAE19E616b7b99a01a` |
 
 ---
 
