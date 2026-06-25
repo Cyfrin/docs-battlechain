@@ -201,16 +201,22 @@ All deployments automatically call `AttackRegistry.registerDeployment()`.
 
 ## Contract ABIs
 
-Typed ABIs for all BattleChain contracts are available in [`battlechain-lib`](https://github.com/Cyfrin/battlechain-lib/blob/main/ts/abi.ts) as TypeScript constants compatible with [viem](https://viem.sh):
+ABIs for all BattleChain contracts ship as language-neutral JSON in [`@cyfrin/battlechain-lib`](https://github.com/Cyfrin/battlechain-lib/tree/main/abis) (the `abis/` directory), so they work with [viem](https://viem.sh) or any tool that takes a JSON ABI:
 
-| Export | Contract |
-|--------|----------|
-| `attackRegistryAbi` | AttackRegistry |
-| `registryAbi` | BattleChainSafeHarborRegistry |
-| `agreementFactoryAbi` | AgreementFactory |
-| `agreementAbi` | Agreement |
-| `deployerAbi` | BattleChainDeployer |
+| Artifact | Contract |
+|----------|----------|
+| `abis/registry.json` | BattleChainSafeHarborRegistry |
+| `abis/attackRegistry.json` | AttackRegistry |
+| `abis/agreementFactory.json` | AgreementFactory |
+| `abis/agreement.json` | Agreement |
+| `abis/deployer.json` | BattleChainDeployer |
 
 ```typescript
-import { attackRegistryAbi, registryAbi } from 'battlechain-lib/ts/abi'
+import registryAbi from '@cyfrin/battlechain-lib/abis/registry.json' with { type: 'json' }
+```
+
+For JS/TS (ethers) projects, [`@cyfrin/battlechain-lib-js`](https://www.npmjs.com/package/@cyfrin/battlechain-lib-js) re-exports the same ABIs as typed constants — `REGISTRY_ABI`, `ATTACK_REGISTRY_ABI`, `AGREEMENT_FACTORY_ABI`, `AGREEMENT_ABI`, `DEPLOYER_ABI`:
+
+```typescript
+import { REGISTRY_ABI, ATTACK_REGISTRY_ABI } from '@cyfrin/battlechain-lib-js'
 ```
